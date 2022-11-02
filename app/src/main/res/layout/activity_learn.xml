@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        tools:listitem="@layout/home_each" />
+        tools:listitem="@layout/learn_each" />
 
     <LinearLayout
         android:id="@+id/linearLayout4"
@@ -74,7 +74,7 @@
             android:paddingBottom="10dp"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/home"
-            app:tint="#14ab69"
+            app:tint="#ffffff"
             tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
 
         <ImageButton
@@ -106,7 +106,7 @@
             android:paddingBottom="10dp"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/book"
-            app:tint="#FFFFFF"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
+            app:tint="#14ab69"
+            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

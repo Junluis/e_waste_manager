@@ -24,4 +24,27 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="and">and</string>
     <string name="reg_register">Register</string>
+    <string name="home_button">Home Button</string>
+    <string name="post_button">Post Button</string>
+    <string name="learn_button">Learn Button</string>
+    <string name="btn_menu">btn Menu</string>
+    <string name="btn_user">btn User</string>
+    <string name="title">Title</string>
+    <string name="author">Author</string>
+    <string name="lorem_ipsum">lorem ipsum</string>
+    <string name="cover">cover</string>
+    <string name="learnCover">cover</string>
+    <string name="manage_e_waste">Manage E-Waste</string>
+    <string name="disposal_area">Disposal Area</string>
+    <string name="donate">Donate</string>
+    <string name="request">Request</string>
+    <string name="back">Back</string>
+    <string name="navback">back</string>
+    <string name="profile">profile</string>
+    <string name="navUsername">Username</string>
+    <string name="navEmail">Email</string>
+    <string name="body">Body</string>
+    <string name="navRightProfile">Profile</string>
+    <string name="notification">Notification</string>
+    <string name="log_out">Log out</string>
 </resources>

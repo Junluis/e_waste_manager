@@ -40,16 +40,6 @@
             app:srcCompat="@drawable/user" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/learnRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="630dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        tools:listitem="@layout/home_each" />
-
     <LinearLayout
         android:id="@+id/linearLayout4"
         android:layout_width="match_parent"
@@ -74,7 +64,7 @@
             android:paddingBottom="10dp"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/home"
-            app:tint="#14ab69"
+            app:tint="#ffffff"
             tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
 
         <ImageButton
@@ -90,7 +80,7 @@
             android:paddingBottom="10dp"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/plus"
-            app:tint="#FFFFFF"
+            app:tint="#14ab69"
             tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
 
         <ImageButton
@@ -106,7 +96,7 @@
             android:paddingBottom="10dp"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/book"
-            app:tint="#FFFFFF"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
+            app:tint="#ffffff"
+            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
