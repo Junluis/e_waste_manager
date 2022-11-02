@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "977130511784",
+    "project_id": "e-waste-manager-9fd6d",
+    "storage_bucket": "e-waste-manager-9fd6d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977130511784:android:7b80b94bc27fe98891d19d",
+        "android_client_info": {
+          "package_name": "com.capstone.e_waste_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "977130511784-irio11inch1cj8npq9k5onbup6l75nn6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlheHsFMyBcpxPp4pDwGbeyM81ck725ZI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "977130511784-irio11inch1cj8npq9k5onbup6l75nn6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
