@@ -158,12 +158,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout6">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/Date of Birth"
+            <EditText
+                android:id="@+id/dateOfBirth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
                 android:hint="@string/date_of_birth"
-                android:inputType="date" />
+                android:inputType="date"
+                tools:ignore="SpeakableTextPresentCheck"
+                android:autofillHints="" />
 
             <TextView
                 android:id="@+id/textView5"

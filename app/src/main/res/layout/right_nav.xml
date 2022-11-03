@@ -29,7 +29,7 @@
                 android:scaleType="centerInside"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/navProfile"
-                app:srcCompat="@drawable/rightArrow"
+                app:srcCompat="@drawable/arrowright"
                 app:tint="#ffffff"
                 tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
