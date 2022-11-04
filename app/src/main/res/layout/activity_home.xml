@@ -18,7 +18,7 @@
         <ImageButton
             android:id="@+id/homeBtnMenu"
             android:layout_width="100dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="125dp"
             android:layout_weight="1"
             android:background="@null"
