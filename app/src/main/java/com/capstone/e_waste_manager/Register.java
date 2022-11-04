@@ -29,8 +29,6 @@ import java.util.Map;
 
 
 public class Register extends AppCompatActivity {
-    EditText dateOfBirth;
-
     EditText regUsername, regPassword, regConfPassword, regEmail, regFirstName, regLastName, dateOfBirth;
     Button regRegister;
     TextView regLogin, regPrivacyPolicy, regTermsService;
