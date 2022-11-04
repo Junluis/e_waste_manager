@@ -47,4 +47,6 @@
     <string name="navRightProfile">Profile</string>
     <string name="notification">Notification</string>
     <string name="log_out">Log out</string>
+    <string name="partner">Partner</string>
+    <string name="e">E</string>
 </resources>

@@ -21,6 +21,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 public class Login extends AppCompatActivity {
 
     TextInputEditText loginEmail, loginPassword;
@@ -81,10 +83,12 @@ public class Login extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Log.d("TAG", "onSuccess: "+ documentSnapshot.getData());
 
-                if(documentSnapshot.getString("Partner")!= null){
+                if(Objects.equals(documentSnapshot.getString("Partner"), "0")){
+                    startActivity(new Intent(getApplicationContext(), Home.class));
                     finish();
                 }
-                if(documentSnapshot.getString("Partner")=="1"){
+                if(Objects.equals(documentSnapshot.getString("Partner"), "1")){
+                    startActivity(new Intent(getApplicationContext(), Partner.class));
                     finish();
                 }
             }
