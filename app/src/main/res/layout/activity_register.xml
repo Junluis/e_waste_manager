@@ -66,7 +66,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/regUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout3">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/regPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -113,7 +113,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout4">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/regConfPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout5">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/regEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -192,7 +192,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout7">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/regFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -215,7 +215,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout8">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/regLastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

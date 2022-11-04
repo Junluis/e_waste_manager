@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/postBtnMenu"
+            android:id="@+id/learnBtnMenu"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="125dp"
@@ -28,7 +28,7 @@
             app:srcCompat="@drawable/menu" />
 
         <ImageButton
-            android:id="@+id/postBtnUser"
+            android:id="@+id/learnBtnUser"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_marginStart="125dp"
@@ -61,7 +61,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
-            android:id="@+id/postBtnHome"
+            android:id="@+id/learnBtnHome"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -78,7 +78,7 @@
             tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
 
         <ImageButton
-            android:id="@+id/postBtnPost"
+            android:id="@+id/learnBtnPost"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -94,7 +94,7 @@
             tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
 
         <ImageButton
-            android:id="@+id/postBtnLearn"
+            android:id="@+id/learnBtnLearn"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
