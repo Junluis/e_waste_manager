@@ -9,7 +9,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import java.util.Calendar;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -18,7 +17,6 @@ public class Register extends AppCompatActivity {
     EditText dateOfBirth;
 
     TextInputEditText regUsername, regPassword, regConfPassword, regEmail, regFirstName, regLastName;
-    EditText dateOfBirth;
     Button regRegister;
     TextView regLogin, regPrivacyPolicy, regTermsService;
 
