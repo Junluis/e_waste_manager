@@ -12,6 +12,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.ImageButton;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -19,6 +24,9 @@ public class Home extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
 
+    RecyclerView homeRecycler;
+    ImageButton homeBtnHome, homeBtnPost, homeBtnLearn;
+    
     ImageView menu_nav, profile_nav;
     NavigationView navView_profile, navView_menu;
 
@@ -26,7 +34,6 @@ public class Home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
 
         //drawer start
         drawerLayout = findViewById(R.id.drawerLayout);
@@ -90,7 +97,17 @@ public class Home extends AppCompatActivity {
             }
         });
         //drawer buttons end
+        
+        
+        homeRecycler = findViewById(R.id.homeRecycler);
+        homeBtnHome = findViewById(R.id.homeBtnHome);
+        homeBtnPost = findViewById(R.id.homeBtnPost);
+        homeBtnLearn = findViewById(R.id.homeBtnLearn);
 
+        homeBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
 
+        homeBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
+
+        homeBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
     }
 }

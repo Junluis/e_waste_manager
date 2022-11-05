@@ -26,6 +26,9 @@
             android:name=".UserProfilePage"
             android:exported="false" />
         <activity
+            android:name=".Partner"
+            android:exported="false" />
+        <activity
             android:name=".Learn"
             android:exported="false" />
         <activity

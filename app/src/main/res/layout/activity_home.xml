@@ -42,7 +42,7 @@
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/learnRecycler"
+        android:id="@+id/homeRecycler"
         android:layout_width="match_parent"
         android:layout_height="630dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
@@ -62,7 +62,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
-            android:id="@+id/postBtnHome"
+            android:id="@+id/homeBtnHome"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -79,7 +79,7 @@
             tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
 
         <ImageButton
-            android:id="@+id/postBtnPost"
+            android:id="@+id/homeBtnPost"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -95,7 +95,7 @@
             tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
 
         <ImageButton
-            android:id="@+id/postBtnLearn"
+            android:id="@+id/homeBtnLearn"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
