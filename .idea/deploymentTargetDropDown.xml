@@ -6,21 +6,12 @@
         <type value="RUNNING_DEVICE_TARGET" />
         <deviceKey>
           <Key>
-<<<<<<< Updated upstream
-            <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\Junluis\.android\avd\Pixel_5_API_31_1.avd" />
-=======
             <type value="SERIAL_NUMBER" />
-            <value value="adb-RR8M90CXWCA-mHeKzv._adb-tls-connect._tcp" />
->>>>>>> Stashed changes
+            <value value="R58T32NQRHT" />
           </Key>
         </deviceKey>
       </Target>
     </runningDeviceTargetSelectedWithDropDown>
-<<<<<<< Updated upstream
-    <timeTargetWasSelectedWithDropDown value="2022-11-04T11:21:53.464117Z" />
-=======
-    <timeTargetWasSelectedWithDropDown value="2022-11-04T11:36:27.089654600Z" />
->>>>>>> Stashed changes
+    <timeTargetWasSelectedWithDropDown value="2022-11-06T20:09:51.448532Z" />
   </component>
 </project>
