@@ -15,7 +15,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import java.util.Calendar;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
@@ -26,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+
 
 
 public class Register extends AppCompatActivity {

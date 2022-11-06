@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Home">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <RelativeLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/homeBtnMenu"
-            android:layout_width="100dp"
+        <ImageView
+            android:id="@+id/menu_nav"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="125dp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/btn_menu"
-            android:padding="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/menu" />
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic__fas_bar"
+            app:tint="@color/darkgray" />
 
-        <ImageButton
-            android:id="@+id/homeBtnUser"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="125dp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/btn_user"
-            android:padding="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/user" />
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/profile_nav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/ic__user_icon"
+            app:tint="@color/darkgray" />
+
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/homeRecycler"
@@ -109,4 +110,70 @@
             app:tint="#FFFFFF"
             tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/nav_viewright"
+        app:menu="@menu/nav_rightmenu"
+        android:layout_gravity="end"
+        android:fitsSystemWindows="true"
+        android:background="@color/whitebg" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/signout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/darkgray"
+                app:drawableStartCompat="@drawable/ic_baseline_exit_to_app_24"
+                app:drawableTint="@color/darkgray"
+                android:padding="20dp"
+                android:text="@string/log_out" />
+
+        </LinearLayout>
+
+    </com.google.android.material.navigation.NavigationView>
+
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/nav_viewleft"
+        app:menu="@menu/nav_leftmenu"
+        android:fitsSystemWindows="true"
+        android:layout_gravity="start"
+        android:background="@color/whitebg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                app:cornerRadius="300dp"
+                android:id="@+id/request"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="@string/request"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:backgroundTint="@color/secondary_blue"/>
+
+        </LinearLayout>
+
+    </com.google.android.material.navigation.NavigationView>
+
+</androidx.drawerlayout.widget.DrawerLayout>
