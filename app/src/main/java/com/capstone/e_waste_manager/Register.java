@@ -1,6 +1,5 @@
 package com.capstone.e_waste_manager;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -41,6 +40,7 @@ public class Register extends AppCompatActivity {
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
     String Dateval;
+    Integer ageInteger = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +75,6 @@ public class Register extends AppCompatActivity {
         regTermsService = findViewById(R.id.regTermsService);
 
         //date picker start
-        tilDateOfBirth = findViewById(R.id.tilDateOfBirth);
 
         Calendar calendar = Calendar.getInstance();
         final int year = calendar.get(Calendar.YEAR);
@@ -134,6 +133,10 @@ public class Register extends AppCompatActivity {
                     if (tilUsername.getChildCount() == 2)
                         tilUsername.getChildAt(1).setVisibility(View.VISIBLE);
                     tilUsername.setError("required*");
+                }else if(s.length() < 6 || !s.toString().matches("[a-zA-Z0-9._-]+")){
+                    if (tilUsername.getChildCount() == 2)
+                        tilUsername.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilUsername.setError("Must be at least 6 characters and cannot contain spaces and special characters other than \".\" \"-\" \"_\".");
                 }else{
                     tilUsername.setError(null);
                     if (tilUsername.getChildCount() == 2)
@@ -232,7 +235,33 @@ public class Register extends AppCompatActivity {
                             }else if(Dateval.length() > 10){
                                 Dateval = Dateval.substring(0, 10);
                             }else{
-                                tilDateOfBirth.setError(null);
+                                Calendar today = Calendar.getInstance();
+                                int cYear = Integer.parseInt(regdateOfBirth.getText().toString().substring(regdateOfBirth.length() - 4, regdateOfBirth.length()));
+                                int cMonth = Integer.parseInt(regdateOfBirth.getText().toString().substring(3, 5));
+                                int cday = Integer.parseInt(regdateOfBirth.getText().toString().substring(0, 2));
+
+                                if (cYear > today.get(Calendar.YEAR)) {
+                                    tilDateOfBirth.setError("Are you a time traveler?");
+                                    tilDateOfBirth.setErrorIconDrawable(0);
+                                } else if (cYear == today.get(Calendar.YEAR)) {
+                                    if (today.get(Calendar.MONTH) + 1 == cMonth) {
+                                        if (today.get(Calendar.DAY_OF_MONTH) < cday) {
+                                            tilDateOfBirth.setError("Are you a time traveler?");
+                                            tilDateOfBirth.setErrorIconDrawable(0);
+                                        }
+                                    }
+                                } else {
+                                    ageInteger = today.get(Calendar.YEAR) - cYear;
+                                    if (today.get(Calendar.MONTH) + 1 == cMonth) {
+                                        if (today.get(Calendar.DAY_OF_MONTH) < cday) {
+                                            ageInteger = ageInteger - 1;
+                                        }
+                                    } else if (today.get(Calendar.MONTH) < cMonth) {
+                                        ageInteger = ageInteger - 1;
+                                    }
+
+                                    tilDateOfBirth.setError(null);
+                                }
                             }
                         }
                         @Override
@@ -241,6 +270,9 @@ public class Register extends AppCompatActivity {
                     });
                 } else {
                     regdateOfBirth.setText(Dateval);
+                    if (ageInteger < 13) {
+                        tilDateOfBirth.setError("You must be over 13 to register.");
+                    }
                 }
             }
         });
@@ -254,6 +286,10 @@ public class Register extends AppCompatActivity {
                     if (tilFirstName.getChildCount() == 2)
                         tilFirstName.getChildAt(1).setVisibility(View.VISIBLE);
                     tilFirstName.setError("required*");
+                }else if(!s.toString().matches("[a-zA-Z ]+")){
+                    if (tilFirstName.getChildCount() == 2)
+                        tilFirstName.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilFirstName.setError("Special characters and numeric values are not allowed.");
                 }else{
                     tilFirstName.setError(null);
                     if (tilFirstName.getChildCount() == 2)
@@ -274,6 +310,10 @@ public class Register extends AppCompatActivity {
                     if (tilLastName.getChildCount() == 2)
                         tilLastName.getChildAt(1).setVisibility(View.VISIBLE);
                     tilLastName.setError("required*");
+                }else if(!s.toString().matches("[a-zA-Z ]+")){
+                    if (tilLastName.getChildCount() == 2)
+                        tilLastName.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilLastName.setError("Special characters and numeric values are not allowed.");
                 }else{
                     tilLastName.setError(null);
                     if (tilLastName.getChildCount() == 2)
@@ -289,38 +329,39 @@ public class Register extends AppCompatActivity {
         regLogin.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Login.class)));
 
         regRegister.setOnClickListener(v -> {
-//            if(valid){
             if(regUsername.getText().toString().length() == 0 || !TextUtils.isEmpty(tilUsername.getError())){
                 if(regUsername.getText().toString().length() == 0)
                     regUsername.setText("");
-                tilUsername.requestFocus();
+                regUsername.requestFocus();
             }else if(regPassword.getText().toString().length() == 0 || !TextUtils.isEmpty(tilPassword.getError())){
                 if(regPassword.getText().toString().length() == 0)
                     regPassword.setText("");
-                tilPassword.requestFocus();
+                regPassword.requestFocus();
             }else if(regConfPassword.getText().toString().length() == 0 || !TextUtils.isEmpty(tilConfPassword.getError())){
                 if(regConfPassword.getText().toString().length() == 0)
                     regConfPassword.setText("");
-                tilConfPassword.requestFocus();
+                regConfPassword.requestFocus();
             }else if(regEmail.getText().toString().length() == 0 || !TextUtils.isEmpty(tilEmail.getError())){
                 if(regEmail.getText().toString().length() == 0)
                     regEmail.setText("");
-                tilEmail.requestFocus();
-            }else if(regdateOfBirth.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDateOfBirth.getError())){
+                regEmail.requestFocus();
+            }else if(regdateOfBirth.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDateOfBirth.getError())) {
                 if(regdateOfBirth.getText().toString().length() == 0)
                     regdateOfBirth.setText("");
-                tilDateOfBirth.requestFocus();
-                tilDateOfBirth.clearFocus();
-                tilDateOfBirth.requestFocus();
+                regdateOfBirth.requestFocus();
+                regdateOfBirth.clearFocus();
+                regdateOfBirth.requestFocus();
             }else if(regFirstName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilFirstName.getError())){
                 if(regFirstName.getText().toString().length() == 0)
                     regFirstName.setText("");
-                tilFirstName.requestFocus();
+                regFirstName.requestFocus();
             }else if(regLastName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilLastName.getError())){
                 if(regLastName.getText().toString().length() == 0)
                     regLastName.setText("");
-                tilLastName.requestFocus();
+                regLastName.requestFocus();
             }else{
+                regdateOfBirth.clearFocus();
+                Toast.makeText(Register.this, regdateOfBirth.getText().toString(), Toast.LENGTH_SHORT).show();
                 fAuth.createUserWithEmailAndPassword(regEmail.getText().toString(), regPassword.getText().toString())
                         .addOnSuccessListener(authResult -> {
                             FirebaseUser user = fAuth.getCurrentUser();
@@ -329,8 +370,8 @@ public class Register extends AppCompatActivity {
                             Map<String, Object> userInfo = new HashMap<>();
                             userInfo.put("Username", regUsername.getText().toString());
                             userInfo.put("Email", regEmail.getText().toString());
-                            userInfo.put("FirstName", regFirstName.getText().toString());
-                            userInfo.put("LastName", regLastName.getText().toString());
+                            userInfo.put("FirstName", regFirstName.getText().toString().substring(0,1).toUpperCase() + regFirstName.getText().toString().substring(1).toLowerCase());
+                            userInfo.put("LastName", regLastName.getText().toString().substring(0,1).toUpperCase() + regLastName.getText().toString().substring(1).toLowerCase());
                             userInfo.put("DateOfBirth", regdateOfBirth.getText().toString());
                             userInfo.put("Partner", "0");
                             df.set(userInfo);
