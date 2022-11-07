@@ -56,12 +56,13 @@
             app:boxCornerRadiusBottomStart="10dp"
             app:boxCornerRadiusTopEnd="10dp"
             app:boxCornerRadiusBottomEnd="10dp"
-            android:id="@+id/textInputLayout3"
+            android:id="@+id/tilUsername"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:helperTextEnabled="true"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
             <EditText
@@ -78,13 +79,13 @@
             app:boxCornerRadiusBottomStart="10dp"
             app:boxCornerRadiusTopEnd="10dp"
             app:boxCornerRadiusBottomEnd="10dp"
-            android:id="@+id/textInputLayout4"
+            android:id="@+id/tilPassword"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout3"
+            app:layout_constraintTop_toBottomOf="@+id/tilUsername"
             app:passwordToggleEnabled="true">
 
             <EditText
@@ -101,13 +102,13 @@
             app:boxCornerRadiusBottomStart="10dp"
             app:boxCornerRadiusTopEnd="10dp"
             app:boxCornerRadiusBottomEnd="10dp"
-            android:id="@+id/textInputLayout5"
+            android:id="@+id/tilConfPassword"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout4"
+            app:layout_constraintTop_toBottomOf="@+id/tilPassword"
             app:passwordToggleEnabled="true">
 
             <EditText
@@ -124,13 +125,13 @@
             app:boxCornerRadiusBottomStart="10dp"
             app:boxCornerRadiusTopEnd="10dp"
             app:boxCornerRadiusBottomEnd="10dp"
-            android:id="@+id/textInputLayout6"
+            android:id="@+id/tilEmail"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout5">
+            app:layout_constraintTop_toBottomOf="@+id/tilConfPassword">
 
             <EditText
                 android:id="@+id/regEmail"
@@ -146,14 +147,16 @@
             app:boxCornerRadiusBottomStart="10dp"
             app:boxCornerRadiusTopEnd="10dp"
             app:boxCornerRadiusBottomEnd="10dp"
-            android:id="@+id/textInputLayout7"
+            android:id="@+id/tilDateOfBirth"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_calendar_month_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout6"
-            app:helperText="dd/mm/yy">
+            app:layout_constraintTop_toBottomOf="@+id/tilEmail"
+            app:helperText="dd/mm/yyyy">
 
             <EditText
                 android:id="@+id/dateOfBirth"
@@ -163,8 +166,7 @@
                 android:ems="10"
                 android:hint="@string/date_of_birth"
                 android:inputType="date"
-                tools:ignore="SpeakableTextPresentCheck"
-                android:focusable="false"/>
+                tools:ignore="SpeakableTextPresentCheck"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -173,13 +175,13 @@
             app:boxCornerRadiusBottomStart="10dp"
             app:boxCornerRadiusTopEnd="10dp"
             app:boxCornerRadiusBottomEnd="10dp"
-            android:id="@+id/textInputLayout8"
+            android:id="@+id/tilFirstName"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout7">
+            app:layout_constraintTop_toBottomOf="@+id/tilDateOfBirth">
 
             <EditText
                 android:id="@+id/regFirstName"
@@ -195,13 +197,13 @@
             app:boxCornerRadiusBottomStart="10dp"
             app:boxCornerRadiusTopEnd="10dp"
             app:boxCornerRadiusBottomEnd="10dp"
-            android:id="@+id/textInputLayout9"
+            android:id="@+id/tilLastName"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout8">
+            app:layout_constraintTop_toBottomOf="@+id/tilFirstName">
 
             <EditText
                 android:id="@+id/regLastName"
@@ -220,7 +222,7 @@
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout9" />
+            app:layout_constraintTop_toBottomOf="@+id/tilLastName" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
