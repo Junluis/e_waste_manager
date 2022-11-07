@@ -18,8 +18,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -44,6 +47,8 @@ public class Home extends AppCompatActivity {
     
     ImageView menu_nav, profile_nav;
     NavigationView navView_profile, navView_menu;
+
+    TextView signout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,12 +122,22 @@ public class Home extends AppCompatActivity {
         homeBtnHome = findViewById(R.id.homeBtnHome);
         homeBtnPost = findViewById(R.id.homeBtnPost);
         homeBtnLearn = findViewById(R.id.homeBtnLearn);
+        signout = findViewById(R.id.signout);
 
         homeBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
 
         homeBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
 
         homeBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
+
+        signout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getApplicationContext(), Login.class));
+                finish();
+            }
+        });
 
         pd = new ProgressDialog(this);
         pd.setCancelable(false);

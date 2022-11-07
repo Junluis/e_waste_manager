@@ -51,4 +51,6 @@
     <string name="e">E</string>
     <string name="todo">TODO</string>
     <string name="to">TODO</string>
+    <string name="post">Post...</string>
+    <string name="postb">Post</string>
 </resources>

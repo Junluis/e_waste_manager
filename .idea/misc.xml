@@ -8,12 +8,15 @@
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_login.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_main.xml" value="0.5" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_partner.xml" value="0.55" />
-        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_post.xml" value="0.55" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_post.xml" value="0.33" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_register.xml" value="0.5359375" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_request.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/home_each.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/learn_each.xml" value="0.5" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/left_nav.xml" value="0.5489583333333333" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/right_nav.xml" value="0.5489583333333333" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/menu/nav_leftmenu.xml" value="0.55" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/menu/nav_rightmenu.xml" value="0.55" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__fas_bar.xml" value="0.229" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__user_icon.xml" value="0.229" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_disposal_location.xml" value="0.358695652173913" />
