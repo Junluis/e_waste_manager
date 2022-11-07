@@ -23,7 +23,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/learnTitle"
+                android:id="@+id/homeTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -33,24 +33,24 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/learnAuthor"
+                android:id="@+id/homeAuthor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="@string/author"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/learnTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/homeTitle" />
 
             <TextView
-                android:id="@+id/LearneBody"
+                android:id="@+id/homeBody"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:text="@string/lorem_ipsum"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.1"
-                app:layout_constraintStart_toEndOf="@+id/learnAuthor"
-                app:layout_constraintTop_toBottomOf="@+id/learnTitle" />
+                app:layout_constraintStart_toEndOf="@+id/homeAuthor"
+                app:layout_constraintTop_toBottomOf="@+id/homeTitle" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
