@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:src="@drawable/ic__fas_bar"
-            app:tint="@color/darkgray" />
+            app:tint="@color/darkgray"
+            android:contentDescription="@string/todo" />
 
         <ImageView
             android:id="@+id/profile_nav"
@@ -37,7 +38,8 @@
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
             android:src="@drawable/ic__user_icon"
-            app:tint="@color/darkgray" />
+            app:tint="@color/darkgray"
+            android:contentDescription="@string/to" />
 
     </RelativeLayout>
 

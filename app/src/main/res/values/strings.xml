@@ -49,4 +49,6 @@
     <string name="log_out">Log out</string>
     <string name="partner">Partner</string>
     <string name="e">E</string>
+    <string name="todo">TODO</string>
+    <string name="to">TODO</string>
 </resources>

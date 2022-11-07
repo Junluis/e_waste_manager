@@ -1,26 +1,41 @@
 package com.capstone.e_waste_manager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.widget.ImageButton;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+
 
 public class Home extends AppCompatActivity {
+
+    ArrayList<HomeModel> homeModelsArrayList;
+    HomeAdapter homeAdapter;
+    ProgressDialog pd;
+
+    FirebaseFirestore fStore;
 
     DrawerLayout drawerLayout;
 
@@ -97,8 +112,7 @@ public class Home extends AppCompatActivity {
             }
         });
         //drawer buttons end
-        
-        
+
         homeRecycler = findViewById(R.id.homeRecycler);
         homeBtnHome = findViewById(R.id.homeBtnHome);
         homeBtnPost = findViewById(R.id.homeBtnPost);
@@ -109,5 +123,41 @@ public class Home extends AppCompatActivity {
         homeBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
 
         homeBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
+
+        pd = new ProgressDialog(this);
+        pd.setCancelable(false);
+        pd .setMessage("Fetching Data...");
+        pd.show();
+
+        fStore = FirebaseFirestore.getInstance();
+        homeModelsArrayList = new ArrayList<HomeModel>();
+        homeAdapter = new HomeAdapter(Home.this, homeModelsArrayList);
+
+        homeRecycler = findViewById(R.id.homeRecycler);
+        homeRecycler.setHasFixedSize(true);
+        homeRecycler.setLayoutManager(new LinearLayoutManager(this));
+        homeRecycler.setAdapter(homeAdapter);
+
+        EventChangeListener();
+    }
+
+    private void EventChangeListener() {
+        fStore.collection("Post").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null){
+                    if(pd.isShowing())
+                        pd.dismiss();
+                    Log.e("Firestore error", error.getMessage());
+                    return;
+                }
+                for (DocumentChange dc : value.getDocumentChanges()){
+                    homeModelsArrayList.add(dc.getDocument().toObject(HomeModel.class));
+                }
+                homeAdapter.notifyDataSetChanged();
+                if(pd.isShowing())
+                    pd.dismiss();
+            }
+        });
     }
 }
