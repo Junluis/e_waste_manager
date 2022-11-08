@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,7 +33,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
 
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity{
 
     ArrayList<HomeModel> homeModelsArrayList;
     HomeAdapter homeAdapter;
@@ -44,7 +45,7 @@ public class Home extends AppCompatActivity {
 
     RecyclerView homeRecycler;
     ImageButton homeBtnHome, homeBtnPost, homeBtnLearn;
-    
+    MaterialButton request;
     ImageView menu_nav, profile_nav;
     NavigationView navView_profile, navView_menu;
 
@@ -59,7 +60,7 @@ public class Home extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawerLayout);
         navView_profile = findViewById(R.id.nav_viewright);
         navView_menu = findViewById(R.id.nav_viewleft);
-
+        request = findViewById(R.id.request);
         menu_nav = findViewById(R.id.menu_nav);
         profile_nav = findViewById(R.id.profile_nav);
 
@@ -124,10 +125,9 @@ public class Home extends AppCompatActivity {
         homeBtnLearn = findViewById(R.id.homeBtnLearn);
         signout = findViewById(R.id.signout);
 
+        request.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), LearnPost.class)));
         homeBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
-
         homeBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
-
         homeBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
 
         signout.setOnClickListener(new View.OnClickListener() {

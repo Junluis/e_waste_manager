@@ -53,4 +53,12 @@
     <string name="to">TODO</string>
     <string name="post">Post...</string>
     <string name="postb">Post</string>
+    <string name="upload_learning_materials">Upload Learning Materials</string>
+    <string name="tag">Tag</string>
+    <string name="content">Content</string>
+    <string name="submit">submit</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="cover_placeholder">cover_placeholder</string>
+    <string name="_100">100%</string>
+    <string name="upload_learning_material">Upload Learning Material</string>
 </resources>

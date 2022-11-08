@@ -56,8 +56,6 @@ public class Post extends AppCompatActivity {
         postBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
         String name = user.getDisplayName();
 
-
-
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,14 +89,9 @@ public class Post extends AppCompatActivity {
                                 }
                             });
                         }else{
-
                         }
                     });
-
             }
         });
     }
-
-
-
 }
