@@ -17,12 +17,14 @@ import java.util.ArrayList;
 
 public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder> {
 
+    LearnInterface learnInterface;
     Context context;
     ArrayList<LearnModel> learnModelArrayList;
 
-    public LearnAdapter(Context context, ArrayList<LearnModel> learnModelArrayList) {
+    public LearnAdapter(Context context, ArrayList<LearnModel> learnModelArrayList, LearnInterface learnInterface) {
         this.context = context;
         this.learnModelArrayList = learnModelArrayList;
+        this.learnInterface = learnInterface;
     }
 
     @NonNull
@@ -31,7 +33,7 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
 
         View v = LayoutInflater.from(context).inflate(R.layout.learn_each, parent, false);
 
-        return new MyViewHolder(v);
+        return new MyViewHolder(v, learnInterface);
     }
 
     @Override
@@ -44,6 +46,7 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
         holder.body.setText(learnP.learnBody);
         Picasso.get().load(learnP.learnImage).into(holder.image);
 
+
     }
 
     @Override
@@ -55,13 +58,26 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
         TextView author, title, body;
         ImageView image;
 
-        public MyViewHolder(@NonNull View itemView){
+        public MyViewHolder(@NonNull View itemView, LearnInterface learnInterface){
             super(itemView);
 
             author = itemView.findViewById(R.id.learnAuthor);
             title = itemView.findViewById(R.id.learnTitle);
             body = itemView.findViewById(R.id.learnBody);
             image = itemView.findViewById(R.id.learnImage);
+
+            image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(learnInterface != null){
+                        int pos = getAdapterPosition();
+
+                        if (pos != RecyclerView.NO_POSITION) {
+                         learnInterface.onItemClick(pos);
+                        }
+                    }
+                }
+            });
         }
     }
 }

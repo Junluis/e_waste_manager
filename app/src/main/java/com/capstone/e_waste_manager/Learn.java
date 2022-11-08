@@ -21,7 +21,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
-public class Learn extends AppCompatActivity {
+public class Learn extends AppCompatActivity implements LearnInterface{
 
     RecyclerView learnRecycler;
     ImageButton learnBtnHome, learnBtnPost, learnBtnLearn, learnBtnMenu, learnBtnUser, addButton;
@@ -59,7 +59,7 @@ public class Learn extends AppCompatActivity {
 
         fStore = FirebaseFirestore.getInstance();
         learnModelArrayList = new ArrayList<LearnModel>();
-        learnAdapter = new LearnAdapter(Learn.this, learnModelArrayList);
+        learnAdapter = new LearnAdapter(Learn.this, learnModelArrayList, this);
 
         learnRecycler = findViewById(R.id.learnRecycler);
         learnRecycler.setHasFixedSize(true);
@@ -89,4 +89,16 @@ public class Learn extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onItemClick(int position) {
+        Intent intent = new Intent(Learn.this, LearnView.class);
+
+        intent.putExtra("learnTitle", learnModelArrayList.get(position).getLearnTitle());
+        intent.putExtra("learnAuthor", learnModelArrayList.get(position).getLearnAuthor());
+        intent.putExtra("learnBody", learnModelArrayList.get(position).getLearnBody());
+        intent.putExtra("cover", learnModelArrayList.get(position).getLearnImage());
+
+        startActivity(intent);
+
+    }
 }
