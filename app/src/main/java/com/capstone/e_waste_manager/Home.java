@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,7 +43,7 @@ public class Home extends AppCompatActivity{
     FirebaseFirestore fStore;
 
     DrawerLayout drawerLayout;
-
+    EditText postSearch;
     RecyclerView homeRecycler;
     ImageButton homeBtnHome, homeBtnPost, homeBtnLearn;
     MaterialButton request;
@@ -63,6 +64,7 @@ public class Home extends AppCompatActivity{
         request = findViewById(R.id.request);
         menu_nav = findViewById(R.id.menu_nav);
         profile_nav = findViewById(R.id.profile_nav);
+        postSearch = findViewById(R.id.postSearch);
 
         menu_nav.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +127,6 @@ public class Home extends AppCompatActivity{
         homeBtnLearn = findViewById(R.id.homeBtnLearn);
         signout = findViewById(R.id.signout);
 
-        request.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), LearnPost.class)));
         homeBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
         homeBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
         homeBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
@@ -154,6 +155,7 @@ public class Home extends AppCompatActivity{
         homeRecycler.setAdapter(homeAdapter);
 
         EventChangeListener();
+
     }
 
     private void EventChangeListener() {

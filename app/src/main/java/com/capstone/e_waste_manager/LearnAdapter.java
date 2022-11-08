@@ -1,13 +1,17 @@
 package com.capstone.e_waste_manager;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -31,13 +35,14 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull LearnAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
         LearnModel learnP = learnModelArrayList.get(position);
 
         holder.author.setText(learnP.learnAuthor);
         holder.title.setText(learnP.learnTitle);
         holder.body.setText(learnP.learnBody);
+        Picasso.get().load(learnP.learnImage).into(holder.image);
 
     }
 
@@ -48,6 +53,7 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         TextView author, title, body;
+        ImageView image;
 
         public MyViewHolder(@NonNull View itemView){
             super(itemView);
@@ -55,6 +61,7 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
             author = itemView.findViewById(R.id.learnAuthor);
             title = itemView.findViewById(R.id.learnTitle);
             body = itemView.findViewById(R.id.learnBody);
+            image = itemView.findViewById(R.id.learnImage);
         }
     }
 }

@@ -61,4 +61,7 @@
     <string name="cover_placeholder">cover_placeholder</string>
     <string name="_100">100%</string>
     <string name="upload_learning_material">Upload Learning Material</string>
+    <string name="search">Search</string>
+    <string name="p">+</string>
+    <string name="addbutton">TODO</string>
 </resources>

@@ -9,7 +9,7 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,27 +17,57 @@
 
         <ImageButton
             android:id="@+id/learnBtnMenu"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="125dp"
-            android:layout_weight="1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="0dp"
+            android:layout_weight="0"
             android:background="@null"
             android:contentDescription="@string/btn_menu"
             android:padding="10dp"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/menu" />
 
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0">
+
+            <EditText
+                android:id="@+id/learnSearch"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_weight="0"
+                android:background="@drawable/search_drawable"
+                android:ems="10"
+                android:hint="@string/search"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <ImageButton
             android:id="@+id/learnBtnUser"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="125dp"
-            android:layout_weight="1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="0dp"
+            android:layout_weight="0"
             android:background="@null"
             android:contentDescription="@string/btn_user"
             android:padding="10dp"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/user" />
+            app:srcCompat="@drawable/user"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <ImageButton
+            android:id="@+id/addButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_weight="0"
+            android:background="@null"
+            app:srcCompat="@drawable/ic_baselin"
+            tools:ignore="SpeakableTextPresentCheck"
+            android:contentDescription="@string/addbutton" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

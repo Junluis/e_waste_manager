@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/drawable/search_drawable.xml" value="0.391" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_home.xml" value="0.5415384615384615" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_learn.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_learn_post.xml" value="0.5" />
@@ -14,7 +15,9 @@
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_request.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/home_each.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/learn_each.xml" value="0.5" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/learnview.xml" value="0.5489583333333333" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/left_nav.xml" value="0.5489583333333333" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/postview.xml" value="0.525" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/right_nav.xml" value="0.5489583333333333" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/menu/nav_leftmenu.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/menu/nav_rightmenu.xml" value="0.55" />

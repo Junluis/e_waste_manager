@@ -15,7 +15,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
@@ -26,6 +29,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class LearnPost extends AppCompatActivity {
 
@@ -36,9 +40,10 @@ public class LearnPost extends AppCompatActivity {
     Uri imageUri;
     boolean isImageAdded;
 
+    FirebaseAuth fAuth;
+
     FirebaseFirestore fStore;
-    DocumentReference df;
-    DatabaseReference dr;
+    DatabaseReference DataRef;
     StorageReference sr;
 
     @Override
@@ -46,9 +51,9 @@ public class LearnPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn_post);
 
+        fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        df = FirebaseFirestore.getInstance().document("LearningMaterials");
-        dr = FirebaseDatabase.getInstance().getReference().child("LearningMaterials");
+        DataRef = FirebaseDatabase.getInstance().getReference().child("LearningMaterials");
         sr = FirebaseStorage.getInstance().getReference().child("CoverImages");
 
         LearnPostTitle = findViewById(R.id.LearnPostTitle);
@@ -57,6 +62,13 @@ public class LearnPost extends AppCompatActivity {
         LearnPostButton = findViewById(R.id.LearnPostButton);
         UploadImage = findViewById(R.id.UploadImage);
         LearnPostCover = findViewById(R.id.LearnPostCover);
+
+
+        if (fAuth.getCurrentUser()!=null){
+
+        }else{
+
+        }
 
         UploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,32 +89,52 @@ public class LearnPost extends AppCompatActivity {
                 if (isImageAdded != false && LearnPostCover != null){
                     uploadImage(lpTitle, lpBody, lpTag);
                 }
+                finish();
             }
         });
 
     }
 
-    private void uploadImage(String lpTitle, String lpBody, String lpTag) {
+    private void uploadImage(final String lpTitle, final String lpBody, final String lpTag) {
 
-        String key = dr.push().getKey();
+
+        String key = DataRef.push().getKey();
         sr.child(key+".jpg").putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 sr.child(key+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        HashMap hashMap = new HashMap();
-                        hashMap.put("LearnTitle", lpTitle);
-                        hashMap.put("LearnBody", lpBody);
-                        hashMap.put("LearnTag", lpTag);
-                        hashMap.put("ImageURL", uri.toString());
+                        fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .get().addOnCompleteListener(task -> {
+                                    if (task.isSuccessful() && task.getResult()!=null){
+                                        String id = task.getResult().getString("Partner");
+                                        if(Objects.equals(id, "1")){
+                                            String username = task.getResult().getString("Username");
+                                            HashMap hashMap = new HashMap();
+                                            hashMap.put("learnTitle", lpTitle);
+                                            hashMap.put("learnBody", lpBody);
+                                            hashMap.put("learnTag", lpTag);
+                                            hashMap.put("learnAuthor", username);
+                                            hashMap.put("learnImage", uri.toString());
 
-                        dr.setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                Toast.makeText(LearnPost.this, "Data Successfully Uploaded ", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                                            fStore.collection("LearningMaterial").add(hashMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentReference> task) {
+                                                    Toast.makeText(LearnPost.this, "Data Successfully Uploaded", Toast.LENGTH_SHORT).show();
+                                                    finish();
+                                                }
+                                            });
+                                        }else{
+                                            Toast.makeText(LearnPost.this, "This account is not authorized", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        }
+
+                                    }else{
+                                        Toast.makeText(LearnPost.this, "Error Getting User Data", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+                                });
                     }
                 });
 

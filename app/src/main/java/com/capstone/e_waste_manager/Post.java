@@ -89,6 +89,8 @@ public class Post extends AppCompatActivity {
                                 }
                             });
                         }else{
+                            Toast.makeText(Post.this, "Error Getting User Data", Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     });
             }

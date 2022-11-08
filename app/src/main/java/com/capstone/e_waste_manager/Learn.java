@@ -24,7 +24,8 @@ import java.util.ArrayList;
 public class Learn extends AppCompatActivity {
 
     RecyclerView learnRecycler;
-    ImageButton learnBtnHome, learnBtnPost, learnBtnLearn, learnBtnMenu, learnBtnUser;
+    ImageButton learnBtnHome, learnBtnPost, learnBtnLearn, learnBtnMenu, learnBtnUser, addButton;
+    View learnImage;
 
     ArrayList<LearnModel> learnModelArrayList;
     LearnAdapter learnAdapter;
@@ -43,12 +44,13 @@ public class Learn extends AppCompatActivity {
         learnBtnLearn = findViewById(R.id.learnBtnLearn);
         learnBtnMenu = findViewById(R.id.learnBtnMenu);
         learnBtnUser = findViewById(R.id.learnBtnUser);
+        learnImage = findViewById(R.id.learnImage);
+        addButton = findViewById(R.id.addButton);
 
         learnBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
-
         learnBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
-
         learnBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
+        addButton.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), LearnPost.class)));
 
         pd = new ProgressDialog(this);
         pd.setCancelable(false);
