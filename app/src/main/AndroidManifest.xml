@@ -14,9 +14,6 @@
         android:theme="@style/Theme.E_waste_manager"
         tools:targetApi="31">
         <activity
-            android:name=".LearnView"
-            android:exported="false" />
-        <activity
             android:name=".LearnPost"
             android:exported="false" />
         <activity
