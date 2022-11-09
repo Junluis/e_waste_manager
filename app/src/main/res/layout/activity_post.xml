@@ -1,164 +1,182 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Home">
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/postBtnMenu"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="125dp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/btn_menu"
-            android:padding="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/menu" />
-
-        <ImageButton
-            android:id="@+id/postBtnUser"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="125dp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/btn_user"
-            android:padding="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/user" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout4"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#2f3e46"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageButton
-            android:id="@+id/postBtnHome"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/home_button"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/home"
-            app:tint="#ffffff"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
-
-        <ImageButton
-            android:id="@+id/postBtnPost"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/post_button"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/plus"
-            app:tint="#14ab69"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
-
-        <ImageButton
-            android:id="@+id/postBtnLearn"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/learn_button"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/book"
-            app:tint="#ffffff"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/postButton"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="15dp"
-        android:text="@string/postb"
-        android:textColor="#ffffff"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="TextContrastCheck" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="15dp"
-        app:boxBackgroundColor="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
-
-        <EditText
-            android:id="@+id/postTitle"
+        <RelativeLayout
+            android:id="@+id/relativeLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:hint="@string/title"
-            android:inputType="textPersonName"
-            tools:ignore="SpeakableTextPresentCheck" />
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:focusableInTouchMode="true"
+            app:layout_constraintVertical_bias="0.0">
+            <ImageButton
+                android:id="@+id/closepg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_baseline_close_24"
+                app:tint="@color/darkgray" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_toStartOf="@+id/postButton"
+                android:layout_toEndOf="@+id/closepg"
+                android:paddingBottom="2dp"
+                android:text="Create post"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/postButton"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="@color/darkgray"
+                android:text="@string/postb"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:cornerRadius="300dp" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="15dp"
-        app:boxBackgroundColor="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout3">
+        </RelativeLayout>
 
-        <EditText
-            android:id="@+id/postBody"
+        <ScrollView
+            android:id="@+id/scrollView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:hint="@string/post"
-            android:inputType="textMultiLine|textPersonName"
-            tools:ignore="SpeakableTextPresentCheck" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:paddingBottom="100dp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayout3"
+            app:layout_constraintVertical_bias="0.0">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/postTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:hint="Interesting title"
+                    android:inputType="text"
+                    android:paddingBottom="20dp"
+                    android:textSize="23sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/galleryuploadbtn"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginBottom="20dp"
+                    android:src="@drawable/ic_add_svgrepo_com"
+                    android:visibility="gone"
+                    app:tint="@color/blue" />
+
+                <EditText
+                    android:id="@+id/postlink"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:hint="URL"
+                    android:inputType="text"
+                    android:paddingBottom="20dp"
+                    android:visibility="gone"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/postBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:hint="Add optional body text"
+                    android:inputType="textMultiLine"
+                    android:paddingBottom="100dp"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/whitebg">
+
+            <ImageView
+                android:id="@+id/uploadimgbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic__image_icon"
+                android:background="@drawable/custom_ripple_button"
+                android:paddingVertical="16dp"
+                android:paddingHorizontal="32dp"
+                app:tint="@color/darkgray" />
+
+            <ImageView
+                android:id="@+id/postbodybtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_message_24"
+                android:background="@drawable/custom_ripple_button"
+                android:paddingVertical="16dp"
+                android:paddingHorizontal="32dp"
+                app:tint="@color/darkgray" />
+
+            <ImageView
+                android:id="@+id/linkbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic__link_icon"
+                android:background="@drawable/custom_ripple_button"
+                android:paddingVertical="16dp"
+                android:paddingHorizontal="32dp"
+                app:tint="@color/darkgray" />
+
+            <ImageView
+                android:id="@+id/morebtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_more_horiz_24"
+                android:background="@drawable/custom_ripple_button"
+                android:paddingVertical="16dp"
+                android:paddingHorizontal="32dp"
+                app:tint="@color/darkgray" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include layout="@layout/item_bottom_sheet"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
