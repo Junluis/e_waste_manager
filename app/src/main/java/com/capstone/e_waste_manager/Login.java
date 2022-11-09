@@ -88,7 +88,7 @@ public class Login extends AppCompatActivity {
                     finish();
                 }
                 if(Objects.equals(documentSnapshot.getString("Partner"), "1")){
-                    startActivity(new Intent(getApplicationContext(), Partner.class));
+                    startActivity(new Intent(getApplicationContext(), Home.class));
                     finish();
                 }
             }
