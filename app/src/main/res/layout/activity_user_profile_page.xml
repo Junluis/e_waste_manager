@@ -33,6 +33,7 @@
 
     <soup.neumorphism.NeumorphCardView
         android:id="@+id/neumorphCardView"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="25dp"
@@ -126,5 +127,6 @@
                 app:cornerRadius="300dp" />
         </LinearLayout>
     </soup.neumorphism.NeumorphCardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
