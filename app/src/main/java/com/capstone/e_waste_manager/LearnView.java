@@ -1,5 +1,6 @@
 package com.capstone.e_waste_manager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -30,6 +31,8 @@ public class LearnView extends AppCompatActivity {
         lBody = findViewById(R.id.lBody);
         backButton = findViewById(R.id.backButton);
         cover = findViewById(R.id.cover);
+
+        backButton.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
 
         lTitle.setText(title);
         lAuthor.setText(author);
