@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/drawable/search_drawable.xml" value="0.391" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_home.xml" value="0.5415384615384615" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_home_view.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_learn.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_learn_post.xml" value="0.5" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_learn_view.xml" value="0.55" />
@@ -14,6 +15,7 @@
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_post.xml" value="0.33" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_register.xml" value="0.5359375" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_request.xml" value="0.55" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/comment_each.xml" value="0.5388888888888889" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/home_each.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/learn_each.xml" value="0.5" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/learnview.xml" value="0.5489583333333333" />

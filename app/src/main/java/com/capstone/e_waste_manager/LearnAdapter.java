@@ -55,7 +55,6 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
         return learnModelArrayList.size();
     }
 
-
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         TextView author, title, body;
         ImageView image;
