@@ -188,15 +188,24 @@
             android:gravity="center_horizontal"
             android:padding="16dp">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/darkgray"
+                app:drawableTint="@color/darkgray"
+                android:layout_marginHorizontal="20dp"
+                android:text="Join us for our cause. Be part of our partnered Organization. Request for an approval." />
             <com.google.android.material.button.MaterialButton
                 app:cornerRadius="300dp"
                 android:id="@+id/request"
                 android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="wrap_content"
                 android:text="@string/request"
                 android:textStyle="bold"
                 android:textSize="18sp"
+                android:layout_marginHorizontal="10dp"
+                android:paddingVertical="15dp"
                 android:backgroundTint="@color/secondary_blue"/>
 
         </LinearLayout>
