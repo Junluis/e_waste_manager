@@ -1,6 +1,7 @@
 package com.capstone.e_waste_manager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +16,10 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder> {
+public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder>{
 
     LearnInterface learnInterface;
+
     Context context;
     ArrayList<LearnModel> learnModelArrayList;
 
@@ -46,7 +48,6 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
         holder.body.setText(learnP.learnBody);
         Picasso.get().load(learnP.learnImage).into(holder.image);
 
-
     }
 
     @Override
@@ -54,9 +55,11 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
         return learnModelArrayList.size();
     }
 
+
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         TextView author, title, body;
         ImageView image;
+        View homeView;
 
         public MyViewHolder(@NonNull View itemView, LearnInterface learnInterface){
             super(itemView);
@@ -65,15 +68,15 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
             title = itemView.findViewById(R.id.learnTitle);
             body = itemView.findViewById(R.id.learnBody);
             image = itemView.findViewById(R.id.learnImage);
+            homeView = itemView;
 
-            image.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(learnInterface != null){
+                    if (learnInterface != null ){
                         int pos = getAdapterPosition();
-
-                        if (pos != RecyclerView.NO_POSITION) {
-                         learnInterface.onItemClick(pos);
+                        if (pos != RecyclerView.NO_POSITION){
+                            learnInterface.onItemClick(pos);
                         }
                     }
                 }
