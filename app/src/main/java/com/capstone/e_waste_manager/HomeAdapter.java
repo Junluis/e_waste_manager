@@ -14,13 +14,15 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
+    HomeInterface homeInterface;
 
     Context context;
     ArrayList<HomeModel> homeModelArrayList;
 
-    public HomeAdapter(Context context, ArrayList<HomeModel> homeModelArrayList) {
+    public HomeAdapter(Context context, ArrayList<HomeModel> homeModelArrayList, HomeInterface homeInterface) {
         this.context = context;
         this.homeModelArrayList = homeModelArrayList;
+        this.homeInterface = homeInterface;
     }
 
     @NonNull
@@ -29,7 +31,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
 
         View v = LayoutInflater.from(context).inflate(R.layout.home_each, parent, false);
 
-        return new MyViewHolder(v);
+        return new MyViewHolder(v, homeInterface);
     }
 
     @Override
@@ -51,13 +53,27 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView author, title, body;
+        View homeView;
 
-        public MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView, HomeInterface homeInterface) {
             super(itemView);
 
             author = itemView.findViewById(R.id.homeAuthor);
             title = itemView.findViewById(R.id.homeTitle);
             body = itemView.findViewById(R.id.homeBody);
+            homeView = itemView;
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (homeInterface != null){
+                        int pos = getAdapterPosition();
+                        if(pos != RecyclerView.NO_POSITION){
+                            homeInterface.onItemClick(pos);
+                        }
+                    }
+                }
+            });
 
         }
     }

@@ -34,7 +34,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
 
-public class Home extends AppCompatActivity{
+public class Home extends AppCompatActivity implements HomeInterface{
 
     ArrayList<HomeModel> homeModelsArrayList;
     HomeAdapter homeAdapter;
@@ -147,7 +147,7 @@ public class Home extends AppCompatActivity{
 
         fStore = FirebaseFirestore.getInstance();
         homeModelsArrayList = new ArrayList<HomeModel>();
-        homeAdapter = new HomeAdapter(Home.this, homeModelsArrayList);
+        homeAdapter = new HomeAdapter(Home.this, homeModelsArrayList, this);
 
         homeRecycler = findViewById(R.id.homeRecycler);
         homeRecycler.setHasFixedSize(true);
@@ -176,5 +176,17 @@ public class Home extends AppCompatActivity{
                     pd.dismiss();
             }
         });
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Intent intent = new Intent(Home.this, HomeView.class);
+
+        intent.putExtra("homeTitle", homeModelsArrayList.get(position).getHomeTitle());
+        intent.putExtra("homeAuthor", homeModelsArrayList.get(position).getHomeAuthor());
+        intent.putExtra("homeBody", homeModelsArrayList.get(position).getHomeBody());
+
+        startActivity(intent);
+
     }
 }
