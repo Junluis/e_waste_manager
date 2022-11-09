@@ -94,11 +94,10 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         Intent intent = new Intent(Learn.this, LearnView.class);
 
         intent.putExtra("learnTitle", learnModelArrayList.get(position).getLearnTitle());
-        intent.putExtra("learnAuthor", learnModelArrayList.get(position).getLearnAuthor());
         intent.putExtra("learnBody", learnModelArrayList.get(position).getLearnBody());
-        intent.putExtra("cover", learnModelArrayList.get(position).getLearnImage());
+        intent.putExtra("learnAuthor", learnModelArrayList.get(position).getLearnAuthor());
+        intent.putExtra("learnImage", learnModelArrayList.get(position).getLearnImage());
 
         startActivity(intent);
-
     }
 }
