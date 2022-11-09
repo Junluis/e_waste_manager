@@ -71,14 +71,27 @@
                 app:layout_constraintTop_toBottomOf="@+id/relativeLayout3"
                 app:layout_constraintVertical_bias="0.0" />
 
-            <TextView
-                android:id="@+id/prof_username"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="@string/username"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="8dp">
+
+                <TextView
+                    android:id="@+id/prof_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/username"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic__verified_badge"
+                    android:layout_marginStart="5dp"/>
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/prof_email"
