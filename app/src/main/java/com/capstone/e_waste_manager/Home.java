@@ -142,7 +142,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
 
         pd = new ProgressDialog(this);
         pd.setCancelable(false);
-        pd .setMessage("Fetching Data...");
+        pd.setMessage("Fetching Data...");
         pd.show();
 
         fStore = FirebaseFirestore.getInstance();

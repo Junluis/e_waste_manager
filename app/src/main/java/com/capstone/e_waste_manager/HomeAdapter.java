@@ -9,6 +9,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.core.ViewSnapshot;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -54,6 +57,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
 
         TextView author, title, body;
         View homeView;
+//        String docId;
 
         public MyViewHolder(@NonNull View itemView, HomeInterface homeInterface) {
             super(itemView);
