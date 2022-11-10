@@ -1,4 +1,4 @@
-package com.capstone.e_waste_manager;
+package com.capstone.e_waste_manager.Fragments;
 
 import android.os.Bundle;
 
@@ -8,12 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
-public class ProfileAboutFragment extends Fragment {
-
+import com.capstone.e_waste_manager.R;
 
 
-    public ProfileAboutFragment() {
+public class ProfileCommentFragment extends Fragment {
+
+
+    public ProfileCommentFragment() {
         // Required empty public constructor
     }
 
@@ -21,6 +22,8 @@ public class ProfileAboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile_about, container, false);
+        return inflater.inflate(R.layout.fragment_profile_comment, container, false);
+
+
     }
 }

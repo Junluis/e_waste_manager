@@ -96,6 +96,7 @@
                     android:textStyle="bold" />
 
                 <ImageView
+                    android:id="@+id/partnerBadge"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_marginStart="5dp"
@@ -176,7 +177,7 @@
             android:id="@+id/profiletabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/custom_ripple_button"
+            android:background="@drawable/custom_roundedtopcorner"
             app:tabGravity="fill"
             app:tabIndicatorAnimationMode="elastic" />
 

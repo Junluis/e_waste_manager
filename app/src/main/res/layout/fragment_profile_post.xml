@@ -3,14 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfilePostFragment">
+    tools:context=".Fragments.ProfilePostFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/prof_posts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Profile Post"
-        android:gravity="center"
-        android:textStyle="bold"/>
-
+        tools:listitem="@layout/home_each"/>
 </RelativeLayout>
