@@ -65,8 +65,10 @@
     <string name="p">+</string>
     <string name="addbutton">TODO</string>
     <string name="comment">Comment</string>
-
-
+    
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="time">time</string>
+    
     <string-array name="barangay_list">
         <item>Aduas Centro (Aduas)</item>
         <item>Aduas Norte</item>
@@ -158,5 +160,4 @@
         <item>Villa Ofelia-Caridad</item>
         <item>Zulueta District</item>
     </string-array>
-
 </resources>

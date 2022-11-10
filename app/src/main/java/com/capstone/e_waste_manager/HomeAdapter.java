@@ -9,6 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.core.ViewSnapshot;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -42,6 +46,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
         holder.author.setText(homeP.homeAuthor);
         holder.title.setText(homeP.homeTitle);
         holder.body.setText(homeP.homeBody);
+//        holder.docId = homeP.docId;
 
     }
 
@@ -62,6 +67,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
             title = itemView.findViewById(R.id.homeTitle);
             body = itemView.findViewById(R.id.homeBody);
             homeView = itemView;
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -66,7 +66,7 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
             body = itemView.findViewById(R.id.learnBody);
             image = itemView.findViewById(R.id.learnImage);
 
-            image.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if(learnInterface != null){
