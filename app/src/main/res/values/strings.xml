@@ -65,6 +65,98 @@
     <string name="p">+</string>
     <string name="addbutton">TODO</string>
     <string name="comment">Comment</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <string-array name="barangay_list">
+        <item>Aduas Centro (Aduas)</item>
+        <item>Aduas Norte</item>
+        <item>Aduas Sur</item>
+        <item>Bagong Buhay</item>
+        <item>Bagong Sikat</item>
+        <item>Bakero</item>
+        <item>Bakod Bayan</item>
+        <item>Balite</item>
+        <item>Bangad</item>
+        <item>Bantug Bulalo</item>
+        <item>Bantug Norte</item>
+        <item>Barlis</item>
+        <item>Barrera District</item>
+        <item>Bernardo District</item>
+        <item>Bitas</item>
+        <item>Bonifacio District</item>
+        <item>Buliran</item>
+        <item>Caalibangbangan</item>
+        <item>Cabu</item>
+        <item>Calawagan</item>
+        <item>Campo Tinio</item>
+        <item>Caridad</item>
+        <item>Caudillo</item>
+        <item>Cinco-Cinco</item>
+        <item>City Supermarket</item>
+        <item>Communal</item>
+        <item>Cruz Roja</item>
+        <item>Daang Sarile</item>
+        <item>Dalampang</item>
+        <item>Dicarma</item>
+        <item>Dimasalang</item>
+        <item>Dionisio S. Garcia</item>
+        <item>Fatima</item>
+        <item>General Luna</item>
+        <item>Hermogenes C. Concepcion, Sr.</item>
+        <item>Ibabao Bana</item>
+        <item>Imelda District</item>
+        <item>Isla</item>
+        <item>Kalikid Norte</item>
+        <item>Kalikid Sur</item>
+        <item>Kapitan Pepe</item>
+        <item>Lagare</item>
+        <item>Lourdes</item>
+        <item>M. S. Garcia</item>
+        <item>Mabini Extension</item>
+        <item>Mabini Homesite</item>
+        <item>Macatbong</item>
+        <item>Magsaysay District</item>
+        <item>Magsaysay South</item>
+        <item>Maria Theresa</item>
+        <item>Matadero</item>
+        <item>Mayapyap Norte</item>
+        <item>Mayapyap Sur</item>
+        <item>Melojavilla</item>
+        <item>Nabao</item>
+        <item>Obrero</item>
+        <item>Padre Burgos</item>
+        <item>Padre Crisostomo</item>
+        <item>Pagas</item>
+        <item>Palagay</item>
+        <item>Pamaldan</item>
+        <item>Pangatian</item>
+        <item>Patalac</item>
+        <item>Polilio</item>
+        <item>Pula</item>
+        <item>Quezon District</item>
+        <item>Rizdelis</item>
+        <item>Samon</item>
+        <item>San Isidro</item>
+        <item>San Josef Norte</item>
+        <item>San Josef Sur</item>
+        <item>San Juan Poblacion</item>
+        <item>San Roque Norte</item>
+        <item>San Roque Sur</item>
+        <item>Sanbermicristi</item>
+        <item>Sangitan</item>
+        <item>Sangitan East</item>
+        <item>Santa Arcadia</item>
+        <item>Santo Niño</item>
+        <item>Sapang</item>
+        <item>Sumacab Este</item>
+        <item>Sumacab Norte</item>
+        <item>Sumacab South</item>
+        <item>Talipapa</item>
+        <item>Valdefuente</item>
+        <item>Valle Cruz</item>
+        <item>Vijandre District</item>
+        <item>Villa Ofelia-Caridad</item>
+        <item>Zulueta District</item>
+    </string-array>
+
 </resources>

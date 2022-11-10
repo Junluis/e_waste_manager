@@ -240,16 +240,72 @@ public class Register extends AppCompatActivity {
                                 int cMonth = Integer.parseInt(regdateOfBirth.getText().toString().substring(3, 5));
                                 int cday = Integer.parseInt(regdateOfBirth.getText().toString().substring(0, 2));
 
-                                if (cYear > today.get(Calendar.YEAR)) {
-                                    tilDateOfBirth.setError("Are you a time traveler?");
-                                    tilDateOfBirth.setErrorIconDrawable(0);
-                                } else if (cYear == today.get(Calendar.YEAR)) {
+                                if (cYear == today.get(Calendar.YEAR)) {
                                     if (today.get(Calendar.MONTH) + 1 == cMonth) {
                                         if (today.get(Calendar.DAY_OF_MONTH) < cday) {
                                             tilDateOfBirth.setError("Are you a time traveler?");
                                             tilDateOfBirth.setErrorIconDrawable(0);
+                                        }else{
+                                            tilDateOfBirth.setError("You must be over 13 to register.");
+                                            tilDateOfBirth.setErrorIconDrawable(0);
                                         }
+                                    }else if(today.get(Calendar.MONTH) + 1 < cMonth){
+                                        tilDateOfBirth.setError("Are you a time traveler?");
+                                        tilDateOfBirth.setErrorIconDrawable(0);
+                                    }else{
+                                        tilDateOfBirth.setError("You must be over 13 to register.");
+                                        tilDateOfBirth.setErrorIconDrawable(0);
                                     }
+                                }else if (cYear > today.get(Calendar.YEAR)) {
+                                    tilDateOfBirth.setError("Are you a time traveler?");
+                                    tilDateOfBirth.setErrorIconDrawable(0);
+                                }else if(cYear < today.get(Calendar.YEAR)){
+                                    if ((today.get(Calendar.YEAR) - cYear) == 13 ) {
+                                        if (today.get(Calendar.MONTH) + 1 == cMonth) {
+                                            if (today.get(Calendar.DAY_OF_MONTH) < cday) {
+                                                tilDateOfBirth.setError("You must be over 13 to register.");
+                                                tilDateOfBirth.setErrorIconDrawable(0);
+                                            }else{
+                                                ageInteger = today.get(Calendar.YEAR) - cYear;
+                                                if (today.get(Calendar.MONTH) + 1 == cMonth) {
+                                                    if (today.get(Calendar.DAY_OF_MONTH) < cday) {
+                                                        ageInteger = ageInteger - 1;
+                                                    }
+                                                } else if (today.get(Calendar.MONTH) < cMonth) {
+                                                    ageInteger = ageInteger - 1;
+                                                }
+                                                tilDateOfBirth.setError(null);
+                                            }
+                                        }else if (today.get(Calendar.MONTH) + 1 < cMonth) {
+                                            tilDateOfBirth.setError("You must be over 13 to register.");
+                                            tilDateOfBirth.setErrorIconDrawable(0);
+                                        }else{
+                                            ageInteger = today.get(Calendar.YEAR) - cYear;
+                                            if (today.get(Calendar.MONTH) + 1 == cMonth) {
+                                                if (today.get(Calendar.DAY_OF_MONTH) < cday) {
+                                                    ageInteger = ageInteger - 1;
+                                                }
+                                            } else if (today.get(Calendar.MONTH) < cMonth) {
+                                                ageInteger = ageInteger - 1;
+                                            }
+
+                                            tilDateOfBirth.setError(null);
+                                        }
+                                    }else if ((today.get(Calendar.YEAR) - cYear) < 13 ){
+                                        tilDateOfBirth.setError("You must be over 13 to register.");
+                                        tilDateOfBirth.setErrorIconDrawable(0);
+                                    }else{
+                                        ageInteger = today.get(Calendar.YEAR) - cYear;
+                                        if (today.get(Calendar.MONTH) + 1 == cMonth) {
+                                            if (today.get(Calendar.DAY_OF_MONTH) < cday) {
+                                                ageInteger = ageInteger - 1;
+                                            }
+                                        } else if (today.get(Calendar.MONTH) < cMonth) {
+                                            ageInteger = ageInteger - 1;
+                                        }
+                                        tilDateOfBirth.setError(null);
+                                    }
+
                                 } else {
                                     ageInteger = today.get(Calendar.YEAR) - cYear;
                                     if (today.get(Calendar.MONTH) + 1 == cMonth) {
@@ -259,7 +315,6 @@ public class Register extends AppCompatActivity {
                                     } else if (today.get(Calendar.MONTH) < cMonth) {
                                         ageInteger = ageInteger - 1;
                                     }
-
                                     tilDateOfBirth.setError(null);
                                 }
                             }
@@ -272,6 +327,7 @@ public class Register extends AppCompatActivity {
                     regdateOfBirth.setText(Dateval);
                     if (ageInteger < 13) {
                         tilDateOfBirth.setError("You must be over 13 to register.");
+                        tilDateOfBirth.setErrorIconDrawable(0);
                     }
                 }
             }
@@ -348,8 +404,6 @@ public class Register extends AppCompatActivity {
             }else if(regdateOfBirth.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDateOfBirth.getError())) {
                 if(regdateOfBirth.getText().toString().length() == 0)
                     regdateOfBirth.setText("");
-                regdateOfBirth.requestFocus();
-                regdateOfBirth.clearFocus();
                 regdateOfBirth.requestFocus();
             }else if(regFirstName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilFirstName.getError())){
                 if(regFirstName.getText().toString().length() == 0)

@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.capstone.e_waste_manager.adapter.ProfileAdapter;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -21,6 +23,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -31,10 +36,11 @@ public class UserProfilePage extends AppCompatActivity {
     ViewPager2 profilePager;
     ProfileAdapter adapter;
     TextView prof_username, prof_email, prof_bio;
-    ImageView partnerBadge;
+    ImageView partnerBadge, prof_img;
 
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
+    StorageReference storageReference;
     String userID;
 
 
@@ -47,22 +53,39 @@ public class UserProfilePage extends AppCompatActivity {
         prof_username = findViewById(R.id.prof_username);
         prof_email = findViewById(R.id.prof_email);
         partnerBadge = findViewById(R.id.partnerBadge);
+        prof_img = findViewById(R.id.prof_img);
+        prof_bio = findViewById(R.id.prof_bio);
 
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         userID = fAuth.getCurrentUser().getUid();
 
+        //get profile info
         DocumentReference documentReference = fStore.collection("Users").document(userID);
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
                 prof_username.setText(documentSnapShot.getString("Username"));
                 prof_email.setText(documentSnapShot.getString("Email"));
+                prof_bio.setText(documentSnapShot.getString("Bio"));
+
+                if(prof_bio.getText().toString().equals("")){
+                    prof_bio.setVisibility(View.GONE);
+                }
 
                 if(Objects.equals(documentSnapShot.getString("Partner"), "0")){
                     partnerBadge.setVisibility(View.GONE);
                 }
+            }
+        });
+        //get profile pic
+        StorageReference profileRef = storageReference.child("ProfileImage/"+fAuth.getCurrentUser().getUid()+"/profile.jpg");
+        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).into(prof_img);
             }
         });
 
@@ -73,6 +96,14 @@ public class UserProfilePage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onBackPressed();
+            }
+        });
+
+        editProfilebtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(view.getContext(), EditProfile.class);
+                startActivity(i);
             }
         });
 
