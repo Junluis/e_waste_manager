@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserProfilePage"
-    android:background="@color/whitebg">
+    android:background="@color/whitebg"
+    app:layoutDescription="@xml/activity_user_profile_page_scene"
+    tools:context=".UserProfilePage">
+
     <RelativeLayout
         android:id="@+id/relativeLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
         android:paddingHorizontal="16dp"
         android:paddingVertical="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:focusableInTouchMode="true"
         app:layout_constraintVertical_bias="0.0">
 
         <ImageButton
@@ -31,11 +33,13 @@
     </RelativeLayout>
 
 
-    <soup.neumorphism.NeumorphCardView
-        android:id="@+id/neumorphCardView"
-        android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/profileCard"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="25dp"
+        android:layout_marginHorizontal="20dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,32 +51,29 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/prof_img"
+            android:gravity="center"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@+id/prof_img"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.1"
-            app:layout_constraintStart_toEndOf="@+id/prof_img"
-            app:layout_constraintTop_toTopOf="@+id/prof_img"
-            android:gravity="center">
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="135dp"
                 android:layout_height="135dp"
-                app:cardCornerRadius="250dp"
-                app:cardBackgroundColor="@color/white">
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="250dp">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="130dp"
                     android:layout_height="130dp"
-                    app:cardCornerRadius="250dp"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    app:cardCornerRadius="250dp">
 
                     <ImageView
                         android:id="@+id/prof_img"
                         android:layout_width="130dp"
                         android:layout_height="130dp"
-                        android:src="@drawable/profilelogotest"
-                        android:scaleType="centerCrop"/>
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/profilelogotest" />
 
                 </androidx.cardview.widget.CardView>
 
@@ -82,8 +83,8 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:paddingTop="8dp">
 
                 <TextView
@@ -93,11 +94,13 @@
                     android:text="@string/username"
                     android:textSize="20sp"
                     android:textStyle="bold" />
+
                 <ImageView
+                    android:id="@+id/partnerBadge"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:src="@drawable/ic__verified_badge"
-                    android:layout_marginStart="5dp"/>
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/ic__verified_badge" />
 
             </LinearLayout>
 
@@ -114,8 +117,8 @@
                 android:id="@+id/prof_bio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:maxLines="3"
+                android:layout_marginVertical="5dp"
+                android:maxLines="4"
                 android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="14sp" />
@@ -133,7 +136,55 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:cornerRadius="300dp" />
-        </LinearLayout>
-    </soup.neumorphism.NeumorphCardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="130dp"
+                android:layout_marginStart="130dp"
+                android:src="@drawable/ic_baseline_keyboard_arrow_up_24"
+                app:tint="@color/green1" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/profileCard"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout3"
+        app:layout_constraintVertical_bias="0.86" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/shadow_18315"
+        android:elevation="-1dp"
+        android:orientation="vertical"
+        android:paddingTop="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/space"
+        app:layout_constraintVertical_bias="0.0">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/profiletabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_roundedtopcorner"
+            app:tabGravity="fill"
+            app:tabIndicatorAnimationMode="elastic" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/profilePager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>
