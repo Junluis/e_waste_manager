@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +33,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull CommentAdapter.MyViewHolder holder, int position) {
 
+        CommentModel commentP = commentModelArrayList.get(position);
+
+        holder.author.setText(commentP.commentAuthor);
+        holder.body.setText(commentP.commentBody);
+        holder.time.setText(commentP.commentTime);
     }
 
     @Override
@@ -41,8 +47,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
+        TextView author, body, time;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
+            author = itemView.findViewById(R.id.commentAuthor);
+            body = itemView.findViewById(R.id.commentBody);
+            time = itemView.findViewById(R.id.commentTime);
+
         }
     }
 }
