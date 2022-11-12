@@ -49,14 +49,35 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/pTitle" />
+        <TextView
+            android:id="@+id/pAuthorUid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="AuthorUid"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pAuthor" />
+
+        <TextView
+            android:id="@+id/pTimeStamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time Stamp"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pAuthorUid" />
 
         <ScrollView
+            android:id="@+id/scrollView3"
             android:layout_width="match_parent"
             android:layout_height="300sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pAuthor">
+            app:layout_constraintTop_toBottomOf="@+id/pTimeStamp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -107,7 +128,6 @@
         android:layout_height="50dp"
         android:layout_marginEnd="15dp"
         android:layout_weight="1"
-        android:background="@drawable/search_drawable"
         android:text="@string/postb"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/textInputLayout7"

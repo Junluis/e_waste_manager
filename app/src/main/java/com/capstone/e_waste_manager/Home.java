@@ -1,5 +1,7 @@
 package com.capstone.e_waste_manager;
 
+import static com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBehavior.ESTIMATE;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -50,6 +53,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
     MaterialButton request;
     ImageView menu_nav, profile_nav;
     NavigationView navView_profile, navView_menu;
+    SwipeRefreshLayout swipeRefresh;
 
     TextView signout;
 
@@ -127,6 +131,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
         homeBtnPost = findViewById(R.id.homeBtnPost);
         homeBtnLearn = findViewById(R.id.homeBtnLearn);
         signout = findViewById(R.id.signout);
+        swipeRefresh = findViewById(R.id.swipeRefresh);
 
         homeBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
         homeBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
@@ -155,12 +160,27 @@ public class Home extends AppCompatActivity implements HomeInterface{
         homeRecycler.setLayoutManager(new LinearLayoutManager(this));
         homeRecycler.setAdapter(homeAdapter);
 
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager.setReverseLayout(true);
+        mLayoutManager.setStackFromEnd(true);
+        homeRecycler.setLayoutManager(mLayoutManager);
+
         EventChangeListener();
+
+        //swipe up to refresh.. not really needed firebase is already in real time
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                homeAdapter.notifyDataSetChanged();
+                swipeRefresh.setRefreshing(false);
+            }
+        });
+        //not really needed
 
     }
 
     private void EventChangeListener() {
-        fStore.collection("Post").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        fStore.collection("Post").orderBy("homePostDate").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null){
@@ -173,6 +193,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
                     homeModelsArrayList.add(dc.getDocument().toObject(HomeModel.class));
                 }
                 homeAdapter.notifyDataSetChanged();
+                DocumentSnapshot.ServerTimestampBehavior behavior = ESTIMATE;
                 if(pd.isShowing())
                     pd.dismiss();
             }
@@ -186,8 +207,18 @@ public class Home extends AppCompatActivity implements HomeInterface{
         intent.putExtra("homeTitle", homeModelsArrayList.get(position).getHomeTitle());
         intent.putExtra("homeAuthor", homeModelsArrayList.get(position).getHomeAuthor());
         intent.putExtra("homeBody", homeModelsArrayList.get(position).getHomeBody());
+        intent.putExtra("docId", homeModelsArrayList.get(position).getDocId());
+        intent.putExtra("homeAuthorUid", homeModelsArrayList.get(position).getHomeAuthorUid());
+//        intent.putExtra("homePostDate", homeModelsArrayList.get(position).getHomePostDate());
 
         startActivity(intent);
+    }
 
+    @Override
+    public void onRestart()
+    {
+        super.onRestart();
+        finish();
+        startActivity(getIntent());
     }
 }

@@ -1,6 +1,10 @@
 package com.capstone.e_waste_manager;
 
+import static com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBehavior.ESTIMATE;
+
 import android.content.Context;
+import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +19,10 @@ import com.google.firebase.firestore.core.ViewSnapshot;
 
 import org.w3c.dom.Text;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.TimeZone;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
     HomeInterface homeInterface;
@@ -46,18 +53,33 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
         holder.author.setText(homeP.homeAuthor);
         holder.title.setText(homeP.homeTitle);
         holder.body.setText(homeP.homeBody);
-//        holder.docId = homeP.docId;
+        holder.docId.setText(homeP.docId);
+        holder.authorUid.setText(homeP.homeAuthorUid);
+        String timeago = calculateTimeAgo(homeP.getHomePostDate().toDate().toString());
+        holder.timestamp.setText(timeago);
 
+    }
+
+    private String calculateTimeAgo(String s) {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d hh:mm:ss zzz yyyy");
+        try {
+            long time = sdf.parse(s).getTime();
+            long now = System.currentTimeMillis();
+            CharSequence ago =
+                    DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS);
+            return ago+"";
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override
-    public int getItemCount() {
-        return homeModelArrayList.size();
-    }
+    public int getItemCount() { return homeModelArrayList.size(); }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView author, title, body;
+        TextView author, title, body, authorUid, docId, timestamp;
         View homeView;
 
         public MyViewHolder(@NonNull View itemView, HomeInterface homeInterface) {
@@ -66,6 +88,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
             author = itemView.findViewById(R.id.homeAuthor);
             title = itemView.findViewById(R.id.homeTitle);
             body = itemView.findViewById(R.id.homeBody);
+            docId = itemView.findViewById(R.id.docId);
+            authorUid = itemView.findViewById(R.id.homeAuthorUid);
+            timestamp = itemView.findViewById(R.id.timestamp);
             homeView = itemView;
 
 
