@@ -5,42 +5,44 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/whitebg"
     tools:context=".Home">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:background="@drawable/custom_border">
+
+
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="200dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxCornerRadiusTopStart="20dp"
+                app:boxCornerRadiusBottomStart="20dp"
+                app:boxCornerRadiusTopEnd="20dp"
+                app:boxCornerRadiusBottomEnd="20dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_toStartOf="@+id/profile_nav"
-                android:layout_toEndOf="@+id/menu_nav"
-                android:backgroundTint="@null">
+                android:layout_toEndOf="@+id/menu_nav">
 
                 <EditText
                     android:id="@+id/postSearch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/search_drawable"
                     android:drawableEnd="@drawable/ic_search"
-                    android:ems="10"
                     android:hint="@string/search"
                     android:importantForAutofill="no"
-                    android:inputType="textPersonName"
-                    tools:ignore="SpeakableTextPresentCheck" />
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
@@ -49,6 +51,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:contentDescription="@string/todo"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
                 android:src="@drawable/ic__fas_bar"
                 app:tint="@color/darkgray" />
 
@@ -65,80 +71,84 @@
                 android:contentDescription="@string/to"
                 android:src="@drawable/ic__user_icon"
                 app:tint="@color/darkgray" />
-
         </RelativeLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/homeRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="630dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        tools:listitem="@layout/home_each" />
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:id="@+id/swipeRefresh"
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-    <LinearLayout
-        android:id="@+id/linearLayout4"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#2f3e46"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
 
-        <ImageButton
-            android:id="@+id/homeBtnHome"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/home_button"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/home"
-            app:tint="#14ab69"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/homeRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+                tools:listitem="@layout/home_each" />
 
-        <ImageButton
-            android:id="@+id/homeBtnPost"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/post_button"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/plus"
-            app:tint="#FFFFFF"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <ImageButton
-            android:id="@+id/homeBtnLearn"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/learn_button"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/book"
-            app:tint="#FFFFFF"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
+        <LinearLayout
+            android:id="@+id/linearLayout4"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#2f3e46"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/homeBtnHome"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:contentDescription="@string/home_button"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/home"
+                app:tint="#14ab69"
+                tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
+
+            <ImageButton
+                android:id="@+id/homeBtnPost"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:contentDescription="@string/post_button"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/plus"
+                app:tint="#FFFFFF"
+                tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
+
+            <ImageButton
+                android:id="@+id/homeBtnLearn"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:contentDescription="@string/learn_button"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/book"
+                app:tint="#FFFFFF"
+                tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
+        </LinearLayout>
+
     </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"

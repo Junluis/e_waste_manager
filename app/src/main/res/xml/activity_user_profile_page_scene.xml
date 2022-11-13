@@ -24,6 +24,7 @@
         <OnSwipe
             motion:touchAnchorId="@+id/space"
             motion:touchAnchorSide="bottom" />
+        <OnClick motion:targetId="@+id/linearLayout6" />
 
     </Transition>
 

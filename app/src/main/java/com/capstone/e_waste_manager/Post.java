@@ -29,7 +29,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -42,6 +44,7 @@ public class Post extends AppCompatActivity {
     Button postButton;
     EditText postTitle, postBody, postlink;
     BottomSheetBehavior bottomSheetBehavior;
+    String userID;
 
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
@@ -54,6 +57,7 @@ public class Post extends AppCompatActivity {
 
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
+        userID = fAuth.getCurrentUser().getUid();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         closepg = findViewById(R.id.closepg);
         postButton = findViewById(R.id.postButton);
@@ -214,19 +218,19 @@ public class Post extends AppCompatActivity {
                 }else{
                     Toast.makeText(Post.this, "Not Logged in", Toast.LENGTH_SHORT).show();
                 }
-                finish();
             }
 
             private void uploadData() {
 
-                fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                        .get().addOnCompleteListener(task -> {
+                fStore.collection("Users").document(userID).get().addOnCompleteListener(task -> {
                             if (task.isSuccessful() && task.getResult() != null){
                                 String username = task.getResult().getString("Username");
                                 Map<String, Object> doc = new HashMap<>();
                                 doc.put("homeTitle", postTitle.getText().toString().trim());
                                 doc.put("homeBody", postBody.getText().toString().trim());
                                 doc.put("homeAuthor", username);
+                                doc.put("homeAuthorUid", fAuth.getCurrentUser().getUid());
+                                doc.put("homePostDate", FieldValue.serverTimestamp());
 
                                 fStore.collection("Post").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                     @Override
@@ -234,6 +238,7 @@ public class Post extends AppCompatActivity {
                                         postBody.setText("");
                                         postTitle.setText("");
                                         Toast.makeText(Post.this, "Post Successful", Toast.LENGTH_SHORT).show();
+                                        finish();
                                     }
                                 });
                             }else{

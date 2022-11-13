@@ -49,9 +49,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/prof_img"
             android:gravity="center"
+            android:layout_gravity="center"
             android:orientation="vertical"
             android:paddingHorizontal="20dp"
             android:paddingVertical="10dp">
@@ -117,9 +117,10 @@
                 android:id="@+id/prof_bio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
+                android:layout_marginTop="15dp"
                 android:maxLines="4"
-                android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an"
+                android:textAlignment="center"
+                android:text=""
                 android:textColor="@android:color/darker_gray"
                 android:textSize="14sp" />
 
@@ -128,9 +129,7 @@
                 android:id="@+id/editProfilebtn"
                 android:layout_width="wrap_content"
                 android:layout_height="45dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="5dp"
+                android:layout_marginTop="15dp"
                 android:backgroundTint="@color/darkgray"
                 android:text="Edit Profile"
                 android:textSize="12sp"
