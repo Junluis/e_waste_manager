@@ -17,32 +17,32 @@
             android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:background="@drawable/custom_border">
-
+            android:background="@drawable/custom_border"
+            android:padding="16dp">
 
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxCornerRadiusTopStart="20dp"
-                app:boxCornerRadiusBottomStart="20dp"
-                app:boxCornerRadiusTopEnd="20dp"
-                app:boxCornerRadiusBottomEnd="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_toStartOf="@+id/profile_nav"
-                android:layout_toEndOf="@+id/menu_nav">
+                android:layout_toEndOf="@+id/menu_nav"
+                app:boxCornerRadiusBottomEnd="20dp"
+                app:boxCornerRadiusBottomStart="20dp"
+                app:boxCornerRadiusTopEnd="20dp"
+                app:boxCornerRadiusTopStart="20dp">
 
                 <EditText
                     android:id="@+id/postSearch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:drawableEnd="@drawable/ic_search"
                     android:hint="@string/search"
                     android:importantForAutofill="no"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
@@ -50,11 +50,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:contentDescription="@string/todo"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
+                android:contentDescription="@string/todo"
                 android:src="@drawable/ic__fas_bar"
                 app:tint="@color/darkgray" />
 
@@ -71,7 +71,13 @@
                 android:contentDescription="@string/to"
                 android:src="@drawable/ic__user_icon"
                 app:tint="@color/darkgray" />
+
         </RelativeLayout>
+
+        <SearchView
+            android:id="@+id/homeSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"

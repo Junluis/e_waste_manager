@@ -8,6 +8,8 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,22 +19,26 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.core.ViewSnapshot;
 
+import org.checkerframework.checker.units.qual.A;
 import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.TimeZone;
 
-public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
+public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> implements Filterable {
     HomeInterface homeInterface;
 
     Context context;
     ArrayList<HomeModel> homeModelArrayList;
+    ArrayList<HomeModel> homeSearchList;
 
     public HomeAdapter(Context context, ArrayList<HomeModel> homeModelArrayList, HomeInterface homeInterface) {
         this.context = context;
         this.homeModelArrayList = homeModelArrayList;
+        this.homeSearchList = new ArrayList<>(homeModelArrayList);
         this.homeInterface = homeInterface;
     }
 
@@ -76,6 +82,44 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
 
     @Override
     public int getItemCount() { return homeModelArrayList.size(); }
+
+    @Override
+    public Filter getFilter() {
+        return postFilter;
+    }
+
+    public final Filter postFilter = new Filter() {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            ArrayList<HomeModel> filteredHomeList = new ArrayList<>();
+
+            if (constraint == null || constraint.length() == 0){
+                filteredHomeList.addAll(homeModelArrayList);
+            }else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for (HomeModel homeModel : homeModelArrayList){
+                    if(homeModel.homeTitle.toLowerCase().contains(filterPattern))
+                        filteredHomeList.add(homeModel);
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = filteredHomeList;
+            results.count = filteredHomeList.size();
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+
+            homeSearchList.clear();
+            homeSearchList.addAll((ArrayList)results.values);
+            notifyDataSetChanged();
+
+        }
+    };
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 

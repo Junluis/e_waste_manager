@@ -5,6 +5,7 @@ import static com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBeha
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -12,6 +13,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -23,6 +25,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
@@ -33,6 +36,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -45,15 +49,17 @@ public class Home extends AppCompatActivity implements HomeInterface{
     ProgressDialog pd;
 
     FirebaseFirestore fStore;
-
+    String search;
     DrawerLayout drawerLayout;
     EditText postSearch;
     RecyclerView homeRecycler;
     ImageButton homeBtnHome, homeBtnPost, homeBtnLearn;
+    SearchView homeSearch;
     MaterialButton request;
     ImageView menu_nav, profile_nav;
     NavigationView navView_profile, navView_menu;
     SwipeRefreshLayout swipeRefresh;
+    Query qSearch;
 
     TextView signout;
 
@@ -70,6 +76,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
         menu_nav = findViewById(R.id.menu_nav);
         profile_nav = findViewById(R.id.profile_nav);
         postSearch = findViewById(R.id.postSearch);
+        homeSearch = findViewById(R.id.homeSearch);
 
         menu_nav.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -220,5 +227,32 @@ public class Home extends AppCompatActivity implements HomeInterface{
         super.onRestart();
         finish();
         startActivity(getIntent());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        MenuItem menuItem = menu.findItem(R.id.search_action);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setQueryHint("Search");
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                homeAdapter.getFilter().filter(newText);
+
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 }
