@@ -5,6 +5,7 @@ import static com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBeha
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -48,7 +49,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
     FirebaseFirestore fStore;
 
     DrawerLayout drawerLayout;
-    EditText postSearch;
+    SearchView postSearch;
     RecyclerView homeRecycler;
     ImageButton homeBtnHome, homeBtnPost, homeBtnLearn;
     MaterialButton request;
