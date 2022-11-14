@@ -6,9 +6,18 @@
     tools:context=".Fragments.ProfilePostFragment">
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/prof_posts"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/home_each"/>
+        android:layout_height="match_parent">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/prof_posts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/home_each" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </RelativeLayout>

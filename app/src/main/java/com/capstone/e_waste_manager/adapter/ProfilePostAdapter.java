@@ -1,9 +1,6 @@
-package com.capstone.e_waste_manager;
-
-import static com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBehavior.ESTIMATE;
+package com.capstone.e_waste_manager.adapter;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,49 +10,48 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.core.ViewSnapshot;
-
-import org.w3c.dom.Text;
+import com.capstone.e_waste_manager.Fragments.ProfilePostFragment;
+import com.capstone.e_waste_manager.Fragments.ProfilePostInterface;
+import com.capstone.e_waste_manager.HomeModel;
+import com.capstone.e_waste_manager.R;
+import com.capstone.e_waste_manager.model.ProfilePostModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.TimeZone;
 
-public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
-    HomeInterface homeInterface;
+public class ProfilePostAdapter extends RecyclerView.Adapter<ProfilePostAdapter.MyViewHolder>{
+    ProfilePostInterface postInterface;
 
     Context context;
-    ArrayList<HomeModel> homeModelArrayList;
+    ArrayList<ProfilePostModel> ProfilePostModel;
 
-    public HomeAdapter(Context context, ArrayList<HomeModel> homeModelArrayList, HomeInterface homeInterface) {
+    public ProfilePostAdapter(Context context, ArrayList<ProfilePostModel> postModelArrayList, ProfilePostFragment postInterface) {
         this.context = context;
-        this.homeModelArrayList = homeModelArrayList;
-        this.homeInterface = homeInterface;
+        this.ProfilePostModel = postModelArrayList;
+        this.postInterface = (ProfilePostInterface) postInterface;
     }
 
     @NonNull
     @Override
-    public HomeAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ProfilePostAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View v = LayoutInflater.from(context).inflate(R.layout.home_each, parent, false);
 
-        return new MyViewHolder(v, homeInterface);
+        return new MyViewHolder(v, postInterface);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HomeAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ProfilePostAdapter.MyViewHolder holder, int position) {
 
-        HomeModel homeP = homeModelArrayList.get(position);
+        ProfilePostModel homeP = ProfilePostModel.get(position);
 
         holder.author.setText(homeP.homeAuthor);
         holder.title.setText(homeP.homeTitle);
         holder.body.setText(homeP.homeBody);
         holder.docId.setText(homeP.docId);
         holder.authorUid.setText(homeP.homeAuthorUid);
-        String timeago = calculateTimeAgo(homeP.homePostDate.toDate().toString());
+        String timeago = calculateTimeAgo(homeP.getHomePostDate().toDate().toString());
         holder.timestamp.setText(timeago);
 
     }
@@ -75,14 +71,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
     }
 
     @Override
-    public int getItemCount() { return homeModelArrayList.size(); }
+    public int getItemCount() { return ProfilePostModel.size(); }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView author, title, body, authorUid, docId, timestamp;
         View homeView;
 
-        public MyViewHolder(@NonNull View itemView, HomeInterface homeInterface) {
+        public MyViewHolder(@NonNull View itemView, ProfilePostInterface postInterface) {
             super(itemView);
 
             author = itemView.findViewById(R.id.homeAuthor);
@@ -97,10 +93,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (homeInterface != null){
+                    if (postInterface != null){
                         int pos = getAdapterPosition();
                         if(pos != RecyclerView.NO_POSITION){
-                            homeInterface.onItemClick(pos);
+                            postInterface.onItemClick(pos);
                         }
                     }
                 }
