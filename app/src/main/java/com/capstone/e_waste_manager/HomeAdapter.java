@@ -48,6 +48,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull HomeAdapter.MyViewHolder holder, int position) {
 
+        DocumentSnapshot.ServerTimestampBehavior behavior = ESTIMATE;
         HomeModel homeP = homeModelArrayList.get(position);
 
         holder.author.setText(homeP.homeAuthor);
@@ -55,7 +56,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
         holder.body.setText(homeP.homeBody);
         holder.docId.setText(homeP.docId);
         holder.authorUid.setText(homeP.homeAuthorUid);
-        String timeago = calculateTimeAgo(homeP.homePostDate.toDate().toString());
+        String timeago = calculateTimeAgo(homeP.getHomePostDate().toDate().toString());
         holder.timestamp.setText(timeago);
 
     }
