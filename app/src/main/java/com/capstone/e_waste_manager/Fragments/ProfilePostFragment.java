@@ -25,6 +25,7 @@ import com.capstone.e_waste_manager.HomeView;
 import com.capstone.e_waste_manager.R;
 import com.capstone.e_waste_manager.adapter.ProfilePostAdapter;
 import com.capstone.e_waste_manager.model.ProfilePostModel;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -50,6 +51,8 @@ public class ProfilePostFragment extends Fragment implements ProfilePostInterfac
     FirebaseFirestore fStore;
     RecyclerView prof_posts;
     SwipeRefreshLayout swipeRefresh;
+    String userID;
+    FirebaseAuth fAuth;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +64,9 @@ public class ProfilePostFragment extends Fragment implements ProfilePostInterfac
         PostModelArrayList = new ArrayList<ProfilePostModel>();
         postAdapter = new ProfilePostAdapter(getActivity(), PostModelArrayList, this);
         swipeRefresh = view.findViewById(R.id.swipeRefresh);
+
+        fAuth = FirebaseAuth.getInstance();
+        userID = fAuth.getCurrentUser().getUid();
 
         pd = new ProgressDialog(getActivity());
         pd.setCancelable(false);
@@ -83,6 +89,8 @@ public class ProfilePostFragment extends Fragment implements ProfilePostInterfac
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                PostModelArrayList.clear();
+                EventChangeListener();
                 swipeRefresh.setRefreshing(false);
             }
         });
@@ -92,7 +100,7 @@ public class ProfilePostFragment extends Fragment implements ProfilePostInterfac
 
     }
     private void EventChangeListener() {
-        fStore.collection("Post").orderBy("homePostDate").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        fStore.collection("Post").whereEqualTo("homeAuthorUid", userID).orderBy("homePostDate").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null){
@@ -104,8 +112,8 @@ public class ProfilePostFragment extends Fragment implements ProfilePostInterfac
                 for (DocumentChange dc : value.getDocumentChanges()){
                     PostModelArrayList.add(dc.getDocument().toObject(ProfilePostModel.class));
                 }
-                postAdapter.notifyDataSetChanged();
                 DocumentSnapshot.ServerTimestampBehavior behavior = ESTIMATE;
+                postAdapter.notifyDataSetChanged();
                 if(pd.isShowing())
                     pd.dismiss();
             }
@@ -125,4 +133,6 @@ public class ProfilePostFragment extends Fragment implements ProfilePostInterfac
 
         startActivity(intent);
     }
+
+
 }

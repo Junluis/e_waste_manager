@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -169,9 +170,11 @@ public class Home extends AppCompatActivity implements HomeInterface{
 
         //swipe up to refresh.. not really needed firebase is already in real time
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onRefresh() {
-                homeAdapter.notifyDataSetChanged();
+                homeModelsArrayList.clear();
+                EventChangeListener();
                 swipeRefresh.setRefreshing(false);
             }
         });
@@ -181,6 +184,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
 
     private void EventChangeListener() {
         fStore.collection("Post").orderBy("homePostDate").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null){
@@ -193,7 +197,6 @@ public class Home extends AppCompatActivity implements HomeInterface{
                     homeModelsArrayList.add(dc.getDocument().toObject(HomeModel.class));
                 }
                 homeAdapter.notifyDataSetChanged();
-                DocumentSnapshot.ServerTimestampBehavior behavior = ESTIMATE;
                 if(pd.isShowing())
                     pd.dismiss();
             }
@@ -218,7 +221,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
     public void onRestart()
     {
         super.onRestart();
-        finish();
-        startActivity(getIntent());
+        homeModelsArrayList.clear();
+        EventChangeListener();
     }
 }

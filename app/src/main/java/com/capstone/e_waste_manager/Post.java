@@ -238,7 +238,7 @@ public class Post extends AppCompatActivity {
                                         postBody.setText("");
                                         postTitle.setText("");
                                         Toast.makeText(Post.this, "Post Successful", Toast.LENGTH_SHORT).show();
-                                        finish();
+                                        onBackPressed();
                                     }
                                 });
                             }else{
