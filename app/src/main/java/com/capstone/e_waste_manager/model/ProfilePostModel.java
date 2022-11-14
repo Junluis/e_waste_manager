@@ -1,23 +1,21 @@
-package com.capstone.e_waste_manager;
+package com.capstone.e_waste_manager.model;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentId;
-import com.google.firebase.firestore.ServerTimestamp;
-
-import java.util.Date;
-
-public class HomeModel {
-    String homeTitle;
-    String homeAuthor;
-    String homeBody;
-    String docId;
-    String homeAuthorUid;
-    Timestamp homePostDate;
 
 
-    public HomeModel(){}
+public class ProfilePostModel {
+    public String homeTitle;
+    public String homeAuthor;
+    public String homeBody;
+    public String docId;
+    public String homeAuthorUid;
+    public Timestamp homePostDate;
 
-    public HomeModel(String homeTitle, String homeAuthor, String homeBody, String homeAuthorUid, Timestamp homePostDate) {
+
+    public ProfilePostModel(){}
+
+    public ProfilePostModel(String homeTitle, String homeAuthor, String homeBody, String homeAuthorUid, Timestamp homePostDate) {
         this.homeTitle = homeTitle;
         this.homeAuthor = homeAuthor;
         this.homeBody = homeBody;
