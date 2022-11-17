@@ -1,5 +1,7 @@
 package com.capstone.e_waste_manager.adapter;
 
+import static com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBehavior.ESTIMATE;
+
 import android.content.Context;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -12,13 +14,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.capstone.e_waste_manager.Fragments.ProfilePostFragment;
 import com.capstone.e_waste_manager.Fragments.ProfilePostInterface;
+import com.capstone.e_waste_manager.HomeAdapter;
 import com.capstone.e_waste_manager.HomeModel;
 import com.capstone.e_waste_manager.R;
 import com.capstone.e_waste_manager.model.ProfilePostModel;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class ProfilePostAdapter extends RecyclerView.Adapter<ProfilePostAdapter.MyViewHolder>{
     ProfilePostInterface postInterface;
@@ -44,30 +50,70 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<ProfilePostAdapter.
     @Override
     public void onBindViewHolder(@NonNull ProfilePostAdapter.MyViewHolder holder, int position) {
 
+        DocumentSnapshot.ServerTimestampBehavior behavior = ESTIMATE;
         ProfilePostModel homeP = ProfilePostModel.get(position);
 
-        holder.author.setText(homeP.homeAuthor);
-        holder.title.setText(homeP.homeTitle);
-        holder.body.setText(homeP.homeBody);
-        holder.docId.setText(homeP.docId);
-        holder.authorUid.setText(homeP.homeAuthorUid);
-        String timeago = calculateTimeAgo(homeP.getHomePostDate().toDate().toString());
-        holder.timestamp.setText(timeago);
-
+        if (homeP.getHomePostDate() != null) {
+            holder.author.setText(homeP.homeAuthor);
+            holder.title.setText(homeP.homeTitle);
+            holder.body.setText(homeP.homeBody);
+            holder.docId.setText(homeP.docId);
+            holder.authorUid.setText(homeP.homeAuthorUid);
+            TimeAgo2 timeAgo2 = new TimeAgo2();
+            String timeago = timeAgo2.covertTimeToText(homeP.getHomePostDate().toDate().toString());
+            holder.timestamp.setText(timeago);
+        }
     }
 
-    private String calculateTimeAgo(String s) {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d hh:mm:ss zzz yyyy");
-        try {
-            long time = sdf.parse(s).getTime();
-            long now = System.currentTimeMillis();
-            CharSequence ago =
-                    DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS);
-            return ago+"";
-        } catch (ParseException e) {
-            e.printStackTrace();
+    public class TimeAgo2 {
+
+        public String covertTimeToText(String dataDate) {
+
+            String convTime = null;
+
+            String prefix = "";
+            String suffix = "Ago";
+
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM d hh:mm:ss zzz yyyy");
+                Date pasTime = dateFormat.parse(dataDate);
+
+                Date nowTime = new Date();
+
+                long dateDiff = nowTime.getTime() - pasTime.getTime();
+
+                long second = TimeUnit.MILLISECONDS.toSeconds(dateDiff);
+                long minute = TimeUnit.MILLISECONDS.toMinutes(dateDiff);
+                long hour   = TimeUnit.MILLISECONDS.toHours(dateDiff);
+                long day  = TimeUnit.MILLISECONDS.toDays(dateDiff);
+
+                if (second == 0) {
+                    convTime = second + " Second " + suffix;
+                }else if (second < 60) {
+                    convTime = second + " Seconds " + suffix;
+                } else if (minute < 60) {
+                    convTime = minute + " Minutes "+suffix;
+                } else if (hour < 24) {
+                    convTime = hour + " Hours "+suffix;
+                } else if (day >= 7) {
+                    if (day > 360) {
+                        convTime = (day / 360) + " Years " + suffix;
+                    } else if (day > 30) {
+                        convTime = (day / 30) + " Months " + suffix;
+                    } else {
+                        convTime = (day / 7) + " Week " + suffix;
+                    }
+                } else if (day < 7) {
+                    convTime = day+" Days "+suffix;
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return convTime;
         }
-        return "";
+
     }
 
     @Override

@@ -169,7 +169,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
 
         EventChangeListener();
 
-        //swipe up to refresh.. not really needed firebase is already in real time
+        //swipe up to refresh.. refresh deleted posts or see changed time
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -179,7 +179,6 @@ public class Home extends AppCompatActivity implements HomeInterface{
                 swipeRefresh.setRefreshing(false);
             }
         });
-        //not really needed
 
     }
 
@@ -213,7 +212,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
         intent.putExtra("homeBody", homeModelsArrayList.get(position).getHomeBody());
         intent.putExtra("docId", homeModelsArrayList.get(position).getDocId());
         intent.putExtra("homeAuthorUid", homeModelsArrayList.get(position).getHomeAuthorUid());
-//        intent.putExtra("homePostDate", homeModelsArrayList.get(position).getHomePostDate());
+        intent.putExtra("homePostDate", homeModelsArrayList.get(position).getHomePostDate());
 
         startActivity(intent);
     }

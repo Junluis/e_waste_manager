@@ -22,7 +22,9 @@ import org.w3c.dom.Text;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
     HomeInterface homeInterface;
@@ -51,28 +53,67 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
         DocumentSnapshot.ServerTimestampBehavior behavior = ESTIMATE;
         HomeModel homeP = homeModelArrayList.get(position);
 
-        holder.author.setText(homeP.homeAuthor);
-        holder.title.setText(homeP.homeTitle);
-        holder.body.setText(homeP.homeBody);
-        holder.docId.setText(homeP.docId);
-        holder.authorUid.setText(homeP.homeAuthorUid);
-        String timeago = calculateTimeAgo(homeP.getHomePostDate().toDate().toString());
-        holder.timestamp.setText(timeago);
-
+        if (homeP.getHomePostDate() != null) {
+            holder.author.setText(homeP.homeAuthor);
+            holder.title.setText(homeP.homeTitle);
+            holder.body.setText(homeP.homeBody);
+            holder.docId.setText(homeP.docId);
+            holder.authorUid.setText(homeP.homeAuthorUid);
+            TimeAgo2 timeAgo2 = new TimeAgo2();
+            String timeago = timeAgo2.covertTimeToText(homeP.getHomePostDate().toDate().toString());
+            holder.timestamp.setText(timeago);
+        }
     }
 
-    private String calculateTimeAgo(String s) {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d hh:mm:ss zzz yyyy");
-        try {
-            long time = sdf.parse(s).getTime();
-            long now = System.currentTimeMillis();
-            CharSequence ago =
-                    DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS);
-            return ago+"";
-        } catch (ParseException e) {
-            e.printStackTrace();
+    public class TimeAgo2 {
+
+        public String covertTimeToText(String dataDate) {
+
+            String convTime = null;
+
+            String prefix = "";
+            String suffix = "Ago";
+
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM d hh:mm:ss zzz yyyy");
+                Date pasTime = dateFormat.parse(dataDate);
+
+                Date nowTime = new Date();
+
+                long dateDiff = nowTime.getTime() - pasTime.getTime();
+
+                long second = TimeUnit.MILLISECONDS.toSeconds(dateDiff);
+                long minute = TimeUnit.MILLISECONDS.toMinutes(dateDiff);
+                long hour   = TimeUnit.MILLISECONDS.toHours(dateDiff);
+                long day  = TimeUnit.MILLISECONDS.toDays(dateDiff);
+
+                if (second == 0) {
+                    convTime = second + " Second " + suffix;
+                }else if (second < 60) {
+                    convTime = second + " Seconds " + suffix;
+                } else if (minute < 60) {
+                    convTime = minute + " Minutes "+suffix;
+                } else if (hour < 24) {
+                    convTime = hour + " Hours "+suffix;
+                } else if (day >= 7) {
+                    if (day > 360) {
+                        convTime = (day / 360) + " Years " + suffix;
+                    } else if (day > 30) {
+                        convTime = (day / 30) + " Months " + suffix;
+                    } else {
+                        convTime = (day / 7) + " Week " + suffix;
+                    }
+                } else if (day < 7) {
+                    convTime = day+" Days "+suffix;
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return convTime;
         }
-        return "";
+
     }
 
     @Override
