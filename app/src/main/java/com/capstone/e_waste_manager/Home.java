@@ -1,22 +1,18 @@
 package com.capstone.e_waste_manager;
 
-import static com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBehavior.ESTIMATE;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,25 +22,17 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.capstone.e_waste_manager.Class.TimeAgo2;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
+import com.google.firebase.firestore.Query;
 
 
-public class Home extends AppCompatActivity implements HomeInterface{
-
-    ArrayList<HomeModel> homeModelsArrayList;
-    HomeAdapter homeAdapter;
-    ProgressDialog pd;
+public class Home extends AppCompatActivity{
 
     FirebaseFirestore fStore;
 
@@ -56,6 +44,9 @@ public class Home extends AppCompatActivity implements HomeInterface{
     ImageView menu_nav, profile_nav;
     NavigationView navView_profile, navView_menu;
     SwipeRefreshLayout swipeRefresh;
+
+    FirestoreRecyclerAdapter adapter;
+    LinearLayoutManager linearLayoutManager;
 
     TextView signout;
 
@@ -148,81 +139,97 @@ public class Home extends AppCompatActivity implements HomeInterface{
             }
         });
 
-        pd = new ProgressDialog(this);
-        pd.setCancelable(false);
-        pd.setMessage("Fetching Data...");
-        pd.show();
-
         fStore = FirebaseFirestore.getInstance();
-        homeModelsArrayList = new ArrayList<HomeModel>();
-        homeAdapter = new HomeAdapter(Home.this, homeModelsArrayList, this);
-
         homeRecycler = findViewById(R.id.homeRecycler);
-        homeRecycler.setHasFixedSize(true);
-        homeRecycler.setLayoutManager(new LinearLayoutManager(this));
-        homeRecycler.setAdapter(homeAdapter);
+        linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        homeRecycler.setLayoutManager(linearLayoutManager);
 
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-        mLayoutManager.setReverseLayout(true);
-        mLayoutManager.setStackFromEnd(true);
-        homeRecycler.setLayoutManager(mLayoutManager);
+        homeRecycler.setItemAnimator(null);
 
-        EventChangeListener();
+        Query query = fStore.collection("Post")
+                .orderBy("homePostDate", Query.Direction.DESCENDING);
 
-        //swipe up to refresh.. not really needed firebase is already in real time
+        FirestoreRecyclerOptions<HomeModel> options = new FirestoreRecyclerOptions.Builder<HomeModel>()
+                .setQuery(query, HomeModel.class)
+                .build();
+
+        //swipe up to refresh.. refresh deleted posts or see changed time
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onRefresh() {
-                homeModelsArrayList.clear();
-                EventChangeListener();
+                adapter.notifyDataSetChanged();
                 swipeRefresh.setRefreshing(false);
             }
         });
-        //not really needed
 
-    }
-
-    private void EventChangeListener() {
-        fStore.collection("Post").orderBy("homePostDate").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @SuppressLint("NotifyDataSetChanged")
+        adapter = new FirestoreRecyclerAdapter<HomeModel, ViewHolder>(options) {
             @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null){
-                    if(pd.isShowing())
-                        pd.dismiss();
-                    Log.e("Firestore error", error.getMessage());
-                    return;
-                }
-                for (DocumentChange dc : value.getDocumentChanges()){
-                    homeModelsArrayList.add(dc.getDocument().toObject(HomeModel.class));
-                }
-                homeAdapter.notifyDataSetChanged();
-                if(pd.isShowing())
-                    pd.dismiss();
+            protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull HomeModel model) {
+                holder.bind(model);
             }
-        });
+
+            @NonNull
+            @Override
+            public ViewHolder onCreateViewHolder(@NonNull ViewGroup group, int i) {
+                View view = LayoutInflater.from(group.getContext())
+                        .inflate(R.layout.home_each, group,false);
+                return new ViewHolder(view);
+            }
+        };
+
+        homeRecycler.setAdapter(adapter);
+
     }
 
     @Override
-    public void onItemClick(int position) {
-        Intent intent = new Intent(Home.this, HomeView.class);
-
-        intent.putExtra("homeTitle", homeModelsArrayList.get(position).getHomeTitle());
-        intent.putExtra("homeAuthor", homeModelsArrayList.get(position).getHomeAuthor());
-        intent.putExtra("homeBody", homeModelsArrayList.get(position).getHomeBody());
-        intent.putExtra("docId", homeModelsArrayList.get(position).getDocId());
-        intent.putExtra("homeAuthorUid", homeModelsArrayList.get(position).getHomeAuthorUid());
-//        intent.putExtra("homePostDate", homeModelsArrayList.get(position).getHomePostDate());
-
-        startActivity(intent);
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
     }
 
     @Override
-    public void onRestart()
-    {
-        super.onRestart();
-        homeModelsArrayList.clear();
-        EventChangeListener();
+    protected void onStop() {
+        super.onStop();
+
+        if (adapter != null) {
+            adapter.stopListening();
+        }
     }
+
+    class ViewHolder extends RecyclerView.ViewHolder{
+        TextView author, title, body, authorUid, docId, timestamp;
+        HomeModel model;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            author = itemView.findViewById(R.id.homeAuthor);
+            title = itemView.findViewById(R.id.homeTitle);
+            body = itemView.findViewById(R.id.homeBody);
+            docId = itemView.findViewById(R.id.docId);
+            authorUid = itemView.findViewById(R.id.homeAuthorUid);
+            timestamp = itemView.findViewById(R.id.timestamp);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(itemView.getContext(), HomeView.class);
+                    intent.putExtra("model", model);
+                    itemView.getContext().startActivity(intent);
+                }
+            });
+        }
+        public void bind(HomeModel homeModel){
+            model = homeModel;
+            author.setText(homeModel.homeAuthor);
+            title.setText(homeModel.homeTitle);
+            body.setText(homeModel.homeBody);
+            docId.setText(homeModel.docId);
+            authorUid.setText(homeModel.homeAuthorUid);
+            TimeAgo2 timeAgo2 = new TimeAgo2();
+            String timeago = timeAgo2.covertTimeToText(homeModel.getHomePostDate().toString());
+            timestamp.setText(timeago);
+        }
+    }
+
 }
