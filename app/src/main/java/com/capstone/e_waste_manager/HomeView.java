@@ -1,47 +1,37 @@
 package com.capstone.e_waste_manager;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.capstone.e_waste_manager.Class.TimeAgo2;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.Query;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class HomeView extends AppCompatActivity {
 
@@ -52,26 +42,16 @@ public class HomeView extends AppCompatActivity {
     RecyclerView commentRecycler;
     FirebaseFirestore fStore;
     FirebaseAuth fAuth;
-    ArrayList<CommentModel> commentModelArrayList;
-    CommentAdapter commentAdapter;
-    ProgressDialog pd;
-    StorageReference storageReference;
     String userID;
     FirebaseUser user;
     SwipeRefreshLayout swipeRefresh;
+    LinearLayoutManager linearLayoutManager;
+    FirestoreRecyclerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_view);
-
-        String title = getIntent().getStringExtra("homeTitle");
-        String author = getIntent().getStringExtra("homeAuthor");
-        String body = getIntent().getStringExtra("homeBody");
-        String AuthorUid = getIntent().getStringExtra("homeAuthorUid");
-        String docId = getIntent().getStringExtra("docId");
-        String homePostDate = getIntent().getStringExtra("homePostDate");
-
 
         // comment try
         fAuth = FirebaseAuth.getInstance();
@@ -92,12 +72,16 @@ public class HomeView extends AppCompatActivity {
         bckBtn = findViewById(R.id.bckBtn);
         commentRecycler = findViewById(R.id.commentRecycler);
 
+
+        HomeModel model = (HomeModel) getIntent().getSerializableExtra("model");
+
         bckBtn.setOnClickListener(v -> finish());
 
         commentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DocumentReference documentReference = fStore.collection("Post").document(docId);
+                adapter.stopListening();
+                DocumentReference documentReference = fStore.collection("Post").document(model.docId);
                 fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         String username = task.getResult().getString("Username");
@@ -112,6 +96,7 @@ public class HomeView extends AppCompatActivity {
                             public void onComplete(@NonNull Task<DocumentReference> task) {
                                 Toast.makeText(HomeView.this, "Comment Success", Toast.LENGTH_SHORT).show();
                                 pComment.setText("");
+                                adapter.startListening();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -126,65 +111,96 @@ public class HomeView extends AppCompatActivity {
             }
         });
 
-        pTitle.setText(title);
-        pAuthor.setText(author);
-        pAuthorUid.setText(AuthorUid);
-        ptimestamp.setText(homePostDate);
-        pdocId.setText(docId);
-        pBody.setText(body);
 
-        pd = new ProgressDialog(this);
-        pd.setCancelable(false);
-        pd.setMessage("Fetching Data...");
-        pd.show();
-
-        fStore = FirebaseFirestore.getInstance();
-        commentModelArrayList = new ArrayList<CommentModel>();
-        commentAdapter = new CommentAdapter(HomeView.this, commentModelArrayList);
-
-        commentRecycler.setHasFixedSize(true);
-        commentRecycler.setLayoutManager(new LinearLayoutManager(this));
-        commentRecycler.setAdapter(commentAdapter);
-
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-        mLayoutManager.setReverseLayout(true);
-        mLayoutManager.setStackFromEnd(true);
-        commentRecycler.setLayoutManager(mLayoutManager);
-
-        EventChangeListener();
+        pTitle.setText(model.getHomeTitle());
+        pAuthor.setText(model.getHomeAuthor());
+        pAuthorUid.setText(model.getDocId());
+        TimeAgo2 timeAgo2 = new TimeAgo2();
+        String timeago = timeAgo2.covertTimeToText(model.getHomePostDate().toString());
+        ptimestamp.setText(timeago);
+        pdocId.setText(model.docId);
+        pBody.setText(model.getHomeBody());
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onRefresh() {
-                commentModelArrayList.clear();
-                EventChangeListener();
+                adapter.notifyDataSetChanged();
                 swipeRefresh.setRefreshing(false);
             }
         });
 
-    }
+        commentRecycler = findViewById(R.id.commentRecycler);
+        linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        commentRecycler.setLayoutManager(linearLayoutManager);
 
-    private void EventChangeListener() {
-        Toast.makeText(HomeView.this, pdocId.getText().toString(), Toast.LENGTH_SHORT).show();
-        fStore.collection("Post").document(pdocId.getText().toString()).collection("comment").orderBy("commentPostDate").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        commentRecycler.setItemAnimator(null);
+
+        Query query = fStore.collection("Post")
+                .document(pdocId.getText().toString()).collection("comment")
+                .orderBy("commentPostDate", Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<CommentModel> options = new FirestoreRecyclerOptions.Builder<CommentModel>()
+                .setQuery(query, CommentModel.class)
+                .build();
+
+        adapter = new FirestoreRecyclerAdapter<CommentModel, ViewHolder>(options) {
             @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null){
-                    if(pd.isShowing())
-                        pd.dismiss();
-                    Log.e("Firestore error", error.getMessage());
-                    return;
-                }
-                for (DocumentChange dc : value.getDocumentChanges()){
-                    commentModelArrayList.add(dc.getDocument().toObject(CommentModel.class));
-                }
-                commentAdapter.notifyDataSetChanged();
-                if(pd.isShowing())
-                    pd.dismiss();
+            protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull CommentModel model) {
+                holder.bind(model);
             }
-        });
+
+            @NonNull
+            @Override
+            public ViewHolder onCreateViewHolder(@NonNull ViewGroup group, int i) {
+                View view = LayoutInflater.from(group.getContext())
+                        .inflate(R.layout.comment_each, group,false);
+                return new ViewHolder(view);
+            }
+        };
+
+        commentRecycler.setAdapter(adapter);
+
+
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (adapter != null) {
+            adapter.stopListening();
+        }
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder{
+        TextView author, body, authorUid, docId, timestamp;
+        CommentModel model;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            author = itemView.findViewById(R.id.commentAuthor);
+            body = itemView.findViewById(R.id.commentBody);
+            docId = itemView.findViewById(R.id.docId);
+            authorUid = itemView.findViewById(R.id.commentAuthorUid);
+            timestamp = itemView.findViewById(R.id.timestamp);
+        }
+        public void bind(CommentModel commentModel){
+            model = commentModel;
+            author.setText(commentModel.commentAuthor);
+            body.setText(commentModel.commentBody);
+            docId.setText(commentModel.docId);
+            authorUid.setText(commentModel.commentUid);
+            TimeAgo2 timeAgo2 = new TimeAgo2();
+            String timeago = timeAgo2.covertTimeToText(commentModel.getCommentPostDate().toString());
+            timestamp.setText(timeago);
+        }
+    }
 
 }

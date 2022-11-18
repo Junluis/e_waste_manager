@@ -3,7 +3,6 @@ package com.capstone.e_waste_manager.adapter;
 import static com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBehavior.ESTIMATE;
 
 import android.content.Context;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.capstone.e_waste_manager.Fragments.ProfilePostFragment;
 import com.capstone.e_waste_manager.Fragments.ProfilePostInterface;
-import com.capstone.e_waste_manager.HomeAdapter;
-import com.capstone.e_waste_manager.HomeModel;
 import com.capstone.e_waste_manager.R;
 import com.capstone.e_waste_manager.model.ProfilePostModel;
 import com.google.firebase.firestore.DocumentSnapshot;

@@ -17,17 +17,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.capstone.e_waste_manager.Home;
-import com.capstone.e_waste_manager.HomeAdapter;
-import com.capstone.e_waste_manager.HomeInterface;
-import com.capstone.e_waste_manager.HomeModel;
 import com.capstone.e_waste_manager.HomeView;
 import com.capstone.e_waste_manager.R;
 import com.capstone.e_waste_manager.adapter.ProfilePostAdapter;
 import com.capstone.e_waste_manager.model.ProfilePostModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;

@@ -5,13 +5,15 @@ import static com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBeha
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentId;
 
+import java.util.Date;
+
 public class CommentModel {
     String commentBody, commentAuthor, docId, commentUid;
-    Timestamp commentPostDate;
+    Date commentPostDate;
 
     public CommentModel(){}
 
-    public CommentModel(String commentBody, String commentAuthor, Timestamp commentPostDate, String commentUid) {
+    public CommentModel(String commentBody, String commentAuthor, Date commentPostDate, String commentUid) {
         this.commentBody = commentBody;
         this.commentAuthor = commentAuthor;
         this.commentPostDate = commentPostDate;
@@ -49,7 +51,7 @@ public class CommentModel {
     @DocumentId
     public void setDocId(String docId) {this.docId = docId;}
 
-    public Timestamp getCommentPostDate() { return commentPostDate; }
+    public Date getCommentPostDate() { return commentPostDate; }
 
-    public void setCommentPostDate(Timestamp commentPostDate) { this.commentPostDate = commentPostDate; }
+    public void setCommentPostDate(Date commentPostDate) { this.commentPostDate = commentPostDate; }
 }

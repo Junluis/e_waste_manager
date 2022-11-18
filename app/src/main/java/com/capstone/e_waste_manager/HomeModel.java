@@ -4,25 +4,27 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.ServerTimestamp;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class HomeModel {
+public class HomeModel implements Serializable {
     String homeTitle;
     String homeAuthor;
     String homeBody;
     String docId;
     String homeAuthorUid;
-    Timestamp homePostDate;
+    Date homePostDate;
 
 
     public HomeModel(){}
 
-    public HomeModel(String homeTitle, String homeAuthor, String homeBody, String homeAuthorUid, Timestamp homePostDate) {
+    public HomeModel(String homeTitle, String homeAuthor, String homeBody, String homeAuthorUid, Date homePostDate, String docId) {
         this.homeTitle = homeTitle;
         this.homeAuthor = homeAuthor;
         this.homeBody = homeBody;
         this.homeAuthorUid = homeAuthorUid;
         this.homePostDate = homePostDate;
+        this.docId = docId;
     }
 
     public String getHomeTitle() {
@@ -51,12 +53,23 @@ public class HomeModel {
     @DocumentId
     public void setDocId(String docId) {this.docId = docId;}
 
+    public Date getHomePostDate() { return homePostDate; }
+
+    public void setHomePostDate(Date homePostDate) {this.homePostDate = homePostDate; }
+
     public String getHomeAuthorUid() { return homeAuthorUid; }
 
     public void setHomeAuthorUid(String homeAuthorUid) {this.homeAuthorUid = homeAuthorUid; }
 
-    public Timestamp getHomePostDate() { return homePostDate; }
-
-    public void setHomePostDate(Timestamp homePostDate) {this.homePostDate = homePostDate; }
-
+    @Override
+    public String toString(){
+        return "HomeModel{" +
+                "homeTitle='"+homeTitle+ '\'' +
+                ", homeAuthor="+homeAuthor+ '\'' +
+                ", homeBody="+homeBody+ '\'' +
+                ", homeAuthorUid="+homeAuthorUid+ '\'' +
+                ", homePostDate="+homePostDate +
+                ", docId="+docId+ '\'' +
+                '}';
+    }
 }
