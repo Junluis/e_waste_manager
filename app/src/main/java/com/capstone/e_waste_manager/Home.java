@@ -8,6 +8,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -25,11 +26,15 @@ import android.widget.TextView;
 import com.capstone.e_waste_manager.Class.TimeAgo2;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 
 public class Home extends AppCompatActivity{
@@ -47,6 +52,8 @@ public class Home extends AppCompatActivity{
 
     FirestoreRecyclerAdapter adapter;
     LinearLayoutManager linearLayoutManager;
+    StorageReference storageReference;
+    FirebaseAuth fAuth;
 
     TextView signout;
 
@@ -140,6 +147,9 @@ public class Home extends AppCompatActivity{
         });
 
         fStore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
+        fAuth = FirebaseAuth.getInstance();
+
         homeRecycler = findViewById(R.id.homeRecycler);
         linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         homeRecycler.setLayoutManager(linearLayoutManager);
@@ -199,6 +209,7 @@ public class Home extends AppCompatActivity{
 
     class ViewHolder extends RecyclerView.ViewHolder{
         TextView author, title, body, authorUid, docId, timestamp;
+        ImageView prof_img;
         HomeModel model;
 
         public ViewHolder(@NonNull View itemView) {
@@ -209,6 +220,9 @@ public class Home extends AppCompatActivity{
             docId = itemView.findViewById(R.id.docId);
             authorUid = itemView.findViewById(R.id.homeAuthorUid);
             timestamp = itemView.findViewById(R.id.timestamp);
+            prof_img = itemView.findViewById(R.id.prof_img);
+
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -229,6 +243,15 @@ public class Home extends AppCompatActivity{
             TimeAgo2 timeAgo2 = new TimeAgo2();
             String timeago = timeAgo2.covertTimeToText(homeModel.getHomePostDate().toString());
             timestamp.setText(timeago);
+
+            StorageReference profileRef = storageReference.child("ProfileImage/"+homeModel.homeAuthorUid+"/profile.jpg");
+            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.get().load(uri).into(prof_img);
+                }
+            });
+
         }
     }
 

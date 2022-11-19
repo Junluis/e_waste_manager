@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,6 +32,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +43,7 @@ public class HomeView extends AppCompatActivity {
 
     ImageButton bckBtn;
     Button commentBtn;
+    ImageView prof_img;
     EditText pComment;
     TextView pTitle, pAuthor, pBody, pAuthorUid, pdocId, ptimestamp;
     RecyclerView commentRecycler;
@@ -47,6 +54,7 @@ public class HomeView extends AppCompatActivity {
     SwipeRefreshLayout swipeRefresh;
     LinearLayoutManager linearLayoutManager;
     FirestoreRecyclerAdapter adapter;
+    StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +64,7 @@ public class HomeView extends AppCompatActivity {
         // comment try
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
         userID = fAuth.getCurrentUser().getUid();
         user = fAuth.getCurrentUser();
 
@@ -66,6 +75,7 @@ public class HomeView extends AppCompatActivity {
         pdocId = findViewById(R.id.pdocId);
         pBody = findViewById(R.id.pBody);
         ptimestamp = findViewById(R.id.ptimestamp);
+        prof_img = findViewById(R.id.prof_img);
         swipeRefresh = findViewById(R.id.swipeRefresh);
         pComment = findViewById(R.id.pComment);
         commentBtn = findViewById(R.id.commentBtn);
@@ -74,6 +84,7 @@ public class HomeView extends AppCompatActivity {
 
 
         HomeModel model = (HomeModel) getIntent().getSerializableExtra("model");
+
 
         bckBtn.setOnClickListener(v -> finish());
 
@@ -114,12 +125,20 @@ public class HomeView extends AppCompatActivity {
 
         pTitle.setText(model.getHomeTitle());
         pAuthor.setText(model.getHomeAuthor());
-        pAuthorUid.setText(model.getDocId());
+        pAuthorUid.setText(model.homeAuthorUid);
         TimeAgo2 timeAgo2 = new TimeAgo2();
         String timeago = timeAgo2.covertTimeToText(model.getHomePostDate().toString());
         ptimestamp.setText(timeago);
         pdocId.setText(model.docId);
         pBody.setText(model.getHomeBody());
+
+        StorageReference profileRef = storageReference.child("ProfileImage/"+model.homeAuthorUid+"/profile.jpg");
+        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).into(prof_img);
+            }
+        });
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @SuppressLint("NotifyDataSetChanged")
@@ -181,6 +200,7 @@ public class HomeView extends AppCompatActivity {
 
     class ViewHolder extends RecyclerView.ViewHolder{
         TextView author, body, authorUid, docId, timestamp;
+        ImageView prof_img;
         CommentModel model;
 
         public ViewHolder(@NonNull View itemView) {
@@ -190,7 +210,9 @@ public class HomeView extends AppCompatActivity {
             docId = itemView.findViewById(R.id.docId);
             authorUid = itemView.findViewById(R.id.commentAuthorUid);
             timestamp = itemView.findViewById(R.id.timestamp);
+            prof_img = itemView.findViewById(R.id.prof_img);
         }
+
         public void bind(CommentModel commentModel){
             model = commentModel;
             author.setText(commentModel.commentAuthor);
@@ -200,6 +222,14 @@ public class HomeView extends AppCompatActivity {
             TimeAgo2 timeAgo2 = new TimeAgo2();
             String timeago = timeAgo2.covertTimeToText(commentModel.getCommentPostDate().toString());
             timestamp.setText(timeago);
+
+            StorageReference profileRef = storageReference.child("ProfileImage/"+commentModel.commentUid+"/profile.jpg");
+            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.get().load(uri).into(prof_img);
+                }
+            });
         }
     }
 
