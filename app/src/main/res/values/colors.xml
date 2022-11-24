@@ -11,6 +11,7 @@
     <color name="green1">#12ab6a</color>
     <color name="green2">#27d8a2</color>
     <color name="darkgray">#242528</color>
+    <color name="gray">#aaaaaa</color>
     <color name="Darkmodeneumorph">#1a1a1a</color>
     <color name="DarkmodeBlack">#121212</color>
     <color name="yellow">#fec72e</color>
@@ -20,5 +21,6 @@
     <color name="blue">#0070c5</color>
     <color name="secondary_blue">#2f3e46</color>
 
-    <color name="error">#FF0000</color>
+    <color name="error">#f8d7da</color>
+    <color name="success">#d4edda</color>
 </resources>

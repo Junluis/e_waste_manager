@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import java.util.Map;
 public class Register extends AppCompatActivity {
     EditText regUsername, regPassword, regConfPassword, regEmail, regFirstName, regLastName, regdateOfBirth;
     Button regRegister;
+    ImageButton closereg;
     TextView regLogin;
     TextView regPrivacyPolicy;
     TextView regTermsService;
@@ -73,6 +75,14 @@ public class Register extends AppCompatActivity {
         regLogin = findViewById(R.id.regLogin);
         regPrivacyPolicy = findViewById(R.id.regPrivacyPolicy);
         regTermsService = findViewById(R.id.regTermsService);
+        closereg = findViewById(R.id.closereg);
+
+        closereg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         //date picker start
 
@@ -382,7 +392,10 @@ public class Register extends AppCompatActivity {
         });
         //checkField error end
 
-        regLogin.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Login.class)));
+        regLogin.setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(), Login.class));
+            finish();
+        });
 
         regRegister.setOnClickListener(v -> {
             if(regUsername.getText().toString().length() == 0 || !TextUtils.isEmpty(tilUsername.getError())){

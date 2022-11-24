@@ -7,7 +7,8 @@
         <menu>
         </menu>
     </item>
-    <item android:title="@string/manage_e_waste">
+
+    <item android:title="@string/manage_e_waste" >
         <menu>
             <item
                 android:id="@+id/disposal"

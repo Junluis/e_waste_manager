@@ -1,19 +1,38 @@
 package com.capstone.e_waste_manager;
 
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,90 +40,292 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.capstone.e_waste_manager.Class.TimeAgo2;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.AggregateQuery;
+import com.google.firebase.firestore.AggregateQuerySnapshot;
+import com.google.firebase.firestore.AggregateSource;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import soup.neumorphism.NeumorphFloatingActionButton;
+
 
 public class Home extends AppCompatActivity{
 
+    //firebase
     FirebaseFirestore fStore;
+    StorageReference storageReference;
+    FirebaseAuth fAuth;
+    FirestoreRecyclerAdapter adapter;
+    FirebaseUser user;
 
     DrawerLayout drawerLayout;
     SearchView postSearch;
     RecyclerView homeRecycler;
-    ImageButton homeBtnHome, homeBtnPost, homeBtnLearn;
+    ImageButton homeBtnHome, homeBtnPost, homeBtnLearn, search_btn;
     MaterialButton request;
-    ImageView menu_nav, profile_nav;
+    ImageView menu_nav, prof_img;
     NavigationView navView_profile, navView_menu;
     SwipeRefreshLayout swipeRefresh;
 
-    FirestoreRecyclerAdapter adapter;
     LinearLayoutManager linearLayoutManager;
-    StorageReference storageReference;
-    FirebaseAuth fAuth;
 
-    TextView signout;
+    TextView signout, titlePage;
+
+    Dialog guestDialog;
+    AlertDialog dialog;
+    ConstraintLayout emptyView;
+    LinearLayout activityHome;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        //drawer start
+        //transparent status
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        //drawers
         drawerLayout = findViewById(R.id.drawerLayout);
         navView_profile = findViewById(R.id.nav_viewright);
         navView_menu = findViewById(R.id.nav_viewleft);
         request = findViewById(R.id.request);
         menu_nav = findViewById(R.id.menu_nav);
-        profile_nav = findViewById(R.id.profile_nav);
-        postSearch = findViewById(R.id.postSearch);
+        prof_img = findViewById(R.id.prof_img);
+        signout = findViewById(R.id.signout);
 
+        //firebase
+        fStore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
+        fAuth = FirebaseAuth.getInstance();
+        user = fAuth.getCurrentUser();
+
+        //bottom nav
+        homeBtnHome = findViewById(R.id.homeBtnHome);
+        homeBtnPost = findViewById(R.id.homeBtnPost);
+        homeBtnLearn = findViewById(R.id.homeBtnLearn);
+
+        //forum
+        homeRecycler = findViewById(R.id.homeRecycler);
+        swipeRefresh = findViewById(R.id.swipeRefresh);
+
+        //search
+        postSearch = findViewById(R.id.postSearch);
+        titlePage = findViewById(R.id.titlePage);
+        search_btn = findViewById(R.id.search_btn);
+
+        //layouts
+        activityHome = findViewById(R.id.activityHome);
+        emptyView = findViewById(R.id.emptyView);
+
+        //search
+        search_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                postSearch.setVisibility(View.VISIBLE);
+                titlePage.setVisibility(View.GONE);
+                search_btn.setVisibility(View.GONE);
+                postSearch.requestFocus();
+            }
+        });
+        postSearch.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    postSearch.setVisibility(View.GONE);
+                    titlePage.setVisibility(View.VISIBLE);
+                    search_btn.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        //bottomNav btn
+        homeBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
+        if (user != null && !user.isAnonymous()) {
+            homeBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
+        } else{
+            homeBtnPost.setOnClickListener(v -> ShowPopup());
+        }
+        homeBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
+
+        //Guest dialog
+        guestDialog = new Dialog(this);
+
+        //drawer
         menu_nav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-        profile_nav.setOnClickListener(new View.OnClickListener() {
+        prof_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 drawerLayout.openDrawer(GravityCompat.END);
             }
         });
-        //drawer end
 
-        //drawer buttons start
-        navView_profile.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId())
-                {
-                    case R.id.profilepg:
-                    {
-                        startActivity(new Intent(Home.this, UserProfilePage.class));
-                        break;
-                    }
-                    case R.id.notificationpg:
-                    {
-                        startActivity(new Intent(Home.this, Notification.class));
-                        break;
-                    }
-                }
-                return false;
-            }
+        //transparent inset
+        ViewCompat.setOnApplyWindowInsetsListener(drawerLayout, (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            // Apply the insets as a margin to the view. Here the system is setting
+            // only the bottom, left, and right dimensions, but apply whichever insets are
+            // appropriate to your layout. You can also update the view padding
+            // if that's more appropriate.
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            mlp.leftMargin = insets.left;
+            mlp.bottomMargin = insets.bottom;
+            mlp.rightMargin = insets.right;
+            v.setLayoutParams(mlp);
+
+            // Return CONSUMED if you don't want want the window insets to keep being
+            // passed down to descendant views.
+            return WindowInsetsCompat.CONSUMED;
         });
+
+        //side drawers
+        if (user != null && !user.isAnonymous()) {
+            View hView = navView_profile.inflateHeaderView(R.layout.nav_header);
+            TextView prof_username_header = (TextView) hView.findViewById(R.id.prof_username);
+            TextView prof_email_header = (TextView) hView.findViewById(R.id.prof_email);
+            TextView prof_bio_header = (TextView) hView.findViewById(R.id.prof_bio);
+            ImageView prof_img_header = (ImageView) hView.findViewById(R.id.prof_img);
+            ImageView partnerBadge_header = (ImageView) hView.findViewById(R.id.partnerBadge);
+
+            DocumentReference documentReference = fStore.collection("Users").document(user.getUid());
+            documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                    prof_username_header.setText(documentSnapShot.getString("Username"));
+                    prof_email_header.setText(documentSnapShot.getString("Email"));
+                    prof_bio_header.setText(documentSnapShot.getString("Bio"));
+
+                    if(prof_bio_header.getText().toString().equals("")){
+                        prof_bio_header.setText("Add bio...");
+                        prof_bio_header.setTextColor(Color.parseColor("#aaaaaa"));
+                    }
+                    if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
+                        partnerBadge_header.setVisibility(View.VISIBLE);
+                    } else{
+                        partnerBadge_header.setVisibility(View.GONE);
+                    }
+                    StorageReference profileRef = storageReference.child("ProfileImage/"+fAuth.getCurrentUser().getUid()+"/profile.jpg");
+                    profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Picasso.get().load(uri).into(prof_img_header);
+                        }
+                    });
+
+                }
+            });
+            StorageReference profileRef = storageReference.child("ProfileImage/"+user.getUid()+"/profile.jpg");
+            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.get().load(uri).into(prof_img);
+                }
+            });
+        }else {
+            View hView = navView_profile.inflateHeaderView(R.layout.guest_header);
+        }
+
+        if (user != null && !user.isAnonymous()) {
+            navView_profile.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @SuppressLint("NonConstantResourceId")
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    switch (item.getItemId())
+                    {
+                        case R.id.profilepg:
+                        {
+                            if (user != null && !user.isAnonymous()) {
+                                startActivity(new Intent(Home.this, UserProfilePage.class));
+                                drawerLayout.closeDrawer(GravityCompat.END);
+                            } else{
+                                ShowPopup();
+                            }
+                            break;
+                        }
+                        case R.id.notificationpg:
+                        {
+                            if (user != null && !user.isAnonymous()) {
+                                startActivity(new Intent(Home.this, Notification.class));
+                                drawerLayout.closeDrawer(GravityCompat.END);
+                            } else{
+                                ShowPopup();
+                            }
+                            break;
+                        }
+                    }
+                    return false;
+                }
+            });
+
+            signout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FirebaseAuth.getInstance().signOut();
+                    finish();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
+                }
+            });
+        } else{
+            navView_profile.getMenu().clear();
+            navView_profile.inflateMenu(R.menu.nav_guestmenu);
+            navView_profile.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @SuppressLint("NonConstantResourceId")
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    switch (item.getItemId())
+                    {
+                        case R.id.loginpg:
+                        {
+                            startActivity(new Intent(Home.this, Login.class));
+                            break;
+                        }
+                        case R.id.registerpg:
+                        {
+                            startActivity(new Intent(Home.this, Register.class));
+                            break;
+                        }
+                    }
+                    return false;
+                }
+            });
+            signout.setVisibility(View.GONE);
+        }
         navView_menu.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -113,65 +334,38 @@ public class Home extends AppCompatActivity{
                     case R.id.disposal:
                     {
                         startActivity(new Intent(Home.this, DisposalLocation.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
                         break;
                     }
                     case R.id.donate:
                     {
-                        startActivity(new Intent(Home.this, Donate.class));
+                        if (user != null && !user.isAnonymous()) {
+                            startActivity(new Intent(Home.this, Donate.class));
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                        } else{
+                            ShowPopup();
+                        }
                         break;
                     }
                 }
                 return false;
             }
         });
-        //drawer buttons end
+        //drawer end
 
-        homeRecycler = findViewById(R.id.homeRecycler);
-        homeBtnHome = findViewById(R.id.homeBtnHome);
-        homeBtnPost = findViewById(R.id.homeBtnPost);
-        homeBtnLearn = findViewById(R.id.homeBtnLearn);
-        signout = findViewById(R.id.signout);
-        swipeRefresh = findViewById(R.id.swipeRefresh);
-
-        homeBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
-        homeBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
-        homeBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
-
-        signout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(getApplicationContext(), Login.class));
-                finish();
-            }
-        });
-
-        fStore = FirebaseFirestore.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
-        fAuth = FirebaseAuth.getInstance();
-
-        homeRecycler = findViewById(R.id.homeRecycler);
+        //forum
         linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         homeRecycler.setLayoutManager(linearLayoutManager);
 
         homeRecycler.setItemAnimator(null);
 
         Query query = fStore.collection("Post")
-                .orderBy("homePostDate", Query.Direction.DESCENDING);
+                .orderBy("homePostDate", Query.Direction.DESCENDING)
+                .limit(50);
 
         FirestoreRecyclerOptions<HomeModel> options = new FirestoreRecyclerOptions.Builder<HomeModel>()
                 .setQuery(query, HomeModel.class)
                 .build();
-
-        //swipe up to refresh.. refresh deleted posts or see changed time
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            public void onRefresh() {
-                adapter.notifyDataSetChanged();
-                swipeRefresh.setRefreshing(false);
-            }
-        });
 
         adapter = new FirestoreRecyclerAdapter<HomeModel, ViewHolder>(options) {
             @Override
@@ -190,30 +384,31 @@ public class Home extends AppCompatActivity{
 
         homeRecycler.setAdapter(adapter);
 
+        //swipe up to refresh
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onRefresh() {
+                adapter.notifyDataSetChanged();
+                swipeRefresh.setRefreshing(false);
+            }
+        });
+
+
+
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        if (adapter != null) {
-            adapter.stopListening();
-        }
-    }
-
+    //forum
     class ViewHolder extends RecyclerView.ViewHolder{
-        TextView author, title, body, authorUid, docId, timestamp;
+        TextView author, title, body, authorUid, docId, timestamp, upvotecount, downvotecount;
+        Button addcoment;
+        ToggleButton upvote, downvote;
         ImageView prof_img;
         HomeModel model;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            //post details
             author = itemView.findViewById(R.id.homeAuthor);
             title = itemView.findViewById(R.id.homeTitle);
             body = itemView.findViewById(R.id.homeBody);
@@ -221,8 +416,21 @@ public class Home extends AppCompatActivity{
             authorUid = itemView.findViewById(R.id.homeAuthorUid);
             timestamp = itemView.findViewById(R.id.timestamp);
             prof_img = itemView.findViewById(R.id.prof_img);
+            addcoment = itemView.findViewById(R.id.addcoment);
+            //vote
+            upvote = itemView.findViewById(R.id.upvote);
+            downvote = itemView.findViewById(R.id.downvote);
+            upvotecount = itemView.findViewById(R.id.upvotecount);
+            downvotecount = itemView.findViewById(R.id.downvotecount);
 
-
+            addcoment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(itemView.getContext(), HomeView.class);
+                    intent.putExtra("model", model);
+                    itemView.getContext().startActivity(intent);
+                }
+            });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -234,6 +442,7 @@ public class Home extends AppCompatActivity{
             });
         }
         public void bind(HomeModel homeModel){
+            //put details
             model = homeModel;
             author.setText(homeModel.homeAuthor);
             title.setText(homeModel.homeTitle);
@@ -244,15 +453,253 @@ public class Home extends AppCompatActivity{
             String timeago = timeAgo2.covertTimeToText(homeModel.getHomePostDate().toString());
             timestamp.setText(timeago);
 
-            StorageReference profileRef = storageReference.child("ProfileImage/"+homeModel.homeAuthorUid+"/profile.jpg");
+            //vote counter
+            CollectionReference vote = fStore.collection("Post").document(docId.getText().toString())
+                    .collection("vote");
+            AggregateQuery Upvotecount = vote.whereEqualTo("Upvote", true).count();
+            AggregateQuery Downvotecount = vote.whereEqualTo("Downvote", true).count();
+            Upvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
+                    AggregateQuerySnapshot snapshot = task.getResult();
+                    if (snapshot.getCount() != 0) {
+                        upvotecount.setText("" + snapshot.getCount());
+                    }else {
+                        upvotecount.setText("Upvote");
+                    }
+                }
+            });
+            Downvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
+                    AggregateQuerySnapshot snapshot = task.getResult();
+                    if (snapshot.getCount() != 0){
+                        downvotecount.setText(""+snapshot.getCount());
+                    }else {
+                        downvotecount.setText("Downvote");
+                    }
+                }
+            });
+
+            //vote history for logged in user
+            if (user != null && !user.isAnonymous()) {
+                DocumentReference documentReference = fStore.collection("Post").document(docId.getText().toString()).collection("vote")
+                        .document(user.getUid());
+                documentReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                        if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
+                            upvote.setChecked(true);
+                            downvote.setChecked(false);
+                        }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
+                            downvote.setChecked(true);
+                            upvote.setChecked(false);
+                        }else{
+                            upvote.setChecked(false);
+                            downvote.setChecked(false);
+                        }
+                    }
+                });
+            }
+
+            //place vote
+            if (user != null && !user.isAnonymous()) {
+                upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        if (isChecked) {
+                            Map<String, Object> vote = new HashMap<>();
+                            vote.put("Upvote", true);
+
+                            fStore.collection("Post").document(docId.getText().toString()).collection("vote")
+                                    .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    });
+                        }else if (!upvote.isChecked() && !downvote.isChecked()){
+                            fStore.collection("Post").document(docId.getText().toString()).collection("vote")
+                                    .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    });
+                        }
+                    }
+                });
+
+                downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        if (isChecked) {
+                            Map<String, Object> vote = new HashMap<>();
+                            vote.put("Downvote", true);
+
+                            fStore.collection("Post").document(docId.getText().toString()).collection("vote")
+                                    .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    });
+                        }else if (!upvote.isChecked() && !downvote.isChecked()){
+                            fStore.collection("Post").document(docId.getText().toString()).collection("vote")
+                                    .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    });
+                        }
+                    }
+                });
+            } else{
+                upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        ShowPopup();
+                        upvote.setChecked(false);
+                        downvote.setChecked(false);
+                    }
+                });
+
+                downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        ShowPopup();
+                        upvote.setChecked(false);
+                        downvote.setChecked(false);
+                    }
+                });
+            }
+
+            //profile image per post
+            StorageReference profileRef = storageReference.child("ProfileImage/"+authorUid.getText().toString()+"/profile.jpg");
             profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
                     Picasso.get().load(uri).into(prof_img);
                 }
             });
-
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showProgressDialog();
+        if (isNetworkAvailable()){
+            //profile details
+            adapter.startListening();
+            if (user != null && !user.isAnonymous()) {
+                StorageReference profileRef = storageReference.child("ProfileImage/"+fAuth.getCurrentUser().getUid()+"/profile.jpg");
+                profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.get().load(uri).into(prof_img);
+                        hideProgressDialog();
+                        hideEmptyView();
+                    }
+
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        showEmptyView();
+                    }
+                });
+
+            } else {
+                signInAnonymously();
+            }
+        }else {
+            hideProgressDialog();
+            showEmptyView();
+        }
+
+    }
+    private void signInAnonymously() {
+        fAuth.signInAnonymously().addOnSuccessListener(this, new  OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        adapter.startListening();
+                        hideProgressDialog();
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        showEmptyView();
+                    }
+                });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (adapter != null) {
+            adapter.stopListening();
+        }
+    }
+
+    public void ShowPopup(){
+        Button registerbutton, loginButton;
+        NeumorphFloatingActionButton close_popup;
+        guestDialog.setContentView(R.layout.custom_popup_guest);
+
+        close_popup = (NeumorphFloatingActionButton) guestDialog.findViewById(R.id.close_popup);
+        loginButton = (Button) guestDialog.findViewById(R.id.loginButton);
+        registerbutton = (Button) guestDialog.findViewById(R.id.registerbutton);
+
+        close_popup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                guestDialog.dismiss();
+            }
+        });
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), Login.class));
+            }
+        });
+        registerbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), Register.class));
+            }
+        });
+        guestDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        guestDialog.show();
+    }
+
+    //loading and error view
+    public void showProgressDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View v = LayoutInflater.from(this).inflate(R.layout.progress_layout, null,false);
+        builder.setView(v);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+    public void hideProgressDialog(){
+        dialog.dismiss();
+    }
+    public void showEmptyView(){
+        emptyView.setVisibility(View.VISIBLE);
+        activityHome.setVisibility(View.GONE);
+    }
+    public void hideEmptyView(){
+        emptyView.setVisibility(View.GONE);
+        activityHome.setVisibility(View.VISIBLE);
+    }
+
+    //check connection
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
 }

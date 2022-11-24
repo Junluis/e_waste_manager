@@ -75,7 +75,9 @@ public class UserProfilePage extends AppCompatActivity {
                     prof_bio.setVisibility(View.GONE);
                 }
 
-                if(Objects.equals(documentSnapShot.getString("Partner"), "0")){
+                if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
+                    partnerBadge.setVisibility(View.VISIBLE);
+                } else{
                     partnerBadge.setVisibility(View.GONE);
                 }
             }
