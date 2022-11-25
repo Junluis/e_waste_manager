@@ -18,6 +18,7 @@
         <!-- Optional: set the status bar light and content dark. -->
         <item name="android:windowLightStatusBar">true</item>
         <!-- Customize your theme here. -->
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="CustomShapeAppearance">

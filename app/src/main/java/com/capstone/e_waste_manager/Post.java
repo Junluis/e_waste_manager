@@ -206,46 +206,39 @@ public class Post extends AppCompatActivity {
                 postlink.requestFocus();
             }
         });
-        String name = user.getDisplayName();
 
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(fAuth.getCurrentUser()!=null){
-
-                    uploadData();
-                    Toast.makeText(Post.this, "Logged in "+name, Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(Post.this, "Not Logged in", Toast.LENGTH_SHORT).show();
-                }
+                uploadData();
             }
+        });
+    }
 
-            private void uploadData() {
+    private void uploadData() {
 
-                fStore.collection("Users").document(userID).get().addOnCompleteListener(task -> {
-                            if (task.isSuccessful() && task.getResult() != null){
-                                String username = task.getResult().getString("Username");
-                                Map<String, Object> doc = new HashMap<>();
-                                doc.put("homeTitle", postTitle.getText().toString().trim());
-                                doc.put("homeBody", postBody.getText().toString().trim());
-                                doc.put("homeAuthor", username);
-                                doc.put("homeAuthorUid", fAuth.getCurrentUser().getUid());
-                                doc.put("homePostDate", FieldValue.serverTimestamp());
+        fStore.collection("Users").document(userID).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null){
+                String username = task.getResult().getString("Username");
+                Map<String, Object> doc = new HashMap<>();
+                doc.put("homeTitle", postTitle.getText().toString().trim());
+                doc.put("homeBody", postBody.getText().toString().trim());
+                doc.put("homeAuthor", username);
+                doc.put("homeAuthorUid", fAuth.getCurrentUser().getUid());
+                doc.put("homePostDate", FieldValue.serverTimestamp());
 
-                                fStore.collection("Post").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                                        postBody.setText("");
-                                        postTitle.setText("");
-                                        Toast.makeText(Post.this, "Post Successful", Toast.LENGTH_SHORT).show();
-                                        onBackPressed();
-                                    }
-                                });
-                            }else{
-                                Toast.makeText(Post.this, "Error Getting User Data", Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
-                        });
+                fStore.collection("Post").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        postBody.setText("");
+                        postTitle.setText("");
+                        Toast.makeText(Post.this, "Post Successful", Toast.LENGTH_SHORT).show();
+                        onBackPressed();
+                    }
+                });
+            }else{
+                Toast.makeText(Post.this, "Error Getting User Data", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }
@@ -270,9 +263,4 @@ public class Post extends AppCompatActivity {
         }.start();
 
     }
-
-
-
-
-
 }

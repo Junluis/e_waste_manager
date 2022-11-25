@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -426,9 +427,11 @@ public class Register extends AppCompatActivity {
                 if(regLastName.getText().toString().length() == 0)
                     regLastName.setText("");
                 regLastName.requestFocus();
+            }else if(!isNetworkAvailable()){
+                startActivity(new Intent(getApplicationContext(), NoConnection.class));
+                finish();
             }else{
                 regdateOfBirth.clearFocus();
-                Toast.makeText(Register.this, regdateOfBirth.getText().toString(), Toast.LENGTH_SHORT).show();
                 fAuth.createUserWithEmailAndPassword(regEmail.getText().toString(), regPassword.getText().toString())
                         .addOnSuccessListener(authResult -> {
                             FirebaseUser user = fAuth.getCurrentUser();
@@ -447,5 +450,11 @@ public class Register extends AppCompatActivity {
                         }).addOnFailureListener(e -> Toast.makeText(Register.this, "Failed to Create Account", Toast.LENGTH_SHORT).show());
             }
         });
+    }
+
+    //check connection
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

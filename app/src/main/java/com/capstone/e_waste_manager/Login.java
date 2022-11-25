@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -130,7 +131,11 @@ public class Login extends AppCompatActivity {
                     if(loginPassword.getText().toString().length() == 0)
                         loginPassword.setText("");
                     loginPassword.requestFocus();
-                } else if(valid){
+                } else if(!isNetworkAvailable()){
+                    startActivity(new Intent(getApplicationContext(), NoConnection.class));
+                    finish();
+                } else {
+
                     fAuth.signInWithEmailAndPassword(loginEmail.getText().toString(), loginPassword.getText().toString())
                             .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                 @Override
@@ -144,8 +149,6 @@ public class Login extends AppCompatActivity {
                                     Toast.makeText(Login.this, "Login failed. Your email or password is incorrect. Please try again", Toast.LENGTH_SHORT).show();
                                 }
                             });
-                }else {
-                    Toast.makeText(Login.this, "test", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -176,6 +179,13 @@ public class Login extends AppCompatActivity {
         if(FirebaseAuth.getInstance().getCurrentUser() !=null && !FirebaseAuth.getInstance().getCurrentUser().isAnonymous()){
             startActivity(new Intent(getApplicationContext(), Home.class));
             finish();
+        }else{
+            FirebaseAuth.getInstance().signOut();
         }
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

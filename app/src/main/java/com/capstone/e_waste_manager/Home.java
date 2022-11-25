@@ -270,7 +270,6 @@ public class Home extends AppCompatActivity{
                         {
                             if (user != null && !user.isAnonymous()) {
                                 startActivity(new Intent(Home.this, UserProfilePage.class));
-                                drawerLayout.closeDrawer(GravityCompat.END);
                             } else{
                                 ShowPopup();
                             }
@@ -280,7 +279,6 @@ public class Home extends AppCompatActivity{
                         {
                             if (user != null && !user.isAnonymous()) {
                                 startActivity(new Intent(Home.this, Notification.class));
-                                drawerLayout.closeDrawer(GravityCompat.END);
                             } else{
                                 ShowPopup();
                             }
@@ -334,14 +332,12 @@ public class Home extends AppCompatActivity{
                     case R.id.disposal:
                     {
                         startActivity(new Intent(Home.this, DisposalLocation.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
                         break;
                     }
                     case R.id.donate:
                     {
                         if (user != null && !user.isAnonymous()) {
                             startActivity(new Intent(Home.this, Donate.class));
-                            drawerLayout.closeDrawer(GravityCompat.START);
                         } else{
                             ShowPopup();
                         }
@@ -389,13 +385,13 @@ public class Home extends AppCompatActivity{
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onRefresh() {
+                homeRecycler.setAdapter(null);
+                homeRecycler.setAdapter(adapter);
+                adapter.startListening();
                 adapter.notifyDataSetChanged();
                 swipeRefresh.setRefreshing(false);
             }
         });
-
-
-
     }
 
     //forum
@@ -450,8 +446,10 @@ public class Home extends AppCompatActivity{
             docId.setText(homeModel.docId);
             authorUid.setText(homeModel.homeAuthorUid);
             TimeAgo2 timeAgo2 = new TimeAgo2();
-            String timeago = timeAgo2.covertTimeToText(homeModel.getHomePostDate().toString());
-            timestamp.setText(timeago);
+            if(homeModel.getHomePostDate() != null){
+                String timeago = timeAgo2.covertTimeToText(homeModel.getHomePostDate().toString());
+                timestamp.setText(timeago);
+            }
 
             //vote counter
             CollectionReference vote = fStore.collection("Post").document(docId.getText().toString())
@@ -482,25 +480,25 @@ public class Home extends AppCompatActivity{
             });
 
             //vote history for logged in user
-            if (user != null && !user.isAnonymous()) {
-                DocumentReference documentReference = fStore.collection("Post").document(docId.getText().toString()).collection("vote")
-                        .document(user.getUid());
-                documentReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                        if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
-                            upvote.setChecked(true);
-                            downvote.setChecked(false);
-                        }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
-                            downvote.setChecked(true);
-                            upvote.setChecked(false);
-                        }else{
-                            upvote.setChecked(false);
-                            downvote.setChecked(false);
-                        }
-                    }
-                });
-            }
+//            if (user != null && !user.isAnonymous()) {
+//                DocumentReference documentReference = fStore.collection("Post").document(docId.getText().toString()).collection("vote")
+//                        .document(user.getUid());
+//                documentReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+//                        if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
+//                            upvote.setChecked(true);
+//                            downvote.setChecked(false);
+//                        }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
+//                            downvote.setChecked(true);
+//                            upvote.setChecked(false);
+//                        }else{
+//                            upvote.setChecked(false);
+//                            downvote.setChecked(false);
+//                        }
+//                    }
+//                });
+//            }
 
             //place vote
             if (user != null && !user.isAnonymous()) {
@@ -529,7 +527,6 @@ public class Home extends AppCompatActivity{
                         }
                     }
                 });
-
                 downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -594,6 +591,8 @@ public class Home extends AppCompatActivity{
             //profile details
             adapter.startListening();
             if (user != null && !user.isAnonymous()) {
+                String name = user.getUid();
+                Toast.makeText(Home.this, "Logged in "+name, Toast.LENGTH_SHORT).show();
                 StorageReference profileRef = storageReference.child("ProfileImage/"+fAuth.getCurrentUser().getUid()+"/profile.jpg");
                 profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override

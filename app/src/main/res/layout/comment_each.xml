@@ -126,7 +126,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/commentBody">
 
                 <ToggleButton
-                    android:id="@+id/upvote"
+                    android:id="@+id/upvotecomment"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center"
@@ -144,7 +144,7 @@
                     android:textStyle="bold" />
 
                 <ToggleButton
-                    android:id="@+id/downvote"
+                    android:id="@+id/downvotecomment"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center"
@@ -251,35 +251,28 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerVertical="true"
                 android:backgroundTint="@color/darkgray"
+                android:visibility="gone"
                 android:text="Reply"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:visibility="gone"
                 app:cornerRadius="300dp"
                 app:layout_constraintBottom_toBottomOf="@+id/tilpReply"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tilpReply" />
 
-<!--            <LinearLayout-->
-<!--                android:id="@+id/replyLinearLayout"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                android:layout_marginTop="10dp"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/tilpReply" />-->
-
-<!--            <androidx.recyclerview.widget.RecyclerView-->
-<!--                android:id="@+id/replyRecycler"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="10dp"-->
-<!--                tools:listitem="@layout/reply_each"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/tilpReply" />-->
-
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/replyCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:text="reply"
+                android:textAllCaps="false"
+                android:textColor="@color/blue"
+                app:cornerRadius="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout7"
+                app:layout_constraintTop_toBottomOf="@+id/tilpReply" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

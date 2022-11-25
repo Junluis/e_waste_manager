@@ -8,6 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -56,6 +62,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import soup.neumorphism.NeumorphFloatingActionButton;
+
 public class HomeView extends AppCompatActivity {
 
     ImageButton bckBtn;
@@ -69,23 +77,27 @@ public class HomeView extends AppCompatActivity {
     String userID;
     FirebaseUser user;
     SwipeRefreshLayout swipeRefresh;
-    LinearLayoutManager linearLayoutManager, linearLayoutManager2;
-    FirestoreRecyclerAdapter adapter;
+    LinearLayoutManager linearLayoutManager;
+    FirestoreRecyclerAdapter adapter2;
     StorageReference storageReference;
     ToggleButton upvote, downvote;
+
+    AlertDialog dialog;
+    Dialog guestDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_view);
 
-        // comment try
+        //firebase
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         userID = fAuth.getCurrentUser().getUid();
         user = fAuth.getCurrentUser();
 
+        //post
         pTitle = findViewById(R.id.pTitle);
         pAuthor = findViewById(R.id.pAuthor);
         pAuthorUid = findViewById(R.id.pAuthorUid);
@@ -94,135 +106,162 @@ public class HomeView extends AppCompatActivity {
         ptimestamp = findViewById(R.id.ptimestamp);
         prof_img = findViewById(R.id.prof_img);
         swipeRefresh = findViewById(R.id.swipeRefresh);
+
+        //comments
         pComment = findViewById(R.id.pComment);
         commentBtn = findViewById(R.id.commentBtn);
         bckBtn = findViewById(R.id.bckBtn);
         commentRecycler = findViewById(R.id.commentRecycler);
 
-
+        //votes
         upvotecount = findViewById(R.id.upvotecount);
         downvotecount = findViewById(R.id.downvotecount);
         upvote = findViewById(R.id.upvote);
         downvote = findViewById(R.id.downvote);
 
-
+        //model
         HomeModel model = (HomeModel) getIntent().getSerializableExtra("model");
 
-
+        //back
         bckBtn.setOnClickListener(v -> finish());
 
+        //Guest dialog
+        guestDialog = new Dialog(this);
+
+
+        //post comment
         commentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                adapter.stopListening();
-                DocumentReference documentReference = fStore.collection("Post").document(model.docId);
-                fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        String username = task.getResult().getString("Username");
-                        Map<String, Object> comment = new HashMap<>();
-                        comment.put("commentUid", userID);
-                        comment.put("commentAuthor", username);
-                        comment.put("commentBody", pComment.getText().toString());
-                        comment.put("commentPostDate", FieldValue.serverTimestamp());
+                if (user != null && !user.isAnonymous()) {
+                    adapter2.stopListening();
+                    DocumentReference documentReference = fStore.collection("Post").document(model.docId);
+                    fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            String username = task.getResult().getString("Username");
+                            Map<String, Object> comment = new HashMap<>();
+                            comment.put("commentUid", userID);
+                            comment.put("commentAuthor", username);
+                            comment.put("commentBody", pComment.getText().toString());
+                            comment.put("commentPostDate", FieldValue.serverTimestamp());
 
-                        documentReference.collection("comment").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentReference> task) {
-                                Toast.makeText(HomeView.this, "Comment Success", Toast.LENGTH_SHORT).show();
-                                pComment.setText("");
-                                adapter.startListening();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(HomeView.this, "Comment Failed", Toast.LENGTH_SHORT).show();
-                                pComment.setText("");
-                            }
-                        });
-                    }
-                });
-
-            }
-        });
-
-        //vote system
-        DocumentReference documentReference = fStore.collection("Post").document(model.docId).collection("vote")
-                .document(fAuth.getCurrentUser().getUid());
-        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
-                    upvote.setChecked(true);
-                    downvote.setChecked(false);
-                }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
-                    downvote.setChecked(true);
-                    upvote.setChecked(false);
+                            documentReference.collection("comment").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentReference> task) {
+                                    Toast.makeText(HomeView.this, "Comment Success", Toast.LENGTH_SHORT).show();
+                                    pComment.setText("");
+                                    adapter2.startListening();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(HomeView.this, "Comment Failed", Toast.LENGTH_SHORT).show();
+                                    pComment.setText("");
+                                }
+                            });
+                        }
+                    });
                 }else{
+                    ShowPopup();
+                }
+            }
+        });
+
+        //vote system
+        if (user != null && !user.isAnonymous()) {
+            DocumentReference documentReference = fStore.collection("Post").document(model.docId).collection("vote")
+                    .document(fAuth.getCurrentUser().getUid());
+            documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                    if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))) {
+                        upvote.setChecked(true);
+                        downvote.setChecked(false);
+                    } else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))) {
+                        downvote.setChecked(true);
+                        upvote.setChecked(false);
+                    } else {
+                        upvote.setChecked(false);
+                        downvote.setChecked(false);
+                    }
+                }
+            });
+        }
+        if (user != null && !user.isAnonymous()) {
+            upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    if (isChecked) {
+                        Map<String, Object> vote = new HashMap<>();
+                        vote.put("Upvote", true);
+
+                        fStore.collection("Post").document(model.docId).collection("vote")
+                                .document(fAuth.getCurrentUser().getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        votecounter();
+                                        adapter2.notifyDataSetChanged();
+                                    }
+                                });
+                    } else if (!upvote.isChecked() && !downvote.isChecked()) {
+                        fStore.collection("Post").document(model.docId).collection("vote")
+                                .document(fAuth.getCurrentUser().getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        votecounter();
+                                        adapter2.notifyDataSetChanged();
+                                    }
+                                });
+                    }
+                }
+            });
+            downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    if (isChecked) {
+                        Map<String, Object> vote = new HashMap<>();
+                        vote.put("Downvote", true);
+
+                        fStore.collection("Post").document(model.docId).collection("vote")
+                                .document(fAuth.getCurrentUser().getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        votecounter();
+                                    }
+                                });
+                    } else if (!upvote.isChecked() && !downvote.isChecked()) {
+                        fStore.collection("Post").document(model.docId).collection("vote")
+                                .document(fAuth.getCurrentUser().getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        votecounter();
+                                    }
+                                });
+                    }
+                }
+            });
+        } else{
+            upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    ShowPopup();
                     upvote.setChecked(false);
                     downvote.setChecked(false);
                 }
-            }
-        });
+            });
 
-
-        upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked) {
-                    Map<String, Object> vote = new HashMap<>();
-                    vote.put("Upvote", true);
-
-                    fStore.collection("Post").document(model.docId).collection("vote")
-                            .document(fAuth.getCurrentUser().getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    votecounter();
-                                    adapter.notifyDataSetChanged();
-                                }
-                            });
-                }else if (!upvote.isChecked() && !downvote.isChecked()){
-                    fStore.collection("Post").document(model.docId).collection("vote")
-                            .document(fAuth.getCurrentUser().getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    votecounter();
-                                    adapter.notifyDataSetChanged();
-                                }
-                            });
+            downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    ShowPopup();
+                    upvote.setChecked(false);
+                    downvote.setChecked(false);
                 }
-            }
-        });
-
-        downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked) {
-                    Map<String, Object> vote = new HashMap<>();
-                    vote.put("Downvote", true);
-
-                    fStore.collection("Post").document(model.docId).collection("vote")
-                            .document(fAuth.getCurrentUser().getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    votecounter();
-                                    adapter.notifyDataSetChanged();
-                                }
-                            });
-                }else if (!upvote.isChecked() && !downvote.isChecked()){
-                    fStore.collection("Post").document(model.docId).collection("vote")
-                            .document(fAuth.getCurrentUser().getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    votecounter();
-                                    adapter.notifyDataSetChanged();
-                                }
-                            });
-                }
-            }
-        });
+            });
+        }
         //vote system
 
-
+        //model post
         pTitle.setText(model.getHomeTitle());
         pAuthor.setText(model.getHomeAuthor());
         pAuthorUid.setText(model.homeAuthorUid);
@@ -240,18 +279,10 @@ public class HomeView extends AppCompatActivity {
             }
         });
 
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            public void onRefresh() {
-                adapter.notifyDataSetChanged();
-                votecounter();
-                swipeRefresh.setRefreshing(false);
-            }
-        });
-
+        //count votes
         votecounter();
 
+        //comment recycler
         commentRecycler = findViewById(R.id.commentRecycler);
         linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         commentRecycler.setLayoutManager(linearLayoutManager);
@@ -267,7 +298,7 @@ public class HomeView extends AppCompatActivity {
                 .setQuery(query, CommentModel.class)
                 .build();
 
-        adapter = new FirestoreRecyclerAdapter<CommentModel, ViewHolder>(options) {
+        adapter2 = new FirestoreRecyclerAdapter<CommentModel, ViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull CommentModel model) {
                 holder.bind(model);
@@ -282,35 +313,32 @@ public class HomeView extends AppCompatActivity {
             }
         };
 
-        commentRecycler.setAdapter(adapter);
+        commentRecycler.setAdapter(adapter2);
 
-    }
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onRefresh() {
+                commentRecycler.setAdapter(null);
+                commentRecycler.setAdapter(adapter2);
+                adapter2.startListening();
+                adapter2.notifyDataSetChanged();
+                votecounter();
+                swipeRefresh.setRefreshing(false);
+            }
+        });
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        if (adapter != null) {
-            adapter.stopListening();
-        }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
-        TextView author, body, authorUid, docId, timestamp, pReply, upvotecount, downvotecount;
+        TextView author, body, authorUid, docId, timestamp, pReply, upvotecountcomment, downvotecountcomment;
         TextInputLayout tilpReply;
-        ImageView prof_img;
+        ImageView prof_imgreply;
         Chip replyChip;
-        ToggleButton upvote, downvote;
+        ToggleButton upvotecomment, downvotecomment;
         ToggleButton replypop;
         Button replyBtn;
         CommentModel model;
-        
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -319,19 +347,17 @@ public class HomeView extends AppCompatActivity {
             docId = itemView.findViewById(R.id.docId);
             authorUid = itemView.findViewById(R.id.commentAuthorUid);
             timestamp = itemView.findViewById(R.id.timestamp);
-            prof_img = itemView.findViewById(R.id.prof_img);
+            prof_imgreply = itemView.findViewById(R.id.prof_img);
             replypop = itemView.findViewById(R.id.replypop);
             tilpReply = itemView.findViewById(R.id.tilpReply);
             replyBtn = itemView.findViewById(R.id.replyBtn);
             replyChip = itemView.findViewById(R.id.replyChip);
             pReply = itemView.findViewById(R.id.pReply);
 
-            upvote = itemView.findViewById(R.id.upvote);
-            downvote = itemView.findViewById(R.id.downvote);
-            upvotecount = itemView.findViewById(R.id.upvotecount);
-            downvotecount = itemView.findViewById(R.id.downvotecount);
-
-//            replyRecycler = itemView.findViewById(R.id.replyRecycler);
+            upvotecomment = itemView.findViewById(R.id.upvotecomment);
+            downvotecomment = itemView.findViewById(R.id.downvotecomment);
+            upvotecountcomment = itemView.findViewById(R.id.upvotecount);
+            downvotecountcomment = itemView.findViewById(R.id.downvotecount);
 
             replyChip.setOnCloseIconClickListener(new View.OnClickListener() {
                 @Override
@@ -359,6 +385,15 @@ public class HomeView extends AppCompatActivity {
                     }
                 }
             });
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(itemView.getContext(), RepliesView.class);
+                    intent.putExtra("model", model);
+                    itemView.getContext().startActivity(intent);
+                }
+            });
         }
 
         public void bind(CommentModel commentModel){
@@ -368,201 +403,182 @@ public class HomeView extends AppCompatActivity {
             docId.setText(commentModel.docId);
             authorUid.setText(commentModel.commentUid);
             TimeAgo2 timeAgo2 = new TimeAgo2();
-            String timeago = timeAgo2.covertTimeToText(commentModel.getCommentPostDate().toString());
-            timestamp.setText(timeago);
+            if(commentModel.getCommentPostDate() != null){
+                String timeago = timeAgo2.covertTimeToText(commentModel.getCommentPostDate().toString());
+                timestamp.setText(timeago);
+            }
             replyChip.setText("@"+commentModel.commentAuthor);
 
+            upvotecomment.setChecked(false);
+            downvotecomment.setChecked(false);
 
+//            //vote counter
+//            CollectionReference vote = fStore.collection("Post").document(pdocId.getText().toString())
+//                    .collection("comment").document(docId.getText().toString())
+//                    .collection("vote");
+//            AggregateQuery Upvotecount = vote.whereEqualTo("Upvote", true).count();
+//            AggregateQuery Downvotecount = vote.whereEqualTo("Downvote", true).count();
+//            Upvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
+//                    AggregateQuerySnapshot snapshot = task.getResult();
+//                    if (snapshot.getCount() != 0) {
+//                        upvotecountcomment.setText("" + snapshot.getCount());
+//                    }else {
+//                        upvotecountcomment.setText("Upvote");
+//                    }
+//                }
+//            });
+//            Downvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
+//                    AggregateQuerySnapshot snapshot = task.getResult();
+//                    if (snapshot.getCount() != 0){
+//                        downvotecountcomment.setText(""+snapshot.getCount());
+//                    }else {
+//                        downvotecountcomment.setText("Downvote");
+//                    }
+//                }
+//            });
+//
+//            //vote history for logged in user
+//            if (user != null && !user.isAnonymous()) {
+//                DocumentReference documentReference = fStore.collection("Post").document(pdocId.getText().toString())
+//                        .collection("comment").document(docId.getText().toString())
+//                        .collection("vote")
+//                        .document(user.getUid());
+//                documentReference.addSnapshotListener(HomeView.this, new EventListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+//                        if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
+//                            upvotecomment.setChecked(false);
+//                            downvotecomment.setChecked(true);
+//                        }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
+//                            downvotecomment.setChecked(false);
+//                            upvotecomment.setChecked(true);
+//                        }else{
+//                            upvotecomment.setChecked(false);
+//                            downvotecomment.setChecked(false);
+//                        }
+//                    }
+//                });
+//            }
 
-            CollectionReference vote = fStore.collection("Post").document(pdocId.getText().toString())
-                    .collection("comment").document(docId.getText().toString()).collection("vote");
-            AggregateQuery Upvotecount = vote.whereEqualTo("Upvote", true).count();
-            AggregateQuery Downvotecount = vote.whereEqualTo("Downvote", true).count();
-            Upvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
-                    AggregateQuerySnapshot snapshot = task.getResult();
-                    if (snapshot.getCount() != 0) {
-                        upvotecount.setText("" + snapshot.getCount());
-                    }else {
-                        upvotecount.setText("Upvote");
-                    }
-                }
-            });
-            Downvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
-                    AggregateQuerySnapshot snapshot = task.getResult();
-                    if (snapshot.getCount() != 0){
-                        downvotecount.setText(""+snapshot.getCount());
-                    }else {
-                        downvotecount.setText("Downvote");
-                    }
-                }
-            });
+            //place vote
+//            if (user != null && !user.isAnonymous()) {
+//                upvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                    @Override
+//                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+//                        if (isChecked) {
+//                            Map<String, Object> votereply = new HashMap<>();
+//                            votereply.put("Upvote", true);
+//
+//                            fStore.collection("Post").document(pdocId.getText().toString())
+//                                    .collection("comment").document(docId.getText().toString())
+//                                    .collection("vote")
+//                                    .document(user.getUid()).set(votereply).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                        }
+//                                    });
+//                        }else if (!upvotecomment.isChecked() && !downvotecomment.isChecked()){
+//                            fStore.collection("Post").document(pdocId.getText().toString())
+//                                    .collection("comment").document(docId.getText().toString())
+//                                    .collection("vote")
+//                                    .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                            Toast.makeText(HomeView.this, docId.getText().toString(), Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    });
+//                        }
+//                    }
+//                });
+//                downvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                    @Override
+//                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+//                        if (isChecked) {
+//                            Map<String, Object> votereply = new HashMap<>();
+//                            votereply.put("Downvote", true);
+//
+//                            fStore.collection("Post").document(pdocId.getText().toString())
+//                                    .collection("comment").document(docId.getText().toString())
+//                                    .collection("vote")
+//                                    .document(user.getUid()).set(votereply).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                        }
+//                                    });
+//                        }else if (!upvotecomment.isChecked() && !downvotecomment.isChecked()){
+//                            fStore.collection("Post").document(pdocId.getText().toString())
+//                                    .collection("comment").document(docId.getText().toString())
+//                                    .collection("vote")
+//                                    .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                            Toast.makeText(HomeView.this, docId.getText().toString(), Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    });
+//                        }
+//                    }
+//                });
+//            } else{
+//                upvotecomment.setEnabled(false);
+//                downvotecomment.setEnabled(false);
+//            }
 
-            //vote system
-            DocumentReference documentReference = fStore.collection("Post").document(pdocId.getText().toString())
-                    .collection("comment").document(docId.getText().toString()).collection("vote")
-                    .document(fAuth.getCurrentUser().getUid());
-            documentReference.addSnapshotListener(HomeView.this, new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                    if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
-                        upvote.setChecked(true);
-                        downvote.setChecked(false);
-                    }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
-                        downvote.setChecked(true);
-                        upvote.setChecked(false);
-                    }else{
-                        upvote.setChecked(false);
-                        downvote.setChecked(false);
-                    }
-                }
-            });
-
-            upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                    if (isChecked) {
-                        Map<String, Object> vote = new HashMap<>();
-                        vote.put("Upvote", true);
-
-                        fStore.collection("Post").document(pdocId.getText().toString())
-                                .collection("comment").document(docId.getText().toString()).collection("vote")
-                                .document(fAuth.getCurrentUser().getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                });
-                    }else if (!upvote.isChecked() && !downvote.isChecked()){
-                        fStore.collection("Post").document(pdocId.getText().toString())
-                                .collection("comment").document(docId.getText().toString()).collection("vote")
-                                .document(fAuth.getCurrentUser().getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                });
-                    }
-                }
-            });
-
-            downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                    if (isChecked) {
-                        Map<String, Object> vote = new HashMap<>();
-                        vote.put("Downvote", true);
-
-                        fStore.collection("Post").document(pdocId.getText().toString())
-                                .collection("comment").document(docId.getText().toString()).collection("vote")
-                                .document(fAuth.getCurrentUser().getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                });
-                    }else if (!upvote.isChecked() && !downvote.isChecked()){
-                        fStore.collection("Post").document(pdocId.getText().toString())
-                                .collection("comment").document(docId.getText().toString()).collection("vote")
-                                .document(fAuth.getCurrentUser().getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                });
-                    }
-                }
-            });
-            //vote system
-
+            //reply to comment
             replyBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    adapter.stopListening();
-                    DocumentReference documentReference = fStore.collection("Post").document(pdocId.getText().toString())
-                            .collection("comment").document(commentModel.docId);
-                    fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            String username = task.getResult().getString("Username");
-                            Map<String, Object> comment = new HashMap<>();
-                            comment.put("replyAuthorUid", userID);
-                            comment.put("replyAuthor", username);
-                            comment.put("replyBody", pReply.getText().toString());
-                            comment.put("replyChip", commentModel.commentAuthor);
-                            comment.put("replyPostDate", FieldValue.serverTimestamp());
+                    showProgressDialog();
+                    if (user != null && !user.isAnonymous()) {
+                        DocumentReference documentReference = fStore.collection("Post").document(pdocId.getText().toString())
+                                .collection("comment").document(commentModel.docId);
+                        fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                String username = task.getResult().getString("Username");
+                                Map<String, Object> comment = new HashMap<>();
+                                comment.put("replyAuthorUid", userID);
+                                comment.put("replyAuthor", username);
+                                comment.put("replyBody", pReply.getText().toString());
+                                comment.put("replyChip", commentModel.commentAuthor);
+                                comment.put("replyPostDate", FieldValue.serverTimestamp());
 
-                            documentReference.collection("reply").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                    Toast.makeText(HomeView.this, "Comment Success", Toast.LENGTH_SHORT).show();
-                                    pReply.setText("");
-                                    adapter.startListening();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(HomeView.this, "Comment Failed", Toast.LENGTH_SHORT).show();
-                                    pReply.setText("");
-                                }
-                            });
-                        }
-                    });
+                                documentReference.collection("reply").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                                        Toast.makeText(HomeView.this, "Comment Success", Toast.LENGTH_SHORT).show();
+                                        pReply.setText("");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(HomeView.this, "Comment Failed", Toast.LENGTH_SHORT).show();
+                                        pReply.setText("");
+                                        showEmptyView();
+                                    }
+                                });
+                                hideProgressDialog();
+                            }
+                        });
+                    }else{
+                        ShowPopup();
+                    }
 
                 }
             });
 
+            //profile img per post
             StorageReference profileRef = storageReference.child("ProfileImage/"+commentModel.commentUid+"/profile.jpg");
             profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    Picasso.get().load(uri).into(prof_img);
+                    Picasso.get().load(uri).into(prof_imgreply);
                 }
             });
         }
     }
-
-//    class ViewHolder2 extends RecyclerView.ViewHolder{
-//        TextView author, body, authorUid, docId, timestamp, pReply, upvotecount, downvotecount;
-//        ImageView prof_img;
-//        Chip replyChip;
-//        ToggleButton upvote, downvote;
-//        ToggleButton replypop;
-//        ReplyModel model;
-//
-//        public ViewHolder2(@NonNull View itemView) {
-//            super(itemView);
-//            author = itemView.findViewById(R.id.commentAuthor);
-//            body = itemView.findViewById(R.id.commentBody);
-//            docId = itemView.findViewById(R.id.docId);
-//            authorUid = itemView.findViewById(R.id.commentAuthorUid);
-//            timestamp = itemView.findViewById(R.id.timestamp);
-//            prof_img = itemView.findViewById(R.id.prof_img);
-//            replypop = itemView.findViewById(R.id.replypop);
-//            replyChip = itemView.findViewById(R.id.replyChip);
-//            pReply = itemView.findViewById(R.id.pReply);
-//
-//            upvote = itemView.findViewById(R.id.upvote);
-//            downvote = itemView.findViewById(R.id.downvote);
-//            upvotecount = itemView.findViewById(R.id.upvotecount);
-//            downvotecount = itemView.findViewById(R.id.downvotecount);
-//
-//        }
-//
-//        public void bind(ReplyModel replyModel){
-//            model = replyModel;
-//            author.setText(replyModel.replyAuthor);
-//            body.setText(replyModel.replyBody);
-//            docId.setText(replyModel.replydocId);
-//            authorUid.setText(replyModel.replyAuthorUid);
-//            TimeAgo2 timeAgo2 = new TimeAgo2();
-//            String timeago = timeAgo2.covertTimeToText(replyModel.getReplyPostDate().toString());
-//            timestamp.setText(timeago);
-//            replyChip.setText("@"+replyChip);
-//        }
-//    }
 
     public void votecounter(){
         CollectionReference vote = fStore.collection("Post").document(pdocId.getText().toString())
@@ -593,5 +609,85 @@ public class HomeView extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showProgressDialog();
+        if (isNetworkAvailable()){
+            adapter2.startListening();
+            hideProgressDialog();
+        }else{
+            showEmptyView();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (adapter2 != null) {
+            adapter2.stopListening();
+        } else{
+            hideProgressDialog();
+            showEmptyView();
+        }
+    }
+
+    public void ShowPopup(){
+        Button registerbutton, loginButton;
+        NeumorphFloatingActionButton close_popup;
+        guestDialog.setContentView(R.layout.custom_popup_guest);
+
+        close_popup = (NeumorphFloatingActionButton) guestDialog.findViewById(R.id.close_popup);
+        loginButton = (Button) guestDialog.findViewById(R.id.loginButton);
+        registerbutton = (Button) guestDialog.findViewById(R.id.registerbutton);
+
+        close_popup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                guestDialog.dismiss();
+            }
+        });
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), Login.class));
+                finish();
+            }
+        });
+        registerbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), Register.class));
+                finish();
+            }
+        });
+        guestDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        guestDialog.show();
+    }
+
+    //loading and error view
+    public void showProgressDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View v = LayoutInflater.from(this).inflate(R.layout.progress_layout, null,false);
+        builder.setView(v);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+    public void hideProgressDialog(){
+        dialog.dismiss();
+    }
+
+    public void showEmptyView(){
+        startActivity(new Intent(HomeView.this, NoConnection.class));
+        finish();
+    }
+    //check connection
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
 
 }
