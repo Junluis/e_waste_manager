@@ -183,12 +183,13 @@
             android:padding="16dp">
 
             <TextView
+                android:id="@+id/reqeustText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/darkgray"
-                app:drawableTint="@color/darkgray"
                 android:layout_marginHorizontal="20dp"
-                android:text="Join us for our cause. Be part of our partnered Organization. Request for an approval." />
+                android:text="Join us for our cause. Be part of our partnered Organization. Request for an approval."
+                android:textColor="@color/darkgray"
+                app:drawableTint="@color/darkgray" />
 
             <com.google.android.material.button.MaterialButton
                 app:cornerRadius="300dp"

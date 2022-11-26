@@ -60,12 +60,12 @@ public class LearnPost extends AppCompatActivity {
         UploadImage = findViewById(R.id.UploadImage);
         LearnPostCover = findViewById(R.id.LearnPostCover);
 
-
-        if (fAuth.getCurrentUser()!=null){
-
-        }else{
-
-        }
+//
+//        if (fAuth.getCurrentUser()!=null){
+//
+//        }else{
+//
+//        }
 
         UploadImage.setOnClickListener(new View.OnClickListener() {
             @Override

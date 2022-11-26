@@ -38,6 +38,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class Home extends AppCompatActivity implements HomeInterface{
@@ -47,6 +48,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
     ProgressDialog pd;
 
     FirebaseFirestore fStore;
+    FirebaseAuth fAuth;
 
     DrawerLayout drawerLayout;
     SearchView postSearch;
@@ -54,6 +56,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
     ImageButton homeBtnHome, homeBtnPost, homeBtnLearn;
     MaterialButton request;
     ImageView menu_nav, profile_nav;
+    TextView requestText, sign;
     NavigationView navView_profile, navView_menu;
     SwipeRefreshLayout swipeRefresh;
 
@@ -72,6 +75,10 @@ public class Home extends AppCompatActivity implements HomeInterface{
         menu_nav = findViewById(R.id.menu_nav);
         profile_nav = findViewById(R.id.profile_nav);
         postSearch = findViewById(R.id.postSearch);
+        request = findViewById(R.id.request);
+        requestText = findViewById(R.id.reqeustText);
+        sign = findViewById(R.id.signout);
+
 
         menu_nav.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,10 +141,12 @@ public class Home extends AppCompatActivity implements HomeInterface{
         homeBtnLearn = findViewById(R.id.homeBtnLearn);
         signout = findViewById(R.id.signout);
         swipeRefresh = findViewById(R.id.swipeRefresh);
+        requestText = findViewById(R.id.reqeustText);
 
         homeBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
         homeBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
         homeBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
+        request.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Request.class)));
 
         signout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,6 +163,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
         pd.show();
 
         fStore = FirebaseFirestore.getInstance();
+        fAuth = FirebaseAuth.getInstance();
         homeModelsArrayList = new ArrayList<HomeModel>();
         homeAdapter = new HomeAdapter(Home.this, homeModelsArrayList, this);
 
@@ -167,6 +177,7 @@ public class Home extends AppCompatActivity implements HomeInterface{
         mLayoutManager.setStackFromEnd(true);
         homeRecycler.setLayoutManager(mLayoutManager);
 
+        UserCheck();
         EventChangeListener();
 
         //swipe up to refresh.. not really needed firebase is already in real time
@@ -224,5 +235,26 @@ public class Home extends AppCompatActivity implements HomeInterface{
         super.onRestart();
         homeModelsArrayList.clear();
         EventChangeListener();
+    }
+
+    private void UserCheck() {
+        if (fAuth.getCurrentUser()!=null){
+            fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult()!=null){
+                            String id = task.getResult().getString("Partner");
+                            if(Objects.equals(id, "1")){
+                                request.setVisibility(View.GONE);
+                                requestText.setVisibility(View.GONE);
+                            }
+                        }else{
+                            request.setVisibility(View.VISIBLE);
+                        }
+                    });
+        }else{
+            sign.setText("Sign In");
+
+        }
+
     }
 }

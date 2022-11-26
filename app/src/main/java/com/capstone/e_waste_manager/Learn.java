@@ -12,14 +12,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Learn extends AppCompatActivity implements LearnInterface{
 
@@ -32,6 +36,7 @@ public class Learn extends AppCompatActivity implements LearnInterface{
     ProgressDialog pd;
 
     FirebaseFirestore fStore;
+    FirebaseAuth fAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +63,7 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         pd.show();
 
         fStore = FirebaseFirestore.getInstance();
+        fAuth = FirebaseAuth.getInstance();
         learnModelArrayList = new ArrayList<LearnModel>();
         learnAdapter = new LearnAdapter(Learn.this, learnModelArrayList, this);
 
@@ -65,8 +71,29 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         learnRecycler.setHasFixedSize(true);
         learnRecycler.setLayoutManager(new LinearLayoutManager(this));
         learnRecycler.setAdapter(learnAdapter);
+        addButton.setVisibility(View.GONE);
 
+        UserCheck();
         EventChangeListener();
+    }
+
+    private void UserCheck() {
+        if (fAuth.getCurrentUser()!=null){
+            fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult()!=null){
+                            String id = task.getResult().getString("Partner");
+                            if(Objects.equals(id, "1")){
+                                addButton.setVisibility(View.VISIBLE);
+                            }
+                        }else{
+                            addButton.setVisibility(View.GONE);
+                        }
+                    });
+        }else{
+
+        }
+
     }
 
     private void EventChangeListener() {

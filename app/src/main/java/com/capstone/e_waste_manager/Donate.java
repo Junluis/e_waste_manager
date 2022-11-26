@@ -18,7 +18,7 @@ public class Donate extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donate);
 
-        closedd = findViewById(R.id.closedd);
+        closedd = findViewById(R.id.closedr);
         regNext = findViewById(R.id.regNext);
 
         closedd.setOnClickListener(new View.OnClickListener() {
