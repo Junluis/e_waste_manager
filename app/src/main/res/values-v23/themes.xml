@@ -19,6 +19,8 @@
         <item name="android:windowLightStatusBar">true</item>
         <!-- Customize your theme here. -->
         <item name="android:windowIsTranslucent">true</item>
+
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
     </style>
 
     <style name="CustomShapeAppearance">
@@ -30,6 +32,14 @@
         <item name="neumorph_cornerSizeTopRight">16dp</item>
         <item name="neumorph_cornerSizeBottomLeft">16dp</item>
         <item name="neumorph_cornerSizeBottomRight">16dp</item>
+    </style>
+
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@color/transparent</item>
     </style>
 
 </resources>

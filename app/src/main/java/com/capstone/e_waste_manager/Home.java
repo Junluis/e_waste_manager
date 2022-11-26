@@ -385,6 +385,24 @@ public class Home extends AppCompatActivity{
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onRefresh() {
+                if (user != null && !user.isAnonymous()) {
+                    StorageReference profileRef = storageReference.child("ProfileImage/" + fAuth.getCurrentUser().getUid() + "/profile.jpg");
+                    profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            View hView = navView_profile.getHeaderView(0);
+                            ImageView prof_img_header = (ImageView) hView.findViewById(R.id.prof_img);
+                            Picasso.get().load(uri).into(prof_img);
+                            Picasso.get().load(uri).into(prof_img_header);
+                        }
+
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            hideProgressDialog();
+                        }
+                    });
+                }
                 homeRecycler.setAdapter(null);
                 homeRecycler.setAdapter(adapter);
                 adapter.startListening();
@@ -480,25 +498,25 @@ public class Home extends AppCompatActivity{
             });
 
             //vote history for logged in user
-//            if (user != null && !user.isAnonymous()) {
-//                DocumentReference documentReference = fStore.collection("Post").document(docId.getText().toString()).collection("vote")
-//                        .document(user.getUid());
-//                documentReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-//                        if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
-//                            upvote.setChecked(true);
-//                            downvote.setChecked(false);
-//                        }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
-//                            downvote.setChecked(true);
-//                            upvote.setChecked(false);
-//                        }else{
-//                            upvote.setChecked(false);
-//                            downvote.setChecked(false);
-//                        }
-//                    }
-//                });
-//            }
+            if (user != null && !user.isAnonymous()) {
+                DocumentReference documentReference = fStore.collection("Post").document(docId.getText().toString()).collection("vote")
+                        .document(user.getUid());
+                documentReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                        if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
+                            upvote.setChecked(true);
+                            downvote.setChecked(false);
+                        }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
+                            downvote.setChecked(true);
+                            upvote.setChecked(false);
+                        }else{
+                            upvote.setChecked(false);
+                            downvote.setChecked(false);
+                        }
+                    }
+                });
+            }
 
             //place vote
             if (user != null && !user.isAnonymous()) {
@@ -585,7 +603,6 @@ public class Home extends AppCompatActivity{
 
     @Override
     protected void onStart() {
-        super.onStart();
         showProgressDialog();
         if (isNetworkAvailable()){
             //profile details
@@ -605,7 +622,7 @@ public class Home extends AppCompatActivity{
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        showEmptyView();
+                        hideProgressDialog();
                     }
                 });
 
@@ -616,8 +633,20 @@ public class Home extends AppCompatActivity{
             hideProgressDialog();
             showEmptyView();
         }
+        super.onStart();
 
     }
+
+    @Override
+    protected void onStop() {
+        if (adapter != null) {
+            adapter.stopListening();
+        }
+        super.onStop();
+    }
+
+
+
     private void signInAnonymously() {
         fAuth.signInAnonymously().addOnSuccessListener(this, new  OnSuccessListener<AuthResult>() {
                     @Override
@@ -632,14 +661,6 @@ public class Home extends AppCompatActivity{
                         showEmptyView();
                     }
                 });
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (adapter != null) {
-            adapter.stopListening();
-        }
     }
 
     public void ShowPopup(){

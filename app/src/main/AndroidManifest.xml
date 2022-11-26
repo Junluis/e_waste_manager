@@ -18,13 +18,11 @@
         android:theme="@style/Theme.E_waste_manager"
         tools:targetApi="31">
         <activity
-            android:name=".RepliesView"
-            android:exported="false" />
-        <activity
             android:name=".NoConnection"
             android:exported="false" />
         <activity
             android:name=".EditProfile"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
             android:name=".HomeView"

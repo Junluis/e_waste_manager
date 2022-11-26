@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/whitebg"
+    android:paddingTop="30dp"
     app:layoutDescription="@xml/activity_user_profile_page_scene"
     tools:context=".UserProfilePage">
 

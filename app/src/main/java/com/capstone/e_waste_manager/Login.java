@@ -162,12 +162,16 @@ public class Login extends AppCompatActivity {
                 Log.d("TAG", "onSuccess: "+ documentSnapshot.getData());
 
                 if(Objects.equals(documentSnapshot.getString("Partner"), "0")){
-                    startActivity(new Intent(getApplicationContext(), Home.class));
-                    finish();
+                    Intent intent = new Intent(getApplicationContext(), Home.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
                 if(Objects.equals(documentSnapshot.getString("Partner"), "1")){
-                    startActivity(new Intent(getApplicationContext(), Home.class));
-                    finish();
+                    Intent intent = new Intent(getApplicationContext(), Home.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             }
         });

@@ -30,6 +30,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.capstone.e_waste_manager.Class.TimeAgo2;
+import com.capstone.e_waste_manager.Fragments.RepliesToComment;
 import com.capstone.e_waste_manager.model.ReplyModel;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -331,13 +332,14 @@ public class HomeView extends AppCompatActivity {
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
-        TextView author, body, authorUid, docId, timestamp, pReply, upvotecountcomment, downvotecountcomment;
+        TextView author, body, authorUid, docId, timestamp, upvotecountcomment, downvotecountcomment;
+        EditText pReply;
         TextInputLayout tilpReply;
         ImageView prof_imgreply;
         Chip replyChip;
         ToggleButton upvotecomment, downvotecomment;
         ToggleButton replypop;
-        Button replyBtn;
+        Button replyBtn, replyCount;
         CommentModel model;
 
         public ViewHolder(@NonNull View itemView) {
@@ -351,6 +353,7 @@ public class HomeView extends AppCompatActivity {
             replypop = itemView.findViewById(R.id.replypop);
             tilpReply = itemView.findViewById(R.id.tilpReply);
             replyBtn = itemView.findViewById(R.id.replyBtn);
+            replyCount = itemView.findViewById(R.id.replyCount);
             replyChip = itemView.findViewById(R.id.replyChip);
             pReply = itemView.findViewById(R.id.pReply);
 
@@ -366,32 +369,43 @@ public class HomeView extends AppCompatActivity {
                     replyBtn.setVisibility(View.GONE);
                     replyChip.setVisibility(View.GONE);
                     replypop.setChecked(false);
+                    pReply.setText("");
                 }
             });
 
             replypop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (b){
-                        tilpReply.setVisibility(View.VISIBLE);
-                        replyBtn.setVisibility(View.VISIBLE);
-                        replyChip.setVisibility(View.VISIBLE);
-                        replypop.setVisibility(View.GONE);
-                    }else{
-                        tilpReply.setVisibility(View.GONE);
-                        replyBtn.setVisibility(View.GONE);
-                        replyChip.setVisibility(View.GONE);
-                        replypop.setVisibility(View.VISIBLE);
+                    if (user != null && !user.isAnonymous()) {
+                        if (b){
+                            tilpReply.setVisibility(View.VISIBLE);
+                            replyBtn.setVisibility(View.VISIBLE);
+                            replyChip.setVisibility(View.VISIBLE);
+                            replypop.setVisibility(View.GONE);
+                        }else{
+                            tilpReply.setVisibility(View.GONE);
+                            replyBtn.setVisibility(View.GONE);
+                            replyChip.setVisibility(View.GONE);
+                            replypop.setVisibility(View.VISIBLE);
+                        }
+                    } else{
+                        ShowPopup();
+                        replypop.setChecked(false);
                     }
                 }
             });
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            replyCount.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(itemView.getContext(), RepliesView.class);
-                    intent.putExtra("model", model);
-                    itemView.getContext().startActivity(intent);
+                    RepliesToComment bottomsheetfragment = new RepliesToComment();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("model", model);
+
+                    bottomsheetfragment.setArguments(bundle);
+
+                    bottomsheetfragment.show(getSupportFragmentManager(), bottomsheetfragment.getTag());
                 }
             });
         }
@@ -411,6 +425,27 @@ public class HomeView extends AppCompatActivity {
 
             upvotecomment.setChecked(false);
             downvotecomment.setChecked(false);
+
+            //vote counter
+            CollectionReference reply = fStore.collection("Post").document(pdocId.getText().toString())
+                    .collection("comment").document(docId.getText().toString())
+                    .collection("reply");
+            AggregateQuery replies = reply.count();
+            replies.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
+                    AggregateQuerySnapshot snapshot = task.getResult();
+                    if (snapshot.getCount() > 1) {
+                        replyCount.setVisibility(View.VISIBLE);
+                        replyCount.setText(snapshot.getCount() + " replies");
+                    }else if (snapshot.getCount() == 1) {
+                        replyCount.setVisibility(View.VISIBLE);
+                        replyCount.setText(snapshot.getCount() + " reply");
+                    }else {
+                        replyCount.setVisibility(View.GONE);
+                    }
+                }
+            });
 
 //            //vote counter
 //            CollectionReference vote = fStore.collection("Post").document(pdocId.getText().toString())
@@ -549,7 +584,9 @@ public class HomeView extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<DocumentReference> task) {
                                         Toast.makeText(HomeView.this, "Comment Success", Toast.LENGTH_SHORT).show();
+                                        replyChip.performCloseIconClick();
                                         pReply.setText("");
+                                        adapter2.notifyDataSetChanged();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -557,6 +594,7 @@ public class HomeView extends AppCompatActivity {
                                         Toast.makeText(HomeView.this, "Comment Failed", Toast.LENGTH_SHORT).show();
                                         pReply.setText("");
                                         showEmptyView();
+                                        adapter2.notifyDataSetChanged();
                                     }
                                 });
                                 hideProgressDialog();
@@ -564,6 +602,7 @@ public class HomeView extends AppCompatActivity {
                         });
                     }else{
                         ShowPopup();
+                        hideProgressDialog();
                     }
 
                 }

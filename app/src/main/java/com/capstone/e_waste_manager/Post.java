@@ -235,6 +235,12 @@ public class Post extends AppCompatActivity {
                         Toast.makeText(Post.this, "Post Successful", Toast.LENGTH_SHORT).show();
                         onBackPressed();
                     }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(Post.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
+                        onBackPressed();
+                    }
                 });
             }else{
                 Toast.makeText(Post.this, "Error Getting User Data", Toast.LENGTH_SHORT).show();

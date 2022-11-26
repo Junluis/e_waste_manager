@@ -63,6 +63,7 @@ public class ReplyModel implements Serializable {
                 ", replyAuthorUid="+replyAuthorUid+ '\'' +
                 ", replyPostDate="+replyPostDate +
                 ", replydocId="+replydocId+ '\'' +
+                ", replyChip="+replyChip+ '\'' +
                 '}';
     }
 }
