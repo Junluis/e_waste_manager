@@ -6,7 +6,7 @@
     <item
         android:id="@+id/profilepg"
         android:icon="@drawable/ic__user_icon"
-        android:title="@string/profile"/>
+        android:title="@string/navRightProfile"/>
 
     <item
         android:id="@+id/notificationpg"

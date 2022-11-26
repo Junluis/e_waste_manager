@@ -121,11 +121,94 @@
                 android:maxLines="2"
                 android:text="@string/lorem_ipsum"
                 android:textAlignment="viewStart"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/homeTitle" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout7"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/homeBody"
+                tools:layout_editor_absoluteX="20dp">
+
+                <ToggleButton
+                    android:id="@+id/upvote"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:textOn=""
+                    android:textOff=""
+                    android:background="@drawable/vote_toggle" />
+
+                <TextView
+                    android:id="@+id/upvotecount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:text="Upvote"
+                    android:textStyle="bold" />
+
+                <ToggleButton
+                    android:id="@+id/downvote"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:textOn=""
+                    android:textOff=""
+                    android:background="@drawable/downvote_toggle"
+                    android:rotation="180"/>
+
+                <TextView
+                    android:id="@+id/downvotecount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:text="Downvote"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/downvote"
+                    app:layout_constraintStart_toEndOf="@+id/downvote"
+                    app:layout_constraintTop_toTopOf="@+id/downvote" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/addcoment"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Comment"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    app:icon="@drawable/ic__comment"
+                    app:iconSize="20dp"
+                    app:iconTintMode="multiply"/>
+
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_baseline_more_vert_24"
+                app:layout_constraintBottom_toBottomOf="@+id/homeAuthor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/cardView2"
+                app:layout_constraintTop_toTopOf="@+id/homeAuthor"
+                app:tint="@android:color/darker_gray" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

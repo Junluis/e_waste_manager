@@ -11,7 +11,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/activityHome"
         android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@color/white"/>
 
         <RelativeLayout
             android:id="@+id/linearLayout2"
@@ -25,7 +31,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/profile_nav"
-                android:layout_toEndOf="@+id/menu_nav" >
+                android:layout_toEndOf="@+id/menu_nav"
+                android:background="@drawable/search_drawable"
+                android:visibility="gone"
+                app:iconifiedByDefault="false"
+                app:queryBackground="@color/transparent"
+                app:searchHintIcon="@null">
 
             </androidx.appcompat.widget.SearchView>
 
@@ -34,27 +45,64 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:contentDescription="@string/todo"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
+                android:contentDescription="@string/todo"
                 android:src="@drawable/ic__fas_bar"
                 app:tint="@color/darkgray" />
 
-            <ImageView
-                android:id="@+id/profile_nav"
+            <TextView
+                android:id="@+id/titlePage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_toStartOf="@+id/search_btn"
+                android:layout_toEndOf="@+id/menu_nav"
+                android:paddingBottom="2dp"
+                android:text="Home"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <ImageButton
+                android:id="@+id/search_btn"
+                android:layout_width="30dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
+                android:layout_toStartOf="@+id/profile_nav"
+                android:background="@color/white"
+                android:contentDescription="@string/todo"
+                android:paddingTop="5dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_search" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/profile_nav"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
-                android:contentDescription="@string/to"
-                android:src="@drawable/ic__user_icon"
-                app:tint="@color/darkgray" />
+                android:layout_gravity="center"
+                app:cardCornerRadius="250dp">
+
+                <ImageView
+                    android:id="@+id/prof_img"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/profilelogotest" />
+
+            </androidx.cardview.widget.CardView>
+
+
+
         </RelativeLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -79,7 +127,7 @@
             android:id="@+id/linearLayout4"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="#2f3e46"
+            android:background="@color/darkgray"
             android:orientation="horizontal">
 
             <ImageButton
@@ -141,7 +189,7 @@
         app:menu="@menu/nav_rightmenu"
         android:layout_gravity="end"
         android:fitsSystemWindows="true"
-        android:background="@color/whitebg" >
+        android:background="@color/whitebg">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -170,6 +218,7 @@
         android:layout_height="match_parent"
         android:id="@+id/nav_viewleft"
         app:menu="@menu/nav_leftmenu"
+        android:paddingTop="15dp"
         android:fitsSystemWindows="true"
         android:layout_gravity="start"
         android:background="@color/whitebg">
@@ -201,10 +250,51 @@
                 android:textSize="18sp"
                 android:layout_marginHorizontal="10dp"
                 android:paddingVertical="15dp"
-                android:backgroundTint="@color/secondary_blue"/>
+                android:backgroundTint="@color/darkgray"/>
 
         </LinearLayout>
 
     </com.google.android.material.navigation.NavigationView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/emptyView"
+        android:background="@color/whitebg"
+        android:visibility="gone">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/failedLottie"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_rawRes="@raw/failed_connection" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Something went wrong."
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/failedLottie"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Check Internet connection."
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

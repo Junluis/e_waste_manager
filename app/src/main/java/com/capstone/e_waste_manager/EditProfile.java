@@ -9,6 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsAnimationCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -23,6 +29,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -31,6 +38,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -51,6 +59,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -77,6 +86,7 @@ public class EditProfile extends AppCompatActivity {
     AutoCompleteTextView regBarangay;
     ArrayAdapter<String> barangayList;
 
+    ScrollView edit_profile;
 
     String Dateval;
     Integer ageInteger = 0;
@@ -85,6 +95,8 @@ public class EditProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         prof_img = findViewById(R.id.prof_img);
         updateIcon = findViewById(R.id.updateIcon);
@@ -107,7 +119,6 @@ public class EditProfile extends AppCompatActivity {
         regAddressHouse = findViewById(R.id.regAddressHouse);
         regBarangay = findViewById(R.id.regBarangay);
 
-
         tilUsername = findViewById(R.id.tilUsername);
         tilEmail = findViewById(R.id.tilEmail);
         tilBio = findViewById(R.id.tilBio);
@@ -117,12 +128,34 @@ public class EditProfile extends AppCompatActivity {
         tilAddressHouse = findViewById(R.id.tilAddressHouse);
         tilBarangay = findViewById(R.id.tilBarangay);
 
+        edit_profile = findViewById(R.id.edit_profile);
+
 
         String[] barangayarray = getResources().getStringArray(R.array.barangay_list);
 
         barangayList = new ArrayAdapter<String>(this, R.layout.dropdown_barangay, barangayarray);
 
         regBarangay.setAdapter(barangayList);
+
+        //transparent inset
+        ViewCompat.setOnApplyWindowInsetsListener(edit_profile, (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            // Apply the insets as a margin to the view. Here the system is setting
+            // only the bottom, left, and right dimensions, but apply whichever insets are
+            // appropriate to your layout. You can also update the view padding
+            // if that's more appropriate.
+
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            mlp.leftMargin = insets.left;
+            mlp.bottomMargin = insets.bottom;
+            mlp.rightMargin = insets.right;
+            v.setLayoutParams(mlp);
+
+            // Return CONSUMED if you don't want want the window insets to keep being
+            // passed down to descendant views.
+            return WindowInsetsCompat.CONSUMED;
+        });
+
 
 
         DocumentReference documentReference = fStore.collection("Users").document(userID);
@@ -524,9 +557,7 @@ public class EditProfile extends AppCompatActivity {
                     if (profileImageUri != null && !profileImageUri.equals(Uri.EMPTY)){
                         uploadImageToFirebase(profileImageUri);
                     }
-
                     String email = regEmail.getText().toString();
-
                     user.updateEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
@@ -547,10 +578,12 @@ public class EditProfile extends AppCompatActivity {
                                     Toast.makeText(EditProfile.this, "Profile Updated", Toast.LENGTH_SHORT).show();
                                     onBackPressed();
                                 }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(EditProfile.this, "Failed to update details.", Toast.LENGTH_SHORT).show();
+                                }
                             });
-
-                            Toast.makeText(EditProfile.this, "Email is changed", Toast.LENGTH_SHORT).show();
-
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -561,7 +594,10 @@ public class EditProfile extends AppCompatActivity {
                 }
             }
         });
+
     }
+
+
 
 
     private void uploadImageToFirebase(Uri imageUri){

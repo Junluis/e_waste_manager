@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="30dp"
     tools:context=".Register"
     tools:ignore="SpeakableTextPresentCheck" >
     <RelativeLayout
@@ -55,6 +56,7 @@
     </RelativeLayout>
 
     <ScrollView
+        android:id="@+id/edit_profile"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

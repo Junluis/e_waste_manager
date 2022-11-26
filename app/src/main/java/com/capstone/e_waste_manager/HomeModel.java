@@ -8,12 +8,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class HomeModel implements Serializable {
-    String homeTitle;
-    String homeAuthor;
-    String homeBody;
-    String docId;
-    String homeAuthorUid;
-    Date homePostDate;
+    public String homeTitle;
+    public String homeAuthor;
+    public String homeBody;
+    public String docId;
+    public String homeAuthorUid;
+    public Date homePostDate;
 
 
     public HomeModel(){}

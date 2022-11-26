@@ -1,13 +1,22 @@
 package com.capstone.e_waste_manager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.os.Bundle;
@@ -15,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.capstone.e_waste_manager.adapter.ProfileAdapter;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,11 +53,13 @@ public class UserProfilePage extends AppCompatActivity {
     StorageReference storageReference;
     String userID;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile_page);
+
+        //transparent status
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         //update profile card
         prof_username = findViewById(R.id.prof_username);
@@ -60,7 +72,31 @@ public class UserProfilePage extends AppCompatActivity {
         fStore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
+        closeup = findViewById(R.id.closeup);
+        editProfilebtn = findViewById(R.id.editProfilebtn);
+
+        profiletabLayout = findViewById(R.id.profiletabLayout);
+        profilePager = findViewById(R.id.profilePager);
+
         userID = fAuth.getCurrentUser().getUid();
+
+        //transparent inset
+        ViewCompat.setOnApplyWindowInsetsListener(profilePager, (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            // Apply the insets as a margin to the view. Here the system is setting
+            // only the bottom, left, and right dimensions, but apply whichever insets are
+            // appropriate to your layout. You can also update the view padding
+            // if that's more appropriate.
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            mlp.leftMargin = insets.left;
+            mlp.bottomMargin = insets.bottom;
+            mlp.rightMargin = insets.right;
+            v.setLayoutParams(mlp);
+
+            // Return CONSUMED if you don't want want the window insets to keep being
+            // passed down to descendant views.
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         //get profile info
         DocumentReference documentReference = fStore.collection("Users").document(userID);
@@ -75,22 +111,14 @@ public class UserProfilePage extends AppCompatActivity {
                     prof_bio.setVisibility(View.GONE);
                 }
 
-                if(Objects.equals(documentSnapShot.getString("Partner"), "0")){
+                if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
+                    partnerBadge.setVisibility(View.VISIBLE);
+                } else{
                     partnerBadge.setVisibility(View.GONE);
                 }
             }
         });
-        //get profile pic
-        StorageReference profileRef = storageReference.child("ProfileImage/"+fAuth.getCurrentUser().getUid()+"/profile.jpg");
-        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).into(prof_img);
-            }
-        });
-
-        closeup = findViewById(R.id.closeup);
-        editProfilebtn = findViewById(R.id.editProfilebtn);
+        updateProf();
 
         closeup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,10 +134,6 @@ public class UserProfilePage extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-
-        profiletabLayout = findViewById(R.id.profiletabLayout);
-        profilePager = findViewById(R.id.profilePager);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         adapter = new ProfileAdapter(fragmentManager, getLifecycle());
@@ -140,6 +164,21 @@ public class UserProfilePage extends AppCompatActivity {
                 profiletabLayout.selectTab(profiletabLayout.getTabAt(position));
             }
         });
+    }
 
+    public void updateProf(){
+        //get profile pic
+        StorageReference profileRef = storageReference.child("ProfileImage/"+fAuth.getCurrentUser().getUid()+"/profile.jpg");
+        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).into(prof_img);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
     }
 }

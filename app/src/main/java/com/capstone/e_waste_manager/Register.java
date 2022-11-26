@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ import java.util.Map;
 public class Register extends AppCompatActivity {
     EditText regUsername, regPassword, regConfPassword, regEmail, regFirstName, regLastName, regdateOfBirth;
     Button regRegister;
+    ImageButton closereg;
     TextView regLogin;
     TextView regPrivacyPolicy;
     TextView regTermsService;
@@ -73,6 +76,14 @@ public class Register extends AppCompatActivity {
         regLogin = findViewById(R.id.regLogin);
         regPrivacyPolicy = findViewById(R.id.regPrivacyPolicy);
         regTermsService = findViewById(R.id.regTermsService);
+        closereg = findViewById(R.id.closereg);
+
+        closereg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         //date picker start
 
@@ -382,7 +393,10 @@ public class Register extends AppCompatActivity {
         });
         //checkField error end
 
-        regLogin.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Login.class)));
+        regLogin.setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(), Login.class));
+            finish();
+        });
 
         regRegister.setOnClickListener(v -> {
             if(regUsername.getText().toString().length() == 0 || !TextUtils.isEmpty(tilUsername.getError())){
@@ -413,9 +427,11 @@ public class Register extends AppCompatActivity {
                 if(regLastName.getText().toString().length() == 0)
                     regLastName.setText("");
                 regLastName.requestFocus();
+            }else if(!isNetworkAvailable()){
+                startActivity(new Intent(getApplicationContext(), NoConnection.class));
+                finish();
             }else{
                 regdateOfBirth.clearFocus();
-                Toast.makeText(Register.this, regdateOfBirth.getText().toString(), Toast.LENGTH_SHORT).show();
                 fAuth.createUserWithEmailAndPassword(regEmail.getText().toString(), regPassword.getText().toString())
                         .addOnSuccessListener(authResult -> {
                             FirebaseUser user = fAuth.getCurrentUser();
@@ -434,5 +450,11 @@ public class Register extends AppCompatActivity {
                         }).addOnFailureListener(e -> Toast.makeText(Register.this, "Failed to Create Account", Toast.LENGTH_SHORT).show());
             }
         });
+    }
+
+    //check connection
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

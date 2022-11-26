@@ -5,9 +5,10 @@ import static com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBeha
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentId;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class CommentModel {
+public class CommentModel implements Serializable {
     String commentBody, commentAuthor, docId, commentUid;
     Date commentPostDate;
 
