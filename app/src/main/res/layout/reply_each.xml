@@ -9,6 +9,8 @@
         android:id="@+id/commentcard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:cardElevation="0dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,9 +19,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/custom_borderleft"
-            android:layout_marginStart="30dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
             android:paddingHorizontal="20dp"
             android:paddingVertical="10dp">
 
@@ -110,7 +110,6 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:text="@string/lorem_ipsum"
-                android:layout_marginTop="10dp"
                 android:textAlignment="viewStart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
