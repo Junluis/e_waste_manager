@@ -20,6 +20,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:focusableInTouchMode="true"
             app:layout_constraintVertical_bias="0.0">
+
             <ImageButton
                 android:id="@+id/closepg"
                 android:layout_width="wrap_content"
@@ -33,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
-                android:layout_toStartOf="@+id/postButton"
+                android:layout_toStartOf="@+id/PostButton"
                 android:layout_toEndOf="@+id/closepg"
                 android:paddingBottom="2dp"
                 android:text="Create post"
@@ -41,7 +42,7 @@
                 android:textSize="20sp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/postButton"
+                android:id="@+id/PostButton"
                 android:layout_width="wrap_content"
                 android:layout_height="45dp"
                 android:layout_alignParentEnd="true"
@@ -51,7 +52,8 @@
                 android:text="@string/postb"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                app:cornerRadius="300dp" />
+                app:cornerRadius="300dp"
+                tools:ignore="TouchTargetSizeCheck" />
 
         </RelativeLayout>
 

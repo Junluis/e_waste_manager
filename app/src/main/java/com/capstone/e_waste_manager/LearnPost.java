@@ -74,6 +74,7 @@ public class LearnPost extends AppCompatActivity {
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(intent, REQUEST_CODE_IMAGE);
+                LearnPostCover.setVisibility(View.VISIBLE);
             }
         });
 

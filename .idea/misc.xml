@@ -3,12 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/drawable/ic_tag_background.xml" value="0.2775" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/drawable/search_drawable.xml" value="0.391" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_donate.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_home.xml" value="0.5415384615384615" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_home_view.xml" value="0.55" />
+<<<<<<< Updated upstream
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_learn.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_learn_post.xml" value="0.55" />
+=======
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_learn.xml" value="0.5" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_learn_post.xml" value="0.5" />
+>>>>>>> Stashed changes
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_login.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_main.xml" value="0.5" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_partner.xml" value="0.55" />
@@ -22,6 +28,11 @@
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/left_nav.xml" value="0.5489583333333333" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/postview.xml" value="0.30092592592592593" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/right_nav.xml" value="0.5489583333333333" />
+<<<<<<< Updated upstream
+=======
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2425" />
+        <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/bordered_rectangle_rounded_corners.xml" value="0.307" />
+>>>>>>> Stashed changes
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/btn_tint.xml" value="0.229" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/custom_border.xml" value="0.318" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/custom_button_round.xml" value="0.229" />

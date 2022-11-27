@@ -4,139 +4,91 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="10dp"
+    android:background="@color/whitebg"
     tools:context=".Home">
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/learnBtnMenu"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="0dp"
-            android:layout_weight="0"
-            android:background="@null"
-            android:contentDescription="@string/btn_menu"
-            android:padding="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/menu" />
+            android:id="@+id/closebtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_baseline_close_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/darkgray"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GUIDE"
+            android:textColor="#0C0C0C"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/LearnPostButton"
+            app:layout_constraintStart_toEndOf="@+id/closebtn"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="200dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0">
-
-            <EditText
-                android:id="@+id/learnSearch"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:layout_weight="0"
-                android:background="@drawable/search_drawable"
-                android:ems="10"
-                android:hint="@string/search"
-                android:importantForAutofill="no"
-                android:inputType="textPersonName"
-                tools:ignore="SpeakableTextPresentCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <ImageButton
-            android:id="@+id/learnBtnUser"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="0dp"
-            android:layout_weight="0"
-            android:background="@null"
-            android:contentDescription="@string/btn_user"
-            android:padding="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/user"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/LearnPostButton"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="5dp"
+            android:backgroundTint="@color/darkgray"
+            android:text="@string/postb"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:cornerRadius="300dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TouchTargetSizeCheck" />
 
-        <ImageButton
-            android:id="@+id/addButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_weight="0"
-            android:background="@null"
-            app:srcCompat="@drawable/ic_baselin"
-            tools:ignore="SpeakableTextPresentCheck"
-            android:contentDescription="@string/addbutton" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/learnRecycler"
+    <SearchView
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
-        android:layout_height="630dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        tools:listitem="@layout/learn_each" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
-    <LinearLayout
-        android:id="@+id/linearLayout4"
+    </SearchView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#2f3e46"
-        android:orientation="horizontal"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView">
 
-        <ImageButton
-            android:id="@+id/learnBtnHome"
-            android:layout_width="100dp"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/learnRecycler"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/home_button"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/home"
-            app:tint="#ffffff"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
-
-        <ImageButton
-            android:id="@+id/learnBtnPost"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/post_button"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/plus"
-            app:tint="#FFFFFF"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
-
-        <ImageButton
-            android:id="@+id/learnBtnLearn"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="@string/learn_button"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/book"
-            app:tint="#14ab69"
-            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
-    </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/learn_each" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
