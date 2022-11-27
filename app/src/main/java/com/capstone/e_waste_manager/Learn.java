@@ -12,33 +12,26 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Learn extends AppCompatActivity implements LearnInterface{
 
     RecyclerView learnRecycler;
-    ImageButton closebtn;
+    ImageButton learnBtnHome, learnBtnPost, learnBtnLearn, learnBtnMenu, learnBtnUser, addButton;
     View learnImage;
-    MaterialButton addButton;
 
     ArrayList<LearnModel> learnModelArrayList;
     LearnAdapter learnAdapter;
     ProgressDialog pd;
 
     FirebaseFirestore fStore;
-    FirebaseAuth fAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +39,17 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         setContentView(R.layout.activity_learn);
 
         learnRecycler = findViewById(R.id.learnRecycler);
+        learnBtnHome = findViewById(R.id.learnBtnHome);
+        learnBtnPost = findViewById(R.id.learnBtnPost);
+        learnBtnLearn = findViewById(R.id.learnBtnLearn);
+        learnBtnMenu = findViewById(R.id.learnBtnMenu);
+        learnBtnUser = findViewById(R.id.learnBtnUser);
         learnImage = findViewById(R.id.learnImage);
-        closebtn = findViewById(R.id.closebtn);
         addButton = findViewById(R.id.addButton);
 
-        closebtn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
+        learnBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
+        learnBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
+        learnBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
         addButton.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), LearnPost.class)));
 
         pd = new ProgressDialog(this);
@@ -59,7 +58,6 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         pd.show();
 
         fStore = FirebaseFirestore.getInstance();
-        fAuth = FirebaseAuth.getInstance();
         learnModelArrayList = new ArrayList<LearnModel>();
         learnAdapter = new LearnAdapter(Learn.this, learnModelArrayList, this);
 
@@ -67,29 +65,8 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         learnRecycler.setHasFixedSize(true);
         learnRecycler.setLayoutManager(new LinearLayoutManager(this));
         learnRecycler.setAdapter(learnAdapter);
-        addButton.setVisibility(View.GONE);
 
-        UserCheck();
         EventChangeListener();
-    }
-
-    private void UserCheck() {
-        if (fAuth.getCurrentUser()!=null){
-            fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                    .get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && task.getResult()!=null){
-                            String id = task.getResult().getString("Partner");
-                            if(Objects.equals(id, "1")){
-                                addButton.setVisibility(View.VISIBLE);
-                            }
-                        }else{
-                            addButton.setVisibility(View.GONE);
-                        }
-                    });
-        }else{
-
-        }
-
     }
 
     private void EventChangeListener() {
