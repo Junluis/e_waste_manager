@@ -52,9 +52,11 @@ import java.io.Serializable;
 public class RepliesToComment extends BottomSheetDialogFragment {
 
 
+
     private boolean isTouch = false;
     boolean identifier = false;
     BottomSheetDialog dialog;
+
 
     @NonNull
     @Override
