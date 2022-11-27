@@ -26,7 +26,6 @@
             android:exported="false" />
         <activity
             android:name=".HomeView"
-            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
             android:name=".LearnView"
