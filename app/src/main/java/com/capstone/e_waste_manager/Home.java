@@ -527,10 +527,10 @@ public class Home extends AppCompatActivity{
 
             //place vote
             if (user != null && !user.isAnonymous()) {
-                upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                upvote.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                        if (isChecked) {
+                    public void onClick(View view) {
+                        if (upvote.isChecked()) {
                             Map<String, Object> vote = new HashMap<>();
                             vote.put("Upvote", true);
 
@@ -552,10 +552,10 @@ public class Home extends AppCompatActivity{
                         }
                     }
                 });
-                downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                downvote.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                        if (isChecked) {
+                    public void onClick(View view) {
+                        if (downvote.isChecked()) {
                             Map<String, Object> vote = new HashMap<>();
                             vote.put("Downvote", true);
 
@@ -578,18 +578,18 @@ public class Home extends AppCompatActivity{
                     }
                 });
             } else{
-                upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                upvote.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    public void onClick(View view) {
                         ShowPopup();
                         upvote.setChecked(false);
                         downvote.setChecked(false);
                     }
                 });
 
-                downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                downvote.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    public void onClick(View view) {
                         ShowPopup();
                         upvote.setChecked(false);
                         downvote.setChecked(false);

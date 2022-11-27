@@ -87,7 +87,6 @@ import soup.neumorphism.NeumorphFloatingActionButton;
 
 public class RepliesToComment extends BottomSheetDialogFragment {
 
-    private boolean isTouch = false;
     boolean identifier = false;
     BottomSheetDialog dialog;
     @NonNull
@@ -108,7 +107,24 @@ public class RepliesToComment extends BottomSheetDialogFragment {
         }else {
             dialog.getBehavior().setState(BottomSheetBehavior.STATE_EXPANDED);
         }
+        dialog.getBehavior().addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState != BottomSheetBehavior.STATE_COLLAPSED ){
+                    expandBtn.setChecked(true);
+                } else{
+                    expandBtn.setChecked(false);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // React to dragging events
+            }
+        });
+
     }
+
 
     public RepliesToComment() {
         // Required empty public constructor
@@ -348,15 +364,16 @@ public class RepliesToComment extends BottomSheetDialogFragment {
             }
         });
 
+        expand();
         //expand
         expandBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 identifier = b;
                 if(b){
-                    expandBtn.setRotation(90);
+                    expandBtn.animate().rotation(90f).setDuration(300);
                 }else{
-                    expandBtn.setRotation(-90);
+                    expandBtn.animate().rotation(-90f).setDuration(300);
                 }
                 expand();
             }
@@ -394,10 +411,10 @@ public class RepliesToComment extends BottomSheetDialogFragment {
             });
         }
         if (user != null && !user.isAnonymous()) {
-            upvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            upvotecomment.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                    if (isChecked) {
+                public void onClick(View view) {
+                    if (upvotecomment.isChecked()) {
                         Map<String, Object> vote = new HashMap<>();
                         vote.put("Upvote", true);
 
@@ -421,10 +438,10 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                     }
                 }
             });
-            downvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            downvotecomment.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                    if (isChecked) {
+                public void onClick(View view) {
+                    if (downvotecomment.isChecked()) {
                         Map<String, Object> vote = new HashMap<>();
                         vote.put("Downvote", true);
 
@@ -449,18 +466,18 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                 }
             });
         } else{
-            upvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            upvotecomment.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                public void onClick(View view) {
                     ShowPopup();
                     upvotecomment.setChecked(false);
                     downvotecomment.setChecked(false);
                 }
             });
 
-            downvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            downvotecomment.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                public void onClick(View view) {
                     ShowPopup();
                     upvotecomment.setChecked(false);
                     downvotecomment.setChecked(false);
@@ -589,10 +606,10 @@ public class RepliesToComment extends BottomSheetDialogFragment {
 
 //            place vote
             if (user != null && !user.isAnonymous()) {
-                replyupvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                replyupvote.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                        if (isChecked) {
+                    public void onClick(View view) {
+                        if (replyupvote.isChecked()) {
                             Map<String, Object> votecomment = new HashMap<>();
                             votecomment.put("Upvote", true);
 
@@ -620,10 +637,10 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                         }
                     }
                 });
-                replydownvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                replydownvote.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                        if (isChecked) {
+                    public void onClick(View view) {
+                        if (replydownvote.isChecked()) {
                             Map<String, Object> votecomment = new HashMap<>();
                             votecomment.put("Downvote", true);
 
@@ -652,18 +669,18 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                     }
                 });
             } else{
-                replyupvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                replyupvote.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    public void onClick(View view) {
                         ShowPopup();
                         replyupvote.setChecked(false);
                         replydownvote.setChecked(false);
                     }
                 });
 
-                replydownvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                replydownvote.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    public void onClick(View view) {
                         ShowPopup();
                         replyupvote.setChecked(false);
                         replydownvote.setChecked(false);
