@@ -447,138 +447,120 @@ public class HomeView extends AppCompatActivity {
                 }
             });
 
-            //vote counter
-            CollectionReference vote = fStore.collection("Post").document(commentModel.getCommentPostOrigin())
-                    .collection("comment").document(docId.getText().toString())
-                    .collection("vote");
-            AggregateQuery Upvotecount = vote.whereEqualTo("Upvote", true).count();
-            AggregateQuery Downvotecount = vote.whereEqualTo("Downvote", true).count();
-            Upvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
-                    AggregateQuerySnapshot snapshot = task.getResult();
-                    if (snapshot.getCount() != 0) {
-                        upvotecountcomment.setText("" + snapshot.getCount());
-                    }else {
-                        upvotecountcomment.setText("Upvote");
-                    }
-                }
-            });
+//            //vote counter
+//            CollectionReference vote = fStore.collection("Post").document(pdocId.getText().toString())
+//                    .collection("comment").document(docId.getText().toString())
+//                    .collection("vote");
+//            AggregateQuery Upvotecount = vote.whereEqualTo("Upvote", true).count();
+//            AggregateQuery Downvotecount = vote.whereEqualTo("Downvote", true).count();
+//            Upvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
+//                    AggregateQuerySnapshot snapshot = task.getResult();
+//                    if (snapshot.getCount() != 0) {
+//                        upvotecountcomment.setText("" + snapshot.getCount());
+//                    }else {
+//                        upvotecountcomment.setText("Upvote");
+//                    }
+//                }
+//            });
+//            Downvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
+//                    AggregateQuerySnapshot snapshot = task.getResult();
+//                    if (snapshot.getCount() != 0){
+//                        downvotecountcomment.setText(""+snapshot.getCount());
+//                    }else {
+//                        downvotecountcomment.setText("Downvote");
+//                    }
+//                }
+//            });
+//
+//            //vote history for logged in user
+//            if (user != null && !user.isAnonymous()) {
+//                DocumentReference documentReference = fStore.collection("Post").document(pdocId.getText().toString())
+//                        .collection("comment").document(docId.getText().toString())
+//                        .collection("vote")
+//                        .document(user.getUid());
+//                documentReference.addSnapshotListener(HomeView.this, new EventListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+//                        if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
+//                            upvotecomment.setChecked(false);
+//                            downvotecomment.setChecked(true);
+//                        }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
+//                            downvotecomment.setChecked(false);
+//                            upvotecomment.setChecked(true);
+//                        }else{
+//                            upvotecomment.setChecked(false);
+//                            downvotecomment.setChecked(false);
+//                        }
+//                    }
+//                });
+//            }
 
-            Downvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
-                    AggregateQuerySnapshot snapshot = task.getResult();
-                    if (snapshot.getCount() != 0){
-                        downvotecountcomment.setText(""+snapshot.getCount());
-                    }else {
-                        downvotecountcomment.setText("Downvote");
-                    }
-                }
-            });
-
-            //vote history for logged in user
-            if (user != null && !user.isAnonymous()) {
-                DocumentReference voteReference = fStore.collection("Post").document(commentModel.getCommentPostOrigin())
-                        .collection("comment").document(docId.getText().toString())
-                        .collection("vote")
-                        .document(user.getUid());
-                voteReference.addSnapshotListener(HomeView.this, new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                        if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
-                            upvotecomment.setChecked(true);
-                            downvotecomment.setChecked(false);
-                        }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
-                            downvotecomment.setChecked(true);
-                            upvotecomment.setChecked(false);
-                        }else{
-                            upvotecomment.setChecked(false);
-                            downvotecomment.setChecked(false);
-                        }
-                    }
-                });
-            }
-
-//          place vote
-            if (user != null && !user.isAnonymous()) {
-                upvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                        if (isChecked) {
-                            Map<String, Object> votecomment = new HashMap<>();
-                            votecomment.put("Upvote", true);
-
-                            fStore.collection("Post").document(commentModel.commentPostOrigin)
-                                    .collection("comment").document(docId.getText().toString())
-                                    .collection("vote")
-                                    .document(user.getUid()).set(votecomment).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            adapter2.notifyDataSetChanged();
-                                        }
-                                    });
-                        }else if (!upvotecomment.isChecked() && !downvotecomment.isChecked()){
-                            fStore.collection("Post").document(commentModel.commentPostOrigin)
-                                    .collection("comment").document(docId.getText().toString())
-                                    .collection("vote")
-                                    .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            adapter2.notifyDataSetChanged();
-                                        }
-                                    });
-                        }
-                    }
-                });
-                downvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                        if (isChecked) {
-                            Map<String, Object> votecomment = new HashMap<>();
-                            votecomment.put("Downvote", true);
-
-                            fStore.collection("Post").document(commentModel.commentPostOrigin)
-                                    .collection("comment").document(docId.getText().toString())
-                                    .collection("vote")
-                                    .document(user.getUid()).set(votecomment).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            adapter2.notifyDataSetChanged();
-                                        }
-                                    });
-                        }else if (!upvotecomment.isChecked() && !downvotecomment.isChecked()){
-                            fStore.collection("Post").document(commentModel.commentPostOrigin)
-                                    .collection("comment").document(docId.getText().toString())
-                                    .collection("vote")
-                                    .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            adapter2.notifyDataSetChanged();
-                                        }
-                                    });
-                        }
-                    }
-                });
-            } else{
-                upvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                        ShowPopup();
-                        upvotecomment.setChecked(false);
-                        downvotecomment.setChecked(false);
-                    }
-                });
-
-                downvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                        ShowPopup();
-                        upvotecomment.setChecked(false);
-                        downvotecomment.setChecked(false);
-                    }
-                });
-            }
+            //place vote
+//            if (user != null && !user.isAnonymous()) {
+//                upvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                    @Override
+//                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+//                        if (isChecked) {
+//                            Map<String, Object> votereply = new HashMap<>();
+//                            votereply.put("Upvote", true);
+//
+//                            fStore.collection("Post").document(pdocId.getText().toString())
+//                                    .collection("comment").document(docId.getText().toString())
+//                                    .collection("vote")
+//                                    .document(user.getUid()).set(votereply).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                        }
+//                                    });
+//                        }else if (!upvotecomment.isChecked() && !downvotecomment.isChecked()){
+//                            fStore.collection("Post").document(pdocId.getText().toString())
+//                                    .collection("comment").document(docId.getText().toString())
+//                                    .collection("vote")
+//                                    .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                            Toast.makeText(HomeView.this, docId.getText().toString(), Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    });
+//                        }
+//                    }
+//                });
+//                downvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                    @Override
+//                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+//                        if (isChecked) {
+//                            Map<String, Object> votereply = new HashMap<>();
+//                            votereply.put("Downvote", true);
+//
+//                            fStore.collection("Post").document(pdocId.getText().toString())
+//                                    .collection("comment").document(docId.getText().toString())
+//                                    .collection("vote")
+//                                    .document(user.getUid()).set(votereply).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                        }
+//                                    });
+//                        }else if (!upvotecomment.isChecked() && !downvotecomment.isChecked()){
+//                            fStore.collection("Post").document(pdocId.getText().toString())
+//                                    .collection("comment").document(docId.getText().toString())
+//                                    .collection("vote")
+//                                    .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                            Toast.makeText(HomeView.this, docId.getText().toString(), Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    });
+//                        }
+//                    }
+//                });
+//            } else{
+//                upvotecomment.setEnabled(false);
+//                downvotecomment.setEnabled(false);
+//            }
 
             //reply to comment
             replyBtn.setOnClickListener(new View.OnClickListener() {

@@ -183,7 +183,45 @@ public class RepliesToComment extends BottomSheetDialogFragment {
 
         replyRecycler.setItemAnimator(null);
 
-//       
+
+//        Query query = fStore.collection("Post")
+//                .document(pdocId.getText().toString()).collection("comment")
+//                .orderBy("commentPostDate", Query.Direction.DESCENDING)
+//                .limit(50);
+//
+//        FirestoreRecyclerOptions<CommentModel> options = new FirestoreRecyclerOptions.Builder<CommentModel>()
+//                .setQuery(query, CommentModel.class)
+//                .build();
+//
+//        adapter2 = new FirestoreRecyclerAdapter<CommentModel, HomeView.ViewHolder>(options) {
+//            @Override
+//            protected void onBindViewHolder(@NonNull HomeView.ViewHolder holder, int position, @NonNull CommentModel model) {
+//                holder.bind(model);
+//            }
+//
+//            @NonNull
+//            @Override
+//            public HomeView.ViewHolder onCreateViewHolder(@NonNull ViewGroup group, int i) {
+//                View view = LayoutInflater.from(group.getContext())
+//                        .inflate(R.layout.comment_each, group,false);
+//                return new HomeView.ViewHolder(view);
+//            }
+//        };
+//
+//        commentRecycler.setAdapter(adapter2);
+//
+//        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @SuppressLint("NotifyDataSetChanged")
+//            @Override
+//            public void onRefresh() {
+//                commentRecycler.setAdapter(null);
+//                commentRecycler.setAdapter(adapter2);
+//                adapter2.startListening();
+//                adapter2.notifyDataSetChanged();
+//                votecounter();
+//                swipeRefresh.setRefreshing(false);
+//            }
+//        });
 
         return view;
     }
