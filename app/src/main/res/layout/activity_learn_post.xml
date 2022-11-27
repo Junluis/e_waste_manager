@@ -6,85 +6,117 @@
     android:layout_height="match_parent"
     tools:context=".LearnPost">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/upload_learning_material"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout5"
+    <RelativeLayout
+        android:id="@+id/relativeLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="15dp"
+        android:focusableInTouchMode="true"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageButton
+            android:id="@+id/closepg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_baseline_close_24"
+            app:tint="@color/darkgray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toStartOf="@+id/LearnPostButton"
+            android:layout_toEndOf="@+id/closepg"
+            android:paddingBottom="2dp"
+            android:text="Create Guide"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/LearnPostButton"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="@color/darkgray"
+            android:text="@string/postb"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:cornerRadius="300dp" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout8"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout3">
 
         <EditText
             android:id="@+id/LearnPostTitle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@color/transparent"
             android:ems="10"
-            android:hint="@string/title"
-            android:inputType="textPersonName"
-            tools:ignore="SpeakableTextPresentCheck"
-            android:autofillHints="" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Interesting title"
+            android:inputType="text"
+            android:paddingBottom="20dp"
+            android:textSize="23sp"
+            android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/LearnPostTag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="5dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/tag"
-        android:inputType="textPersonName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout5"
-        tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LearnPostTag">
+        <EditText
+            android:id="@+id/LearnPostTag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@color/transparent"
+            android:ems="10"
+            android:hint="Tag"
+            android:inputType="text"
+            android:paddingBottom="20dp"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            />
 
         <EditText
             android:id="@+id/LearnPostBody"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:autofillHints=""
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@color/transparent"
             android:ems="10"
-            android:hint="@string/content"
-            android:inputType="textMultiLine|textPersonName"
-            tools:ignore="SpeakableTextPresentCheck" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Add optional body text"
+            android:inputType="textMultiLine"
+            android:paddingBottom="100dp"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout6">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout8">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -95,10 +127,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="200dp"
                 android:contentDescription="@string/cover_placeholder"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/cover" />
+                app:srcCompat="@drawable/ic__image_icon" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -109,28 +142,24 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/LearnPostCover">
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/UploadImage"
-                    android:layout_width="200dp"
-                    android:layout_height="50dp"
-                    android:text="@string/upload_image"
-                    tools:ignore="TextContrastCheck" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/darkgray"
+                    android:text="Upload Cover"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="300dp"
+                    tools:ignore="TouchTargetSizeCheck" />
+
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/LearnPostButton"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="15dp"
-        android:text="@string/submit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
-        tools:ignore="TextContrastCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
