@@ -10,12 +10,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -32,7 +34,8 @@ public class LearnPost extends AppCompatActivity {
 
     int REQUEST_CODE_IMAGE = 101;
     EditText LearnPostTitle, LearnPostBody, LearnPostTag;
-    Button LearnPostButton, UploadImage;
+    MaterialButton LearnPostButton, UploadImage;
+    ImageButton closepg;
     ImageView LearnPostCover;
     Uri imageUri;
     boolean isImageAdded;
@@ -59,13 +62,16 @@ public class LearnPost extends AppCompatActivity {
         LearnPostButton = findViewById(R.id.LearnPostButton);
         UploadImage = findViewById(R.id.UploadImage);
         LearnPostCover = findViewById(R.id.LearnPostCover);
+        closepg = findViewById(R.id.closepg);
 
+        closepg.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
 
-        if (fAuth.getCurrentUser()!=null){
-
-        }else{
-
-        }
+//
+//        if (fAuth.getCurrentUser()!=null){
+//
+//        }else{
+//
+//        }
 
         UploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +80,7 @@ public class LearnPost extends AppCompatActivity {
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(intent, REQUEST_CODE_IMAGE);
+                LearnPostCover.setVisibility(View.VISIBLE);
             }
         });
 
