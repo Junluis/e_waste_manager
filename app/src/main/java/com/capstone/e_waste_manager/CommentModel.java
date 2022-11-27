@@ -9,16 +9,17 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class CommentModel implements Serializable {
-    String commentBody, commentAuthor, docId, commentUid;
+    String commentBody, commentAuthor, docId, commentUid, commentPostOrigin;
     Date commentPostDate;
 
     public CommentModel(){}
 
-    public CommentModel(String commentBody, String commentAuthor, Date commentPostDate, String commentUid) {
+    public CommentModel(String commentBody, String commentAuthor, Date commentPostDate, String commentUid, String commentPostOrigin) {
         this.commentBody = commentBody;
         this.commentAuthor = commentAuthor;
         this.commentPostDate = commentPostDate;
         this.commentUid = commentUid;
+        this.commentPostOrigin = commentPostOrigin;
     }
 
 
@@ -55,4 +56,14 @@ public class CommentModel implements Serializable {
     public Date getCommentPostDate() { return commentPostDate; }
 
     public void setCommentPostDate(Date commentPostDate) { this.commentPostDate = commentPostDate; }
+
+    public String getCommentPostOrigin() {
+        return commentPostOrigin;
+    }
+
+    public void setCommentPostOrigin(String commentPostOrigin) {
+        this.commentPostOrigin = commentPostOrigin;
+    }
+
+
 }
