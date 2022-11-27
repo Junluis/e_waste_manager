@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
@@ -28,8 +29,9 @@ import java.util.Objects;
 public class Learn extends AppCompatActivity implements LearnInterface{
 
     RecyclerView learnRecycler;
-    ImageButton closebtn, addButton;
+    ImageButton closebtn;
     View learnImage;
+    MaterialButton addButton;
 
     ArrayList<LearnModel> learnModelArrayList;
     LearnAdapter learnAdapter;
@@ -44,19 +46,12 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         setContentView(R.layout.activity_learn);
 
         learnRecycler = findViewById(R.id.learnRecycler);
-//        learnBtnHome = findViewById(R.id.learnBtnHome);
-//        learnBtnPost = findViewById(R.id.learnBtnPost);
-//        learnBtnLearn = findViewById(R.id.learnBtnLearn);
-//        learnBtnMenu = findViewById(R.id.learnBtnMenu);
-//        learnBtnUser = findViewById(R.id.learnBtnUser);
         learnImage = findViewById(R.id.learnImage);
         closebtn = findViewById(R.id.closebtn);
-//        addButton = findViewById(R.id.addButton);
+        addButton = findViewById(R.id.addButton);
 
         closebtn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
-//        learnBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
-//        learnBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
-//        addButton.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), LearnPost.class)));
+        addButton.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), LearnPost.class)));
 
         pd = new ProgressDialog(this);
         pd.setCancelable(false);
