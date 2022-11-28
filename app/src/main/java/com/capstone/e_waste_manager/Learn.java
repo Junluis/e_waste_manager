@@ -50,9 +50,11 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         closebtn = findViewById(R.id.closebtn);
         addButton = findViewById(R.id.addButton);
 
+
         closebtn.setOnClickListener(v -> {
             onBackPressed();
         });
+
         addButton.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), LearnPost.class)));
 
         pd = new ProgressDialog(this);

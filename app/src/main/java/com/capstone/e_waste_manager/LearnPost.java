@@ -64,9 +64,11 @@ public class LearnPost extends AppCompatActivity {
         LearnPostCover = findViewById(R.id.LearnPostCover);
         closepg = findViewById(R.id.closepg);
 
+
         closepg.setOnClickListener(v -> {
             onBackPressed();
         });
+
 
 //
 //        if (fAuth.getCurrentUser()!=null){

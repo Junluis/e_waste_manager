@@ -1,34 +1,21 @@
 package com.capstone.e_waste_manager.Fragments;
 
-import static android.content.Context.CONNECTIVITY_SERVICE;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -36,67 +23,45 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.capstone.e_waste_manager.Class.TimeAgo2;
 import com.capstone.e_waste_manager.CommentModel;
+import com.capstone.e_waste_manager.HomeModel;
 import com.capstone.e_waste_manager.HomeView;
-import com.capstone.e_waste_manager.Login;
-import com.capstone.e_waste_manager.NoConnection;
-import com.capstone.e_waste_manager.Post;
 import com.capstone.e_waste_manager.R;
-import com.capstone.e_waste_manager.Register;
 import com.capstone.e_waste_manager.model.ReplyModel;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.AggregateQuery;
-import com.google.firebase.firestore.AggregateQuerySnapshot;
-import com.google.firebase.firestore.AggregateSource;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import soup.neumorphism.NeumorphFloatingActionButton;
+import java.io.Serializable;
 
 public class RepliesToComment extends BottomSheetDialogFragment {
+
     boolean identifier = false;
     BottomSheetDialog dialog;
+    
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+        BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
         Window window = dialog.getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
         window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
         return dialog;
     }
 
@@ -132,9 +97,9 @@ public class RepliesToComment extends BottomSheetDialogFragment {
     ImageButton bckBtn, more;
     ImageView prof_img;
     TextView commentAuthor, timestamp, commentAuthorUid, docId, commentBody, upvotecount, downvotecount;
-    ToggleButton upvotecomment, downvotecomment, replypop, expandBtn;
+    ToggleButton upvotecomment, downvotecomment, replypop;
     TextInputLayout tilpReply;
-    Chip replyChip, replyChipView;
+    Chip replyChip;
     Button replyBtn;
     EditText pReply;
 
@@ -143,19 +108,10 @@ public class RepliesToComment extends BottomSheetDialogFragment {
     StorageReference storageReference;
     String userID;
     FirebaseUser user;
-    FirestoreRecyclerAdapter adapter3;
 
     //recycler
     RecyclerView replyRecycler;
     LinearLayoutManager linearLayoutManager;
-    SwipeRefreshLayout swipeRefresh;
-
-    ScrollView scrollView3;
-
-    Dialog guestDialog;
-    AlertDialog alrtdialog;
-
-    String CommentOrigin;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -171,14 +127,12 @@ public class RepliesToComment extends BottomSheetDialogFragment {
         commentBody = view.findViewById(R.id.commentBody);
         prof_img = view.findViewById(R.id.prof_img);
 
-        //reply to comment
+        //reply to commnet
         replypop = view.findViewById(R.id.replypop);
         replyChip = view.findViewById(R.id.replyChip);
-        replyChipView = view.findViewById(R.id.replyChipView);
         tilpReply = view.findViewById(R.id.tilpReply);
         replyBtn = view.findViewById(R.id.replyBtn);
         pReply = view.findViewById(R.id.pReply);
-        swipeRefresh = view.findViewById(R.id.swipeRefresh);
 
         //firebase
         fAuth = FirebaseAuth.getInstance();
@@ -187,36 +141,18 @@ public class RepliesToComment extends BottomSheetDialogFragment {
         user = fAuth.getCurrentUser();
         userID = user.getUid();
 
-        scrollView3 = view.findViewById(R.id.scrollView3);
-
-        expandBtn = view.findViewById(R.id.expandBtn);
-
-        //vote
-        upvotecomment = view.findViewById(R.id.upvotecomment);
-        downvotecomment = view.findViewById(R.id.downvotecomment);
-        upvotecount = view.findViewById(R.id.upvotecount);
-        downvotecount = view.findViewById(R.id.downvotecount);
-
-        //Guest dialog
-        guestDialog = new Dialog(getActivity());
 
         //model and comment details
         assert getArguments() != null;
         CommentModel model = (CommentModel) getArguments().getSerializable("model");
 
+        commentAuthor.setText(model.getCommentAuthor());
         TimeAgo2 timeAgo2 = new TimeAgo2();
         String timeago = timeAgo2.covertTimeToText(model.getCommentPostDate().toString());
         timestamp.setText(timeago);
         commentAuthorUid.setText(model.getCommentUid());
         docId.setText(model.getDocId());
         commentBody.setText(model.getCommentBody());
-        DocumentReference usernameReference = fStore.collection("Users").document(model.getCommentUid());
-        usernameReference.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                commentAuthor.setText(documentSnapShot.getString("Username"));
-            }
-        });
 
         StorageReference profileRef = storageReference.child("ProfileImage/"+commentAuthorUid.getText().toString()+"/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -225,8 +161,6 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                 Picasso.get().load(uri).into(prof_img);
             }
         });
-        CommentOrigin = model.getCommentPostOrigin().toString();
-
 
         //reply btn
         replyChip.setOnCloseIconClickListener(new View.OnClickListener() {
@@ -243,71 +177,18 @@ public class RepliesToComment extends BottomSheetDialogFragment {
         replypop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (user != null && !user.isAnonymous()) {
-                    if (b){
-                        tilpReply.setVisibility(View.VISIBLE);
-                        replyBtn.setVisibility(View.VISIBLE);
-                        replyChip.setVisibility(View.GONE);
-                        replypop.setVisibility(View.GONE);
-                        replyChip.setText(commentAuthor.getText());
-                        replyChipView.setText(commentAuthor.getText());
-                    }else{
-                        tilpReply.setVisibility(View.GONE);
-                        replyBtn.setVisibility(View.GONE);
-                        replyChipView.setVisibility(View.GONE);
-                        replypop.setVisibility(View.VISIBLE);
-                    }
-                } else{
-                    ShowPopup();
-                    replypop.setChecked(false);
-                }
-            }
-        });
-
-        //reply to comment
-        replyBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showProgressDialog();
-                if (user != null && !user.isAnonymous()) {
-                    DocumentReference documentReference = fStore.collection("Post").document(model.getCommentPostOrigin())
-                            .collection("comment").document(model.getDocId());
-                    fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            String username = task.getResult().getString("Username");
-                            Map<String, Object> comment = new HashMap<>();
-                            comment.put("replyAuthorUid", userID);
-                            comment.put("replyAuthor", username);
-                            comment.put("replyBody", pReply.getText().toString());
-                            comment.put("replyChip", replyChipView.getText().toString());
-                            comment.put("replyPostDate", FieldValue.serverTimestamp());
-                            comment.put("replyPostOrigin", model.getDocId());
-
-                            documentReference.collection("reply").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                    replyChip.performCloseIconClick();
-                                    pReply.setText("");
-                                    adapter3.notifyDataSetChanged();
-                                    hideProgressDialog();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    pReply.setText("");
-                                    showEmptyView();
-                                    adapter3.notifyDataSetChanged();
-                                    hideProgressDialog();
-                                }
-                            });
-                            hideProgressDialog();
-                        }
-                    });
+                if (b){
+                    tilpReply.setVisibility(View.VISIBLE);
+                    replyBtn.setVisibility(View.VISIBLE);
+                    replyChip.setVisibility(View.VISIBLE);
+                    replypop.setVisibility(View.GONE);
+                    replyChip.setText(commentAuthor.getText());
                 }else{
-                    ShowPopup();
-                    hideProgressDialog();
+                    tilpReply.setVisibility(View.GONE);
+                    replyBtn.setVisibility(View.GONE);
+                    replyChip.setVisibility(View.GONE);
+                    replypop.setVisibility(View.VISIBLE);
                 }
-
             }
         });
 
@@ -319,7 +200,7 @@ public class RepliesToComment extends BottomSheetDialogFragment {
             }
         });
 
-        //reply recycler
+        //comment recycler
         replyRecycler = view.findViewById(R.id.replyRecycler);
         linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         replyRecycler.setLayoutManager(linearLayoutManager);

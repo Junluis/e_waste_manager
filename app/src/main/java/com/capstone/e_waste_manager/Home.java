@@ -460,19 +460,12 @@ public class Home extends AppCompatActivity{
         public void bind(HomeModel homeModel){
             //put details
             model = homeModel;
+            author.setText(homeModel.homeAuthor);
             title.setText(homeModel.homeTitle);
             body.setText(homeModel.homeBody);
             docId.setText(homeModel.docId);
             authorUid.setText(homeModel.homeAuthorUid);
             TimeAgo2 timeAgo2 = new TimeAgo2();
-            DocumentReference usernameReference = fStore.collection("Users").document(homeModel.homeAuthorUid);
-            usernameReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                    author.setText(documentSnapShot.getString("Username"));
-                }
-            });
-
             if(homeModel.getHomePostDate() != null){
                 String timeago = timeAgo2.covertTimeToText(homeModel.getHomePostDate().toString());
                 timestamp.setText(timeago);
