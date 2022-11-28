@@ -141,6 +141,17 @@
                                     app:layout_constraintTop_toTopOf="@+id/cardView2"
                                     app:layout_constraintVertical_bias="0.100000024" />
 
+                                <ImageView
+                                    android:id="@+id/partnerBadge"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:layout_marginStart="5dp"
+                                    android:src="@drawable/ic__verified_badge"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/commentAuthor"
+                                    app:layout_constraintStart_toEndOf="@+id/commentAuthor"
+                                    app:layout_constraintTop_toTopOf="@+id/commentAuthor" />
+
                                 <TextView
                                     android:id="@+id/timestamp"
                                     android:layout_width="wrap_content"

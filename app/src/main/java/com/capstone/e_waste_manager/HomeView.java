@@ -66,6 +66,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import soup.neumorphism.NeumorphFloatingActionButton;
 
@@ -73,7 +74,7 @@ public class HomeView extends AppCompatActivity {
 
     ImageButton bckBtn;
     Button commentBtn;
-    ImageView prof_img;
+    ImageView prof_img, partnerBadge;
     EditText pComment;
     TextView pTitle, pAuthor, pBody, pAuthorUid, pdocId, ptimestamp, upvotecount, downvotecount;
     RecyclerView commentRecycler;
@@ -115,6 +116,7 @@ public class HomeView extends AppCompatActivity {
         ptimestamp = findViewById(R.id.ptimestamp);
         prof_img = findViewById(R.id.prof_img);
         swipeRefresh = findViewById(R.id.swipeRefresh);
+        partnerBadge = findViewById(R.id.partnerBadge);
 
         //comments
         pComment = findViewById(R.id.pComment);
@@ -327,12 +329,26 @@ public class HomeView extends AppCompatActivity {
         //model post
         pTitle.setText(model.getHomeTitle());
         pAuthor.setText(model.getHomeAuthor());
-        pAuthorUid.setText(model.homeAuthorUid);
+        pAuthorUid.setText(model.getHomeAuthorUid());
         TimeAgo2 timeAgo2 = new TimeAgo2();
         String timeago = timeAgo2.covertTimeToText(model.getHomePostDate().toString());
         ptimestamp.setText(timeago);
         pdocId.setText(model.docId);
         pBody.setText(model.getHomeBody());
+
+        DocumentReference usernameReference = fStore.collection("Users").document(model.getHomeAuthorUid());
+        usernameReference.addSnapshotListener(HomeView.this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                pAuthor.setText(documentSnapShot.getString("Username"));
+
+                if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
+                    partnerBadge.setVisibility(View.VISIBLE);
+                } else{
+                    partnerBadge.setVisibility(View.GONE);
+                }
+            }
+        });
 
         StorageReference profileRef = storageReference.child("ProfileImage/"+model.homeAuthorUid+"/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -397,7 +413,7 @@ public class HomeView extends AppCompatActivity {
         TextView author, body, authorUid, docId, timestamp, upvotecountcomment, downvotecountcomment;
         EditText pReply;
         TextInputLayout tilpReply;
-        ImageView prof_imgreply;
+        ImageView prof_imgreply, partnerBadge;
         Chip replyChip;
         ToggleButton upvotecomment, downvotecomment;
         ToggleButton replypop;
@@ -424,6 +440,7 @@ public class HomeView extends AppCompatActivity {
             downvotecomment = itemView.findViewById(R.id.downvotecomment);
             upvotecountcomment = itemView.findViewById(R.id.upvotecount);
             downvotecountcomment = itemView.findViewById(R.id.downvotecount);
+            partnerBadge = itemView.findViewById(R.id.partnerBadge);
 
             replyChip.setOnCloseIconClickListener(new View.OnClickListener() {
                 @Override
@@ -475,7 +492,6 @@ public class HomeView extends AppCompatActivity {
 
         public void bind(CommentModel commentModel){
             model = commentModel;
-            author.setText(commentModel.commentAuthor);
             body.setText(commentModel.commentBody);
             docId.setText(commentModel.docId);
             authorUid.setText(commentModel.commentUid);
@@ -485,6 +501,20 @@ public class HomeView extends AppCompatActivity {
                 timestamp.setText(timeago);
             }
             replyChip.setText("@"+commentModel.commentAuthor);
+
+            DocumentReference usernameReference = fStore.collection("Users").document(commentModel.commentUid);
+            usernameReference.addSnapshotListener(HomeView.this, new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                    author.setText(documentSnapShot.getString("Username"));
+
+                    if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
+                        partnerBadge.setVisibility(View.VISIBLE);
+                    } else{
+                        partnerBadge.setVisibility(View.GONE);
+                    }
+                }
+            });
 
             //post counter
             CollectionReference reply = fStore.collection("Post").document(pdocId.getText().toString())
@@ -666,6 +696,18 @@ public class HomeView extends AppCompatActivity {
                 });
             }
 
+            upvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    adapter2.notifyItemChanged(getAdapterPosition());
+                }
+            });
+            downvotecomment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    adapter2.notifyItemChanged(getAdapterPosition());
+                }
+            });
 
             //reply to comment
             pReply.addTextChangedListener(new TextWatcher() {

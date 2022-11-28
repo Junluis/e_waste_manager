@@ -135,7 +135,7 @@ public class RepliesToComment extends BottomSheetDialogFragment {
     }
 
     ImageButton bckBtn, more;
-    ImageView prof_img;
+    ImageView prof_img, partnerBadge;
     TextView commentAuthor, timestamp, commentAuthorUid, docId, commentBody, upvotecount, downvotecount;
     ToggleButton upvotecomment, downvotecomment, replypop, expandBtn;
     TextInputLayout tilpReply;
@@ -175,6 +175,7 @@ public class RepliesToComment extends BottomSheetDialogFragment {
         docId = view.findViewById(R.id.docId);
         commentBody = view.findViewById(R.id.commentBody);
         prof_img = view.findViewById(R.id.prof_img);
+        partnerBadge = view.findViewById(R.id.partnerBadge);
 
         //reply to comment
         replypop = view.findViewById(R.id.replypop);
@@ -215,11 +216,18 @@ public class RepliesToComment extends BottomSheetDialogFragment {
         commentAuthorUid.setText(model.getCommentUid());
         docId.setText(model.getDocId());
         commentBody.setText(model.getCommentBody());
+
         DocumentReference usernameReference = fStore.collection("Users").document(model.getCommentUid());
         usernameReference.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
                 commentAuthor.setText(documentSnapShot.getString("Username"));
+
+                if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
+                    partnerBadge.setVisibility(View.VISIBLE);
+                } else{
+                    partnerBadge.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -546,7 +554,7 @@ public class RepliesToComment extends BottomSheetDialogFragment {
     class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView replyAuthor, timestamp, replyAuthorUid, docId, replyBody, upvotereplycount, downvotereplycount;
-        ImageView prof_img;
+        ImageView prof_img, partnerBadge;
         ImageButton more;
         ToggleButton replyupvote, replydownvote, replybtn;
         Chip Chip;
@@ -573,6 +581,7 @@ public class RepliesToComment extends BottomSheetDialogFragment {
             more = itemView.findViewById(R.id.more);
             replybtn = itemView.findViewById(R.id.replypop);
             Chip = itemView.findViewById(R.id.replyChip);
+            partnerBadge = itemView.findViewById(R.id.partnerBadge);
 
         }
 
@@ -597,11 +606,18 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                     }
                 });
             }
+
             DocumentReference usernameReference = fStore.collection("Users").document(replyModel.replyAuthorUid);
             usernameReference.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
                     replyAuthor.setText(documentSnapShot.getString("Username"));
+
+                    if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
+                        partnerBadge.setVisibility(View.VISIBLE);
+                    } else{
+                        partnerBadge.setVisibility(View.GONE);
+                    }
                 }
             });
 
