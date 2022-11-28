@@ -545,7 +545,7 @@ public class Home extends AppCompatActivity{
                                     .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter.notifyDataSetChanged();
+                                            adapter.notifyItemChanged(getAdapterPosition());
                                             upvote.setEnabled(true);
                                             downvote.setEnabled(true);
                                         }
@@ -557,7 +557,7 @@ public class Home extends AppCompatActivity{
                                     .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter.notifyDataSetChanged();
+                                            adapter.notifyItemChanged(getAdapterPosition());
                                             upvote.setEnabled(true);
                                             downvote.setEnabled(true);
                                         }
@@ -579,7 +579,7 @@ public class Home extends AppCompatActivity{
                                     .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter.notifyDataSetChanged();
+                                            adapter.notifyItemChanged(getAdapterPosition());
                                             downvote.setEnabled(true);
                                             upvote.setEnabled(true);
                                         }
@@ -591,7 +591,7 @@ public class Home extends AppCompatActivity{
                                     .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter.notifyDataSetChanged();
+                                            adapter.notifyItemChanged(getAdapterPosition());
                                             downvote.setEnabled(true);
                                             upvote.setEnabled(true);
                                         }

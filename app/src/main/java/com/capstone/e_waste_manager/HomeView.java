@@ -3,6 +3,7 @@ package com.capstone.e_waste_manager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -16,6 +17,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,6 +86,7 @@ public class HomeView extends AppCompatActivity {
     FirestoreRecyclerAdapter adapter2;
     StorageReference storageReference;
     ToggleButton upvote, downvote;
+    TextInputLayout tilpComment;
 
     AlertDialog dialog;
     Dialog guestDialog;
@@ -90,6 +95,9 @@ public class HomeView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_view);
+
+        //transparent status
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         //firebase
         fAuth = FirebaseAuth.getInstance();
@@ -110,6 +118,7 @@ public class HomeView extends AppCompatActivity {
 
         //comments
         pComment = findViewById(R.id.pComment);
+        tilpComment = findViewById(R.id.tilpComment);
         commentBtn = findViewById(R.id.commentBtn);
         bckBtn = findViewById(R.id.bckBtn);
         commentRecycler = findViewById(R.id.commentRecycler);
@@ -131,37 +140,78 @@ public class HomeView extends AppCompatActivity {
 
 
         //post comment
+        pComment.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                if(!s.toString().isEmpty()){
+                    tilpComment.setError(null);
+                    if (tilpComment.getChildCount() == 2)
+                        tilpComment.getChildAt(1).setVisibility(View.GONE);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         commentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (user != null && !user.isAnonymous()) {
-                    adapter2.stopListening();
-                    DocumentReference documentReference = fStore.collection("Post").document(model.docId);
-                    fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            String username = task.getResult().getString("Username");
-                            Map<String, Object> comment = new HashMap<>();
-                            comment.put("commentUid", userID);
-                            comment.put("commentAuthor", username);
-                            comment.put("commentBody", pComment.getText().toString());
-                            comment.put("commentPostDate", FieldValue.serverTimestamp());
-
-                            documentReference.collection("comment").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                    Toast.makeText(HomeView.this, "Comment Success", Toast.LENGTH_SHORT).show();
-                                    pComment.setText("");
-                                    adapter2.startListening();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(HomeView.this, "Comment Failed", Toast.LENGTH_SHORT).show();
-                                    pComment.setText("");
-                                }
-                            });
+                    if(pComment.getText().toString().length() == 0 || !TextUtils.isEmpty(tilpComment.getError())){
+                        if(pComment.getText().toString().length() == 0) {
+                            if (tilpComment.getChildCount() == 2)
+                                tilpComment.getChildAt(1).setVisibility(View.VISIBLE);
+                            tilpComment.setError("required*");
+                            pComment.setText("");
                         }
-                    });
+                        pComment.requestFocus();
+                    }else {
+                        showProgressDialog();
+                        DocumentReference documentReference = fStore.collection("Post").document(model.docId);
+                        fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                String username = task.getResult().getString("Username");
+                                Map<String, Object> comment = new HashMap<>();
+                                comment.put("commentUid", userID);
+                                comment.put("commentAuthor", username);
+                                comment.put("commentBody", pComment.getText().toString());
+                                comment.put("commentPostDate", FieldValue.serverTimestamp());
+                                comment.put("commentPostOrigin", model.docId);
+
+                                documentReference.collection("comment").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                                        Toast.makeText(HomeView.this, "Comment Success", Toast.LENGTH_SHORT).show();
+                                        pComment.setText("");
+                                        hideProgressDialog();
+                                        commentRecycler.setAdapter(null);
+                                        commentRecycler.setAdapter(adapter2);
+                                        adapter2.startListening();
+                                        adapter2.notifyDataSetChanged();
+                                        votecounter();
+                                        pComment.clearFocus();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(HomeView.this, "Comment Failed", Toast.LENGTH_SHORT).show();
+                                        pComment.setText("");
+                                        hideProgressDialog();
+                                        commentRecycler.setAdapter(null);
+                                        commentRecycler.setAdapter(adapter2);
+                                        adapter2.startListening();
+                                        adapter2.notifyDataSetChanged();
+                                        votecounter();
+                                        pComment.clearFocus();
+                                    }
+                                });
+                            }
+                        });
+                    }
                 }else{
                     ShowPopup();
                 }
@@ -196,21 +246,27 @@ public class HomeView extends AppCompatActivity {
                         Map<String, Object> vote = new HashMap<>();
                         vote.put("Upvote", true);
 
+                        upvote.setEnabled(false);
+                        downvote.setEnabled(false);
                         fStore.collection("Post").document(model.docId).collection("vote")
                                 .document(fAuth.getCurrentUser().getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         votecounter();
-                                        adapter2.notifyDataSetChanged();
+                                        upvote.setEnabled(true);
+                                        downvote.setEnabled(true);
                                     }
                                 });
                     } else if (!upvote.isChecked() && !downvote.isChecked()) {
+                        upvote.setEnabled(false);
+                        downvote.setEnabled(false);
                         fStore.collection("Post").document(model.docId).collection("vote")
                                 .document(fAuth.getCurrentUser().getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         votecounter();
-                                        adapter2.notifyDataSetChanged();
+                                        upvote.setEnabled(true);
+                                        downvote.setEnabled(true);
                                     }
                                 });
                     }
@@ -223,11 +279,15 @@ public class HomeView extends AppCompatActivity {
                         Map<String, Object> vote = new HashMap<>();
                         vote.put("Downvote", true);
 
+                        downvote.setEnabled(false);
+                        upvote.setEnabled(false);
                         fStore.collection("Post").document(model.docId).collection("vote")
                                 .document(fAuth.getCurrentUser().getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         votecounter();
+                                        downvote.setEnabled(true);
+                                        upvote.setEnabled(true);
                                     }
                                 });
                     } else if (!upvote.isChecked() && !downvote.isChecked()) {
@@ -236,6 +296,8 @@ public class HomeView extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         votecounter();
+                                        downvote.setEnabled(true);
+                                        upvote.setEnabled(true);
                                     }
                                 });
                     }
@@ -342,6 +404,7 @@ public class HomeView extends AppCompatActivity {
         Button replyBtn, replyCount;
         CommentModel model;
 
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             author = itemView.findViewById(R.id.commentAuthor);
@@ -423,10 +486,7 @@ public class HomeView extends AppCompatActivity {
             }
             replyChip.setText("@"+commentModel.commentAuthor);
 
-            upvotecomment.setChecked(false);
-            downvotecomment.setChecked(false);
-
-            //vote counter
+            //post counter
             CollectionReference reply = fStore.collection("Post").document(pdocId.getText().toString())
                     .collection("comment").document(docId.getText().toString())
                     .collection("reply");
@@ -449,7 +509,7 @@ public class HomeView extends AppCompatActivity {
 
             //vote counter
             CollectionReference vote = fStore.collection("Post").document(commentModel.getCommentPostOrigin())
-                    .collection("comment").document(docId.getText().toString())
+                    .collection("comment").document(commentModel.docId)
                     .collection("vote");
             AggregateQuery Upvotecount = vote.whereEqualTo("Upvote", true).count();
             AggregateQuery Downvotecount = vote.whereEqualTo("Downvote", true).count();
@@ -459,12 +519,11 @@ public class HomeView extends AppCompatActivity {
                     AggregateQuerySnapshot snapshot = task.getResult();
                     if (snapshot.getCount() != 0) {
                         upvotecountcomment.setText("" + snapshot.getCount());
-                    }else {
+                    } else {
                         upvotecountcomment.setText("Upvote");
                     }
                 }
             });
-
             Downvotecount.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
@@ -479,19 +538,29 @@ public class HomeView extends AppCompatActivity {
 
             //vote history for logged in user
             if (user != null && !user.isAnonymous()) {
-                DocumentReference voteReference = fStore.collection("Post").document(commentModel.getCommentPostOrigin())
-                        .collection("comment").document(docId.getText().toString())
+                DocumentReference documentReference = fStore.collection("Post").document(commentModel.getCommentPostOrigin())
+                        .collection("comment").document(commentModel.docId)
                         .collection("vote")
                         .document(user.getUid());
-                voteReference.addSnapshotListener(HomeView.this, new EventListener<DocumentSnapshot>() {
+                documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                        if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
-                            upvotecomment.setChecked(true);
-                            downvotecomment.setChecked(false);
-                        }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
-                            downvotecomment.setChecked(true);
-                            upvotecomment.setChecked(false);
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.getResult().exists()){
+                            documentReference.addSnapshotListener(HomeView.this, new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                                    if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
+                                        upvotecomment.setChecked(true);
+                                        downvotecomment.setChecked(false);
+                                    }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
+                                        downvotecomment.setChecked(true);
+                                        upvotecomment.setChecked(false);
+                                    }else{
+                                        upvotecomment.setChecked(false);
+                                        downvotecomment.setChecked(false);
+                                    }
+                                }
+                            });
                         }else{
                             upvotecomment.setChecked(false);
                             downvotecomment.setChecked(false);
@@ -500,32 +569,40 @@ public class HomeView extends AppCompatActivity {
                 });
             }
 
-//          place vote
+            //place vote
             if (user != null && !user.isAnonymous()) {
                 upvotecomment.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (upvotecomment.isChecked()) {
-                            Map<String, Object> votecomment = new HashMap<>();
-                            votecomment.put("Upvote", true);
+                            Map<String, Object> vote = new HashMap<>();
+                            vote.put("Upvote", true);
 
-                            fStore.collection("Post").document(commentModel.commentPostOrigin)
-                                    .collection("comment").document(docId.getText().toString())
+                            upvotecomment.setEnabled(false);
+                            downvotecomment.setEnabled(false);
+                            fStore.collection("Post").document(commentModel.getCommentPostOrigin())
+                                    .collection("comment").document(commentModel.docId)
                                     .collection("vote")
-                                    .document(user.getUid()).set(votecomment).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter2.notifyDataSetChanged();
+                                            adapter2.notifyItemChanged(getAdapterPosition());
+                                            upvotecomment.setEnabled(true);
+                                            downvotecomment.setEnabled(true);
                                         }
                                     });
                         }else if (!upvotecomment.isChecked() && !downvotecomment.isChecked()){
-                            fStore.collection("Post").document(commentModel.commentPostOrigin)
-                                    .collection("comment").document(docId.getText().toString())
+                            upvotecomment.setEnabled(false);
+                            downvotecomment.setEnabled(false);
+                            fStore.collection("Post").document(commentModel.getCommentPostOrigin())
+                                    .collection("comment").document(commentModel.docId)
                                     .collection("vote")
                                     .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter2.notifyDataSetChanged();
+                                            adapter2.notifyItemChanged(getAdapterPosition());
+                                            upvotecomment.setEnabled(true);
+                                            downvotecomment.setEnabled(true);
                                         }
                                     });
                         }
@@ -535,26 +612,35 @@ public class HomeView extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         if (downvotecomment.isChecked()) {
-                            Map<String, Object> votecomment = new HashMap<>();
-                            votecomment.put("Downvote", true);
+                            Map<String, Object> vote = new HashMap<>();
+                            vote.put("Downvote", true);
 
-                            fStore.collection("Post").document(commentModel.commentPostOrigin)
-                                    .collection("comment").document(docId.getText().toString())
+
+                            downvotecomment.setEnabled(false);
+                            upvotecomment.setEnabled(false);
+                            fStore.collection("Post").document(commentModel.getCommentPostOrigin())
+                                    .collection("comment").document(commentModel.docId)
                                     .collection("vote")
-                                    .document(user.getUid()).set(votecomment).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter2.notifyDataSetChanged();
+                                            adapter2.notifyItemChanged(getAdapterPosition());
+                                            downvotecomment.setEnabled(true);
+                                            upvotecomment.setEnabled(true);
                                         }
                                     });
                         }else if (!upvotecomment.isChecked() && !downvotecomment.isChecked()){
-                            fStore.collection("Post").document(commentModel.commentPostOrigin)
-                                    .collection("comment").document(docId.getText().toString())
+                            downvotecomment.setEnabled(false);
+                            upvotecomment.setEnabled(false);
+                            fStore.collection("Post").document(commentModel.getCommentPostOrigin())
+                                    .collection("comment").document(commentModel.docId)
                                     .collection("vote")
                                     .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter2.notifyDataSetChanged();
+                                            adapter2.notifyItemChanged(getAdapterPosition());
+                                            downvotecomment.setEnabled(true);
+                                            upvotecomment.setEnabled(true);
                                         }
                                     });
                         }
@@ -580,44 +666,76 @@ public class HomeView extends AppCompatActivity {
                 });
             }
 
+
             //reply to comment
+            pReply.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+                }
+                @Override
+                public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                    if(!s.toString().isEmpty()){
+                        tilpReply.setError(null);
+                        if (tilpReply.getChildCount() == 2)
+                            tilpReply.getChildAt(1).setVisibility(View.GONE);
+                    }
+                }
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
+
             replyBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     showProgressDialog();
                     if (user != null && !user.isAnonymous()) {
-                        DocumentReference documentReference = fStore.collection("Post").document(pdocId.getText().toString())
-                                .collection("comment").document(commentModel.docId);
-                        fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-                            if (task.isSuccessful() && task.getResult() != null) {
-                                String username = task.getResult().getString("Username");
-                                Map<String, Object> comment = new HashMap<>();
-                                comment.put("replyAuthorUid", userID);
-                                comment.put("replyAuthor", username);
-                                comment.put("replyBody", pReply.getText().toString());
-                                comment.put("replyChip", commentModel.commentAuthor);
-                                comment.put("replyPostDate", FieldValue.serverTimestamp());
-
-                                documentReference.collection("reply").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                                        Toast.makeText(HomeView.this, "Comment Success", Toast.LENGTH_SHORT).show();
-                                        replyChip.performCloseIconClick();
-                                        pReply.setText("");
-                                        adapter2.notifyDataSetChanged();
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(HomeView.this, "Comment Failed", Toast.LENGTH_SHORT).show();
-                                        pReply.setText("");
-                                        showEmptyView();
-                                        adapter2.notifyDataSetChanged();
-                                    }
-                                });
-                                hideProgressDialog();
+                        if(pReply.getText().toString().length() == 0 || !TextUtils.isEmpty(tilpReply.getError())){
+                            if(pReply.getText().toString().length() == 0) {
+                                if (tilpReply.getChildCount() == 2)
+                                    tilpReply.getChildAt(1).setVisibility(View.VISIBLE);
+                                tilpReply.setError("required*");
+                                pReply.setText("");
                             }
-                        });
+                            pReply.requestFocus();
+                            hideProgressDialog();
+                        }else {
+                            DocumentReference documentReference = fStore.collection("Post").document(pdocId.getText().toString())
+                                    .collection("comment").document(commentModel.docId);
+                            fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+                                if (task.isSuccessful() && task.getResult() != null) {
+                                    String username = task.getResult().getString("Username");
+                                    Map<String, Object> comment = new HashMap<>();
+                                    comment.put("replyAuthorUid", userID);
+                                    comment.put("replyAuthor", username);
+                                    comment.put("replyBody", pReply.getText().toString());
+                                    comment.put("replyChip", commentModel.commentAuthor);
+                                    comment.put("replyPostDate", FieldValue.serverTimestamp());
+                                    comment.put("replyPostOrigin", commentModel.docId);
+
+                                    documentReference.collection("reply").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                                            Toast.makeText(HomeView.this, "Comment Success", Toast.LENGTH_SHORT).show();
+                                            replyChip.performCloseIconClick();
+                                            pReply.setText("");
+                                            adapter2.notifyDataSetChanged();
+                                            pReply.clearFocus();
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(HomeView.this, "Comment Failed", Toast.LENGTH_SHORT).show();
+                                            pReply.setText("");
+                                            showEmptyView();
+                                            adapter2.notifyDataSetChanged();
+                                            pReply.clearFocus();
+                                        }
+                                    });
+                                    hideProgressDialog();
+                                }
+                            });
+                        }
                     }else{
                         ShowPopup();
                         hideProgressDialog();

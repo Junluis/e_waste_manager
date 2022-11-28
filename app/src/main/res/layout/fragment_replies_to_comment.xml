@@ -290,7 +290,7 @@
                                     app:layout_constraintTop_toBottomOf="@+id/linearLayout7" />
 
                                 <com.google.android.material.chip.Chip
-                                    android:id="@+id/replyChipView"
+                                    android:id="@+id/replyv"
                                     style="@style/Widget.MaterialComponents.Chip.Entry"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"

@@ -17,11 +17,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.WindowCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -175,7 +179,7 @@ public class RepliesToComment extends BottomSheetDialogFragment {
         //reply to comment
         replypop = view.findViewById(R.id.replypop);
         replyChip = view.findViewById(R.id.replyChip);
-        replyChipView = view.findViewById(R.id.replyChipView);
+        replyChipView = view.findViewById(R.id.replyv);
         tilpReply = view.findViewById(R.id.tilpReply);
         replyBtn = view.findViewById(R.id.replyBtn);
         pReply = view.findViewById(R.id.pReply);
@@ -266,44 +270,80 @@ public class RepliesToComment extends BottomSheetDialogFragment {
         });
 
         //reply to comment
+        pReply.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                if(!s.toString().isEmpty()){
+                    tilpReply.setError(null);
+                    if (tilpReply.getChildCount() == 2)
+                        tilpReply.getChildAt(1).setVisibility(View.GONE);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         replyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showProgressDialog();
                 if (user != null && !user.isAnonymous()) {
-                    DocumentReference documentReference = fStore.collection("Post").document(model.getCommentPostOrigin())
-                            .collection("comment").document(model.getDocId());
-                    fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            String username = task.getResult().getString("Username");
-                            Map<String, Object> comment = new HashMap<>();
-                            comment.put("replyAuthorUid", userID);
-                            comment.put("replyAuthor", username);
-                            comment.put("replyBody", pReply.getText().toString());
-                            comment.put("replyChip", replyChipView.getText().toString());
-                            comment.put("replyPostDate", FieldValue.serverTimestamp());
-                            comment.put("replyPostOrigin", model.getDocId());
-
-                            documentReference.collection("reply").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                    replyChip.performCloseIconClick();
-                                    pReply.setText("");
-                                    adapter3.notifyDataSetChanged();
-                                    hideProgressDialog();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    pReply.setText("");
-                                    showEmptyView();
-                                    adapter3.notifyDataSetChanged();
-                                    hideProgressDialog();
-                                }
-                            });
-                            hideProgressDialog();
+                    if(pReply.getText().toString().length() == 0 || !TextUtils.isEmpty(tilpReply.getError())){
+                        if(pReply.getText().toString().length() == 0) {
+                            if (tilpReply.getChildCount() == 2)
+                                tilpReply.getChildAt(1).setVisibility(View.VISIBLE);
+                            tilpReply.setError("required*");
+                            pReply.setText("");
                         }
-                    });
+                        pReply.requestFocus();
+                        hideProgressDialog();
+                    }else {
+                        DocumentReference documentReference = fStore.collection("Post").document(model.getCommentPostOrigin())
+                                .collection("comment").document(model.getDocId());
+                        fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                String username = task.getResult().getString("Username");
+                                Map<String, Object> comment = new HashMap<>();
+                                comment.put("replyAuthorUid", userID);
+                                comment.put("replyAuthor", username);
+                                comment.put("replyBody", pReply.getText().toString());
+                                comment.put("replyChip", replyChipView.getText().toString());
+                                comment.put("replyPostDate", FieldValue.serverTimestamp());
+                                comment.put("replyPostOrigin", model.getDocId());
+
+                                documentReference.collection("reply").add(comment).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                                        replyChip.performCloseIconClick();
+                                        pReply.setText("");
+                                        replyRecycler.setAdapter(null);
+                                        replyRecycler.setAdapter(adapter3);
+                                        adapter3.startListening();
+                                        adapter3.notifyDataSetChanged();
+                                        hideProgressDialog();
+                                        pReply.clearFocus();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        pReply.setText("");
+                                        showEmptyView();
+                                        replyRecycler.setAdapter(null);
+                                        replyRecycler.setAdapter(adapter3);
+                                        adapter3.startListening();
+                                        adapter3.notifyDataSetChanged();
+                                        hideProgressDialog();
+                                        pReply.clearFocus();
+                                    }
+                                });
+                                hideProgressDialog();
+                            }
+                        });
+                    }
                 } else {
                     ShowPopup();
                     hideProgressDialog();
@@ -417,21 +457,29 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                         Map<String, Object> vote = new HashMap<>();
                         vote.put("Upvote", true);
 
+                        upvotecomment.setEnabled(false);
+                        downvotecomment.setEnabled(false);
                         fStore.collection("Post").document(model.getCommentPostOrigin())
                                 .collection("comment").document(model.getDocId()).collection("vote")
                                 .document(fAuth.getCurrentUser().getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         votecounter();
+                                        upvotecomment.setEnabled(true);
+                                        downvotecomment.setEnabled(true);
                                     }
                                 });
                     } else if (!upvotecomment.isChecked() && !downvotecomment.isChecked()) {
+                        upvotecomment.setEnabled(false);
+                        downvotecomment.setEnabled(false);
                         fStore.collection("Post").document(model.getCommentPostOrigin())
                                 .collection("comment").document(model.getDocId()).collection("vote")
                                 .document(fAuth.getCurrentUser().getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         votecounter();
+                                        upvotecomment.setEnabled(true);
+                                        downvotecomment.setEnabled(true);
                                     }
                                 });
                     }
@@ -444,21 +492,29 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                         Map<String, Object> vote = new HashMap<>();
                         vote.put("Downvote", true);
 
+                        upvotecomment.setEnabled(false);
+                        downvotecomment.setEnabled(false);
                         fStore.collection("Post").document(model.getCommentPostOrigin())
                                 .collection("comment").document(model.getDocId()).collection("vote")
                                 .document(fAuth.getCurrentUser().getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         votecounter();
+                                        upvotecomment.setEnabled(true);
+                                        downvotecomment.setEnabled(true);
                                     }
                                 });
                     } else if (!upvotecomment.isChecked() && !downvotecomment.isChecked()) {
+                        upvotecomment.setEnabled(false);
+                        downvotecomment.setEnabled(false);
                         fStore.collection("Post").document(model.getCommentPostOrigin())
                                 .collection("comment").document(model.getDocId()).collection("vote")
                                 .document(fAuth.getCurrentUser().getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         votecounter();
+                                        upvotecomment.setEnabled(true);
+                                        downvotecomment.setEnabled(true);
                                     }
                                 });
                     }
@@ -482,6 +538,7 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                 }
             });
         }
+        votecounter();
 
         return view;
     }
@@ -603,7 +660,7 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                 });
             }
 
-//            place vote
+//          place vote
             if (user != null && !user.isAnonymous()) {
                 replyupvote.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -612,6 +669,8 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                             Map<String, Object> votecomment = new HashMap<>();
                             votecomment.put("Upvote", true);
 
+                            replyupvote.setEnabled(false);
+                            replydownvote.setEnabled(false);
                             fStore.collection("Post").document(CommentOrigin)
                                     .collection("comment").document(replyModel.replyPostOrigin)
                                     .collection("reply").document(replyModel.replydocId)
@@ -619,10 +678,14 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                                     .document(user.getUid()).set(votecomment).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter3.notifyDataSetChanged();
+                                            replyupvote.setEnabled(true);
+                                            replydownvote.setEnabled(true);
+                                            adapter3.notifyItemChanged(getAdapterPosition());
                                         }
                                     });
                         } else if (!replyupvote.isChecked() && !replydownvote.isChecked()) {
+                            replyupvote.setEnabled(false);
+                            replydownvote.setEnabled(false);
                             fStore.collection("Post").document(CommentOrigin)
                                     .collection("comment").document(replyModel.replyPostOrigin)
                                     .collection("reply").document(replyModel.replydocId)
@@ -630,7 +693,9 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                                     .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter3.notifyDataSetChanged();
+                                            replyupvote.setEnabled(true);
+                                            replydownvote.setEnabled(true);
+                                            adapter3.notifyItemChanged(getAdapterPosition());
                                         }
                                     });
                         }
@@ -643,6 +708,8 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                             Map<String, Object> votecomment = new HashMap<>();
                             votecomment.put("Downvote", true);
 
+                            replydownvote.setEnabled(false);
+                            replyupvote.setEnabled(false);
                             fStore.collection("Post").document(CommentOrigin)
                                     .collection("comment").document(replyModel.replyPostOrigin)
                                     .collection("reply").document(replyModel.replydocId)
@@ -650,10 +717,14 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                                     .document(user.getUid()).set(votecomment).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter3.notifyDataSetChanged();
+                                            replydownvote.setEnabled(true);
+                                            replyupvote.setEnabled(true);
+                                            adapter3.notifyItemChanged(getAdapterPosition());
                                         }
                                     });
                         } else if (!replyupvote.isChecked() && !replydownvote.isChecked()) {
+                            replydownvote.setEnabled(false);
+                            replyupvote.setEnabled(false);
                             fStore.collection("Post").document(CommentOrigin)
                                     .collection("comment").document(replyModel.replyPostOrigin)
                                     .collection("reply").document(replyModel.replydocId)
@@ -661,7 +732,9 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                                     .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter3.notifyDataSetChanged();
+                                            replydownvote.setEnabled(true);
+                                            replyupvote.setEnabled(true);
+                                            adapter3.notifyItemChanged(getAdapterPosition());
                                         }
                                     });
                         }
