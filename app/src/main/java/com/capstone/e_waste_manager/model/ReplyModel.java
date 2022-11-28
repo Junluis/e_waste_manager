@@ -12,17 +12,19 @@ public class ReplyModel implements Serializable {
     public String replyAuthorUid;
     public String replyChip;
     public Date replyPostDate;
+    public String replyPostOrigin;
 
 
     public ReplyModel(){}
 
-    public ReplyModel(String replyAuthor, String replyBody, String replyAuthorUid, Date replyPostDate, String replydocId, String replyChip) {
+    public ReplyModel(String replyAuthor, String replyBody, String replyAuthorUid, Date replyPostDate, String replydocId, String replyChip, String replyPostOrigin) {
         this.replyAuthor = replyAuthor;
         this.replyBody = replyBody;
         this.replyAuthorUid = replyAuthorUid;
         this.replyPostDate = replyPostDate;
         this.replydocId = replydocId;
         this.replyChip = replyChip;
+        this.replyPostOrigin = replyPostOrigin;
     }
 
     public String getReplyAuthor() { return replyAuthor; }
@@ -33,7 +35,7 @@ public class ReplyModel implements Serializable {
 
     public String getReplyBody() {return replyBody;}
 
-    public void setReplyBody(String homeBody) {
+    public void setReplyBody(String replyBody) {
         this.replyBody = replyBody;
     }
 
@@ -55,6 +57,11 @@ public class ReplyModel implements Serializable {
 
     public void setReplyChip(String replyChip) {this.replyChip = replyChip; }
 
+    public String getReplyPostOrigin() { return replyPostOrigin; }
+
+    public void setReplyPostOrigin(String replyPostOrigin) {this.replyPostOrigin = replyPostOrigin; }
+
+
     @Override
     public String toString(){
         return "ReplyModel{" +
@@ -64,6 +71,7 @@ public class ReplyModel implements Serializable {
                 ", replyPostDate="+replyPostDate +
                 ", replydocId="+replydocId+ '\'' +
                 ", replyChip="+replyChip+ '\'' +
+                ", replyPostOrigin="+replyPostOrigin+ '\'' +
                 '}';
     }
 }
