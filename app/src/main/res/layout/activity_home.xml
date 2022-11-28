@@ -144,7 +144,7 @@
                 android:paddingBottom="10dp"
                 android:scaleType="centerInside"
                 app:srcCompat="@drawable/home"
-                app:tint="#14ab69"
+                app:tint="#FFFFFF"
                 tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
 
             <ImageButton

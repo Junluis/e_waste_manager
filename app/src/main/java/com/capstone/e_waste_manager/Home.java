@@ -175,7 +175,9 @@ public class Home extends AppCompatActivity{
         } else{
             homeBtnPost.setOnClickListener(v -> ShowPopup());
         }
-        homeBtnLearn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
+        homeBtnLearn.setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(), Learn.class));
+        });
 
         //Guest dialog
         guestDialog = new Dialog(this);
@@ -508,15 +510,25 @@ public class Home extends AppCompatActivity{
             if (user != null && !user.isAnonymous()) {
                 DocumentReference documentReference = fStore.collection("Post").document(docId.getText().toString()).collection("vote")
                         .document(user.getUid());
-                documentReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {
+                documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                        if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
-                            upvote.setChecked(true);
-                            downvote.setChecked(false);
-                        }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
-                            downvote.setChecked(true);
-                            upvote.setChecked(false);
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.getResult().exists()){
+                            documentReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                                    if(Boolean.TRUE.equals(documentSnapShot.getBoolean("Upvote"))){
+                                        upvote.setChecked(true);
+                                        downvote.setChecked(false);
+                                    }else if (Boolean.TRUE.equals(documentSnapShot.getBoolean("Downvote"))){
+                                        downvote.setChecked(true);
+                                        upvote.setChecked(false);
+                                    }else{
+                                        upvote.setChecked(false);
+                                        downvote.setChecked(false);
+                                    }
+                                }
+                            });
                         }else{
                             upvote.setChecked(false);
                             downvote.setChecked(false);
@@ -534,19 +546,27 @@ public class Home extends AppCompatActivity{
                             Map<String, Object> vote = new HashMap<>();
                             vote.put("Upvote", true);
 
+                            upvote.setEnabled(false);
+                            downvote.setEnabled(false);
                             fStore.collection("Post").document(docId.getText().toString()).collection("vote")
                                     .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             adapter.notifyDataSetChanged();
+                                            upvote.setEnabled(true);
+                                            downvote.setEnabled(true);
                                         }
                                     });
                         }else if (!upvote.isChecked() && !downvote.isChecked()){
+                            upvote.setEnabled(false);
+                            downvote.setEnabled(false);
                             fStore.collection("Post").document(docId.getText().toString()).collection("vote")
                                     .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             adapter.notifyDataSetChanged();
+                                            upvote.setEnabled(true);
+                                            downvote.setEnabled(true);
                                         }
                                     });
                         }
@@ -559,19 +579,28 @@ public class Home extends AppCompatActivity{
                             Map<String, Object> vote = new HashMap<>();
                             vote.put("Downvote", true);
 
+
+                            downvote.setEnabled(false);
+                            upvote.setEnabled(false);
                             fStore.collection("Post").document(docId.getText().toString()).collection("vote")
                                     .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             adapter.notifyDataSetChanged();
+                                            downvote.setEnabled(true);
+                                            upvote.setEnabled(true);
                                         }
                                     });
                         }else if (!upvote.isChecked() && !downvote.isChecked()){
+                            downvote.setEnabled(false);
+                            upvote.setEnabled(false);
                             fStore.collection("Post").document(docId.getText().toString()).collection("vote")
                                     .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             adapter.notifyDataSetChanged();
+                                            downvote.setEnabled(true);
+                                            upvote.setEnabled(true);
                                         }
                                     });
                         }
