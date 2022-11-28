@@ -12,6 +12,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@color/white"/>
+
         <RelativeLayout
             android:id="@+id/relativeLayout3"
             android:layout_width="match_parent"
