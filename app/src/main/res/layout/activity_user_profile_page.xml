@@ -94,7 +94,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/username"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
 
                 <ImageView
                     android:id="@+id/partnerBadge"

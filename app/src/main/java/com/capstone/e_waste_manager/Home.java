@@ -169,7 +169,7 @@ public class Home extends AppCompatActivity{
         });
 
         //bottomNav btn
-        homeBtnHome.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
+        homeBtnHome.setOnClickListener(v -> refresh());
         if (user != null && !user.isAnonymous()) {
             homeBtnPost.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Post.class)));
         } else{
@@ -387,29 +387,7 @@ public class Home extends AppCompatActivity{
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onRefresh() {
-                if (user != null && !user.isAnonymous()) {
-                    StorageReference profileRef = storageReference.child("ProfileImage/" + fAuth.getCurrentUser().getUid() + "/profile.jpg");
-                    profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            View hView = navView_profile.getHeaderView(0);
-                            ImageView prof_img_header = (ImageView) hView.findViewById(R.id.prof_img);
-                            Picasso.get().load(uri).into(prof_img);
-                            Picasso.get().load(uri).into(prof_img_header);
-                        }
-
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            hideProgressDialog();
-                        }
-                    });
-                }
-                homeRecycler.setAdapter(null);
-                homeRecycler.setAdapter(adapter);
-                adapter.startListening();
-                adapter.notifyDataSetChanged();
-                swipeRefresh.setRefreshing(false);
+                refresh();
             }
         });
     }
@@ -419,7 +397,7 @@ public class Home extends AppCompatActivity{
         TextView author, title, body, authorUid, docId, timestamp, upvotecount, downvotecount;
         Button addcoment;
         ToggleButton upvote, downvote;
-        ImageView prof_img;
+        ImageView prof_img, partnerBadge;
         HomeModel model;
 
         public ViewHolder(@NonNull View itemView) {
@@ -438,6 +416,7 @@ public class Home extends AppCompatActivity{
             downvote = itemView.findViewById(R.id.downvote);
             upvotecount = itemView.findViewById(R.id.upvotecount);
             downvotecount = itemView.findViewById(R.id.downvotecount);
+            partnerBadge = itemView.findViewById(R.id.partnerBadge);
 
             addcoment.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -460,7 +439,6 @@ public class Home extends AppCompatActivity{
         public void bind(HomeModel homeModel){
             //put details
             model = homeModel;
-            author.setText(homeModel.homeAuthor);
             title.setText(homeModel.homeTitle);
             body.setText(homeModel.homeBody);
             docId.setText(homeModel.docId);
@@ -470,6 +448,20 @@ public class Home extends AppCompatActivity{
                 String timeago = timeAgo2.covertTimeToText(homeModel.getHomePostDate().toString());
                 timestamp.setText(timeago);
             }
+
+            DocumentReference usernameReference = fStore.collection("Users").document(homeModel.homeAuthorUid);
+            usernameReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                    author.setText(documentSnapShot.getString("Username"));
+
+                    if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
+                        partnerBadge.setVisibility(View.VISIBLE);
+                    } else{
+                        partnerBadge.setVisibility(View.GONE);
+                    }
+                }
+            });
 
             //vote counter
             CollectionReference vote = fStore.collection("Post").document(docId.getText().toString())
@@ -545,7 +537,7 @@ public class Home extends AppCompatActivity{
                                     .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter.notifyDataSetChanged();
+                                            adapter.notifyItemChanged(getAdapterPosition());
                                             upvote.setEnabled(true);
                                             downvote.setEnabled(true);
                                         }
@@ -557,7 +549,7 @@ public class Home extends AppCompatActivity{
                                     .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter.notifyDataSetChanged();
+                                            adapter.notifyItemChanged(getAdapterPosition());
                                             upvote.setEnabled(true);
                                             downvote.setEnabled(true);
                                         }
@@ -579,7 +571,7 @@ public class Home extends AppCompatActivity{
                                     .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter.notifyDataSetChanged();
+                                            adapter.notifyItemChanged(getAdapterPosition());
                                             downvote.setEnabled(true);
                                             upvote.setEnabled(true);
                                         }
@@ -591,7 +583,7 @@ public class Home extends AppCompatActivity{
                                     .document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            adapter.notifyDataSetChanged();
+                                            adapter.notifyItemChanged(getAdapterPosition());
                                             downvote.setEnabled(true);
                                             upvote.setEnabled(true);
                                         }
@@ -619,6 +611,19 @@ public class Home extends AppCompatActivity{
                 });
             }
 
+            upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    adapter.notifyItemChanged(getAdapterPosition());
+                }
+            });
+            downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    adapter.notifyItemChanged(getAdapterPosition());
+                }
+            });
+
             //profile image per post
             StorageReference profileRef = storageReference.child("ProfileImage/"+authorUid.getText().toString()+"/profile.jpg");
             profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -637,8 +642,6 @@ public class Home extends AppCompatActivity{
             //profile details
             adapter.startListening();
             if (user != null && !user.isAnonymous()) {
-                String name = user.getUid();
-                Toast.makeText(Home.this, "Logged in "+name, Toast.LENGTH_SHORT).show();
                 StorageReference profileRef = storageReference.child("ProfileImage/"+fAuth.getCurrentUser().getUid()+"/profile.jpg");
                 profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
@@ -751,4 +754,30 @@ public class Home extends AppCompatActivity{
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
+    public void refresh(){
+        swipeRefresh.setRefreshing(true);
+        if (user != null && !user.isAnonymous()) {
+            StorageReference profileRef = storageReference.child("ProfileImage/" + fAuth.getCurrentUser().getUid() + "/profile.jpg");
+            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    View hView = navView_profile.getHeaderView(0);
+                    ImageView prof_img_header = (ImageView) hView.findViewById(R.id.prof_img);
+                    Picasso.get().load(uri).into(prof_img);
+                    Picasso.get().load(uri).into(prof_img_header);
+                }
+
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    hideProgressDialog();
+                }
+            });
+        }
+        homeRecycler.setAdapter(null);
+        homeRecycler.setAdapter(adapter);
+        adapter.startListening();
+        adapter.notifyDataSetChanged();
+        swipeRefresh.setRefreshing(false);
+    }
 }

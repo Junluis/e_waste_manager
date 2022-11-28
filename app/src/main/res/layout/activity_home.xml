@@ -108,6 +108,7 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
             android:id="@+id/swipeRefresh"
+            android:layout_marginBottom="-30dp"
             android:layout_height="0dp"
             android:layout_weight="1">
 
@@ -123,64 +124,82 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <LinearLayout
-            android:id="@+id/linearLayout4"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/darkgray"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-30dp"
+            android:background="@android:color/transparent">
 
-            <ImageButton
-                android:id="@+id/homeBtnHome"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:contentDescription="@string/home_button"
-                android:paddingLeft="10dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="10dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="10dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/home"
-                app:tint="#FFFFFF"
-                tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
+            <com.google.android.material.bottomappbar.BottomAppBar
+                android:id="@+id/appbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:backgroundTint="@color/darkgray"
+                app:fabCradleMargin="10dp"
+                app:fabCradleRoundedCornerRadius="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="bottom">
 
-            <ImageButton
+                <LinearLayout
+                    android:id="@+id/linearLayout4"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/transparent"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/homeBtnHome"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/custom_ripple_button"
+                        android:backgroundTint="@color/darkgray"
+                        android:contentDescription="@string/home_button"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp"
+                        android:layout_marginEnd="50dp"
+                        android:scaleType="fitCenter"
+                        app:tint="@color/white"
+                        app:srcCompat="@drawable/ic__home"
+                        tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
+
+                    <ImageButton
+                        android:id="@+id/homeBtnLearn"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/custom_ripple_button"
+                        android:backgroundTint="@color/darkgray"
+                        android:contentDescription="@string/learn_button"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp"
+                        android:layout_marginStart="50dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic__book"
+                        app:tint="#FFFFFF"
+                        tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
+                </LinearLayout>
+
+            </com.google.android.material.bottomappbar.BottomAppBar>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/homeBtnPost"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:contentDescription="@string/post_button"
-                android:paddingLeft="10dp"
-                android:paddingTop="10dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="10dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/plus"
-                app:tint="#FFFFFF"
-                tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic__add"
+                app:tint="@color/whitebg"
+                app:layout_anchor="@id/appbar"/>
 
-            <ImageButton
-                android:id="@+id/homeBtnLearn"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:contentDescription="@string/learn_button"
-                android:paddingLeft="10dp"
-                android:paddingTop="10dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="10dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/book"
-                app:tint="#FFFFFF"
-                tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
-        </LinearLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </LinearLayout>
+
 
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"
