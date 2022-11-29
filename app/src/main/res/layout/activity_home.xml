@@ -156,16 +156,11 @@
                         android:background="@drawable/custom_ripple_button"
                         android:backgroundTint="@color/darkgray"
                         android:contentDescription="@string/home_button"
-                        android:paddingLeft="10dp"
-                        android:paddingTop="10dp"
-                        android:paddingEnd="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingBottom="10dp"
+                        android:padding="10dp"
                         android:layout_marginEnd="50dp"
                         android:scaleType="fitCenter"
                         app:tint="@color/white"
-                        app:srcCompat="@drawable/ic__home"
-                        tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
+                        app:srcCompat="@drawable/ic__home" />
 
                     <ImageButton
                         android:id="@+id/homeBtnLearn"
@@ -175,15 +170,12 @@
                         android:background="@drawable/custom_ripple_button"
                         android:backgroundTint="@color/darkgray"
                         android:contentDescription="@string/learn_button"
-                        android:paddingLeft="10dp"
-                        android:paddingTop="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingBottom="10dp"
+                        android:padding="10dp"
                         android:layout_marginStart="50dp"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic__book"
-                        app:tint="#FFFFFF"
-                        tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck" />
+                        app:tint="@color/white" />
+
                 </LinearLayout>
 
             </com.google.android.material.bottomappbar.BottomAppBar>
@@ -248,12 +240,15 @@
             android:layout_gravity="bottom"
             android:orientation="vertical"
             android:gravity="center_horizontal"
+
             android:padding="16dp">
 
             <TextView
+                android:id="@+id/requesttext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/darkgray"
+                android:visibility="gone"
                 app:drawableTint="@color/darkgray"
                 android:layout_marginHorizontal="20dp"
                 android:text="Join us for our cause. Be part of our partnered Organization. Request for an approval." />
@@ -269,7 +264,8 @@
                 android:textSize="18sp"
                 android:layout_marginHorizontal="10dp"
                 android:paddingVertical="15dp"
-                android:backgroundTint="@color/darkgray"/>
+                android:backgroundTint="@color/darkgray"
+                android:visibility="gone"/>
 
         </LinearLayout>
 
