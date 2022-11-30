@@ -8,25 +8,53 @@
 
     <org.osmdroid.views.MapView
         android:id="@+id/map"
+        tilesource="Mapnik"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tilesource="Mapnik" />
-
-    <soup.neumorphism.NeumorphFloatingActionButton
-        style="@style/Widget.Neumorph.FloatingActionButton"
-        android:layout_marginTop="30dp"
-        android:id="@+id/myLocation"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:scaleType="center"
-        android:src="@drawable/ic__mylocation"
-        android:elevation="5dp"
-        app:neumorph_backgroundColor="@color/whitebg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <soup.neumorphism.NeumorphFloatingActionButton
+        android:id="@+id/myLocation"
+        style="@style/Widget.Neumorph.FloatingActionButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="30dp"
+        android:elevation="5dp"
+        android:scaleType="center"
+        android:src="@drawable/ic__gotomylocation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.05" />
+        app:layout_constraintVertical_bias="0.05"
+        app:neumorph_backgroundColor="@color/whitebg"
+        app:neumorph_shadowColorDark="@color/transparent"
+        app:neumorph_shadowColorLight="@color/transparent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/disposalRecycler"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@+id/space2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/map"
+        app:layout_constraintVertical_bias="1.0" />
+
+
+    <Space
+        android:id="@+id/space2"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.95" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
