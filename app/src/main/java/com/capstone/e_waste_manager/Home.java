@@ -98,7 +98,7 @@ public class Home extends AppCompatActivity{
 
     LinearLayoutManager linearLayoutManager;
 
-    TextView signout, titlePage;
+    TextView signout, titlePage, requesttext;
 
     Dialog guestDialog;
     AlertDialog dialog;
@@ -119,6 +119,7 @@ public class Home extends AppCompatActivity{
         navView_profile = findViewById(R.id.nav_viewright);
         navView_menu = findViewById(R.id.nav_viewleft);
         request = findViewById(R.id.request);
+        requesttext = findViewById(R.id.requesttext);
         menu_nav = findViewById(R.id.menu_nav);
         prof_img = findViewById(R.id.prof_img);
         signout = findViewById(R.id.signout);
@@ -655,6 +656,21 @@ public class Home extends AppCompatActivity{
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         hideProgressDialog();
+                    }
+                });
+
+                DocumentReference usernameReference = fStore.collection("Users").document(user.getUid());
+                usernameReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                        if(Objects.equals(documentSnapShot.getString("Partner"), "0")){
+                            request.setVisibility(View.VISIBLE);
+                            requesttext.setVisibility(View.VISIBLE);
+
+                        } else{
+                            request.setVisibility(View.GONE);
+                            requesttext.setVisibility(View.GONE);
+                        }
                     }
                 });
 
