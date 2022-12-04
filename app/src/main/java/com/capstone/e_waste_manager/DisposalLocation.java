@@ -1,17 +1,23 @@
 package com.capstone.e_waste_manager;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -28,29 +34,44 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
+import android.system.ErrnoException;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.airbnb.lottie.utils.LogcatLogger;
 import com.capstone.e_waste_manager.model.DisposalModel;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.AggregateSource;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -67,13 +88,18 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.MinimapOverlay;
+import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.mylocation.DirectedLocationOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+import org.w3c.dom.Document;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
@@ -100,8 +126,11 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     FirestoreRecyclerAdapter adapter;
     FirebaseUser user;
 
-    private List<Marker> mClicked = new ArrayList<>();
-    final List<IGeoPoint> geoPoints = new ArrayList<>();
+    SnapHelper snapHelper;
+    int markerpos;
+
+    private final List<Marker> mClicked = new ArrayList<>();
+    private final List<String> listcomparator = new ArrayList<>();
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -141,6 +170,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         IMapController mapController = map.getController();
         mapController.setZoom(12.0);
         map.setMinZoomLevel(4.0);
+        map.setMaxZoomLevel(20.0);
         GeoPoint startPoint = new GeoPoint(15.4858, 120.9664);
         mapController.setCenter(startPoint);
         map.setTilesScaledToDpi(true);
@@ -150,7 +180,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             public void onClick(View view) {
                 if(currentLocation!=null){
                     GeoPoint myPosition = new GeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
-                    map.getController().animateTo(myPosition);
+                    map.getController().animateTo(myPosition, 12.0,2000L);
                 }
             }
         });
@@ -160,7 +190,6 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
 
         }
 
-
         //disposal locations
         disposalRecycler = findViewById(R.id.disposalRecycler);
         linearLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
@@ -169,8 +198,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         disposalRecycler.setItemAnimator(null);
 
         Query query = fStore.collection("DisposalLocations")
-                .orderBy("barangay", Query.Direction.DESCENDING)
-                .limit(50);
+                .orderBy("barangay", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<DisposalModel> options = new FirestoreRecyclerOptions.Builder<DisposalModel>()
                 .setQuery(query, DisposalModel.class)
@@ -192,6 +220,55 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         };
 
         disposalRecycler.setAdapter(adapter);
+        disposalRecycler.setPadding(100,0,100,0);
+
+        snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(disposalRecycler);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    RecyclerView.ViewHolder viewHolder = disposalRecycler.findViewHolderForAdapterPosition(0);
+                    RelativeLayout rrl= viewHolder.itemView.findViewById(R.id.disposalcard);
+                    rrl.animate().scaleX(1).scaleY(1).setDuration(350).setInterpolator(new AccelerateInterpolator()).start();
+                }catch (Exception e){
+                    Toast.makeText(ctx, "there are currently no disposal areas.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, 1000);
+
+        disposalRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                View v = snapHelper.findSnapView(linearLayoutManager);
+                int pos = linearLayoutManager.getPosition(v);
+
+                RecyclerView.ViewHolder viewHolder = disposalRecycler.findViewHolderForAdapterPosition(pos);
+                RelativeLayout rrl = viewHolder.itemView.findViewById(R.id.disposalcard);
+                ToggleButton zoom = viewHolder.itemView.findViewById(R.id.zoom);
+                TextView lat = viewHolder.itemView.findViewById(R.id.latitude);
+                TextView lon = viewHolder.itemView.findViewById(R.id.longitude);
+
+                zoom.setChecked(false);
+                double latitude = Double.parseDouble(lat.getText().toString());
+                double longitude = Double.parseDouble(lon.getText().toString());
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                    rrl.animate().setDuration(350).scaleX(1).scaleY(1).setInterpolator(new AccelerateInterpolator()).start();
+                    map.getController().animateTo(new GeoPoint(latitude, longitude),14.0, 2000L);
+                }else{
+                    rrl.animate().setDuration(350).scaleX(0.75f).scaleY(0.75f).setInterpolator(new AccelerateInterpolator()).start();
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+
 
         //transparent inset
         ViewCompat.setOnApplyWindowInsetsListener(disposalRecycler, (v, windowInsets) -> {
@@ -211,12 +288,61 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             return WindowInsetsCompat.CONSUMED;
         });
 
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException error) {
+
+                for(int i=0; i < map.getOverlays().size();i++){
+                    Toast.makeText(ctx, i+"", Toast.LENGTH_SHORT).show();
+                    Overlay overlay=map.getOverlays().get(i);
+                    if(overlay instanceof Marker&&((Marker) overlay).getId().equals("marker")){
+                        map.getOverlays().remove(overlay);
+                        i = 0;
+                    }
+                }
+
+                listcomparator.clear();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (DocumentSnapshot document : snapshots.getDocuments()) {
+                            final Drawable drawable = getResources().getDrawable(R.drawable.disposal);
+                            final Marker marker = new MyMarker(map);
+                            marker.setPosition(new GeoPoint(document.getGeoPoint("maplocation").getLatitude()
+                                    , document.getGeoPoint("maplocation").getLongitude()));
+                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                            marker.setIcon(drawable);
+                            marker.setId("marker");
+                            marker.setTitle("test");
+                            marker.setSnippet(document.getString("address") + ", " + document.getString("barangay"));
+
+                            listcomparator.add(document.getGeoPoint("maplocation").toString());
+
+                            marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker, MapView mapView) {
+                                    mClicked.add(marker);
+                                    for (String member : listcomparator){
+                                        Log.i("geopoints: ", member);
+                                    }
+                                    return false;
+                                }
+                            });
+                            map.getOverlays().add(marker);
+                            map.invalidate();
+                        }
+                    }
+                },500);
+            }
+        });
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView disposalname, disposaladdress, latitude, longitude;
         ImageView disposalicon;
         MaterialButton track;
+        ToggleButton zoom;
 
         DisposalModel model;
 
@@ -228,6 +354,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             longitude = itemView.findViewById(R.id.longitude);
             disposalicon = itemView.findViewById(R.id.disposalicon);
             track = itemView.findViewById(R.id.track);
+            zoom = itemView.findViewById(R.id.zoom);
 
             track.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -244,7 +371,18 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    map.getController().animateTo(new GeoPoint(model.maplocation.getLatitude(), model.maplocation.getLongitude()));
+                }
+            });
 
+            zoom.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (zoom.isChecked()){
+                        map.getController().animateTo(new GeoPoint(model.maplocation.getLatitude(), model.maplocation.getLongitude()), 18.0, 2000L);
+                    } else {
+                        map.getController().animateTo(new GeoPoint(model.maplocation.getLatitude(), model.maplocation.getLongitude()), 12.0, 2000L);
+                    }
                 }
             });
         }
@@ -255,43 +393,22 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             latitude.setText(""+disposalModel.maplocation.getLatitude());
             longitude.setText(""+disposalModel.maplocation.getLongitude());
 
-            DocumentReference usernameReference = fStore.collection("Users").document(disposalModel.docId);
-            usernameReference.addSnapshotListener(DisposalLocation.this, new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                    disposalname.setText(documentSnapShot.getString("Username"));
-                }
-            });
+//            DocumentReference usernameReference = fStore.collection("Users").document(disposalModel.docId);
+//            usernameReference.addSnapshotListener(DisposalLocation.this, new EventListener<DocumentSnapshot>() {
+//                @Override
+//                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+//                    disposalname.setText(documentSnapShot.getString("Username"));
+//                }
+//            });
 
-            //profile image per post
-//            StorageReference profileRef = storageReference.child("ProfileImage/"+ disposalModel.docId+"/profile.jpg");
+//            profile image per post
+//            StorageReference profileRef = storageReference.child("ProfileImage/"+ disposalModel.docId +"/profile.jpg");
 //            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
 //                @Override
 //                public void onSuccess(Uri uri) {
 //                    Picasso.get().load(uri).into(disposalicon);
 //                }
 //            });
-
-
-
-            final Drawable drawable = getResources().getDrawable(R.drawable.disposal);
-            geoPoints.add(new GeoPoint(disposalModel.maplocation.getLatitude(), disposalModel.maplocation.getLongitude()));
-            final Marker marker = new MyMarker(map);
-            marker.setPosition(new GeoPoint(disposalModel.maplocation.getLatitude(), disposalModel.maplocation.getLongitude()));
-            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-            marker.setIcon(drawable);
-            marker.setTitle(disposalname.getText().toString());
-            marker.setSnippet(disposaladdress.getText().toString());
-
-            marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker, MapView mapView) {
-                    mClicked.add(marker);
-                    return false;
-                }
-            });
-            map.getOverlays().add(marker);
-
         }
     }
 
@@ -360,9 +477,30 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
 
     }
 
+    private static final float MILLISECONDS_PER_INCH = 50f; //default is 25f (bigger = slower)
+
     private void message(final Marker pMarker) {
         ((MyMarker) pMarker).onMarkerClickDefault(pMarker, map);
+
+        LinearSmoothScroller linearSmoothScroller = new LinearSmoothScroller(disposalRecycler.getContext()) {
+            @Override
+            protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                return MILLISECONDS_PER_INCH / displayMetrics.densityDpi;
+            }
+        };
+
+        String geodata = "GeoPoint { latitude="+pMarker.getPosition().getLatitude()+", "+ "longitude="+pMarker.getPosition().getLongitude()+" }";
+
+        int result = Collections.binarySearch(listcomparator,geodata);
+        if (result == -1)
+            Toast.makeText(this, "Something went worng. Please try to restart.", Toast.LENGTH_SHORT).show();
+        else {
+            linearSmoothScroller.setTargetPosition(result);
+            linearLayoutManager.startSmoothScroll(linearSmoothScroller);
+        }
     }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     void AccessPermission() {
@@ -513,4 +651,9 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         overlay.setLocation(new GeoPoint(location.getLatitude(), location.getLongitude()));
         map.invalidate();
     }
+
+    public void drawmarks(){
+
+    }
+
 }

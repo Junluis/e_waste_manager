@@ -45,4 +45,6 @@ public class DisposalModel implements Serializable {
 
     public void setMaplocation(GeoPoint maplocation) { this.maplocation = maplocation; }
 
+
+
 }
