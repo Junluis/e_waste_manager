@@ -238,6 +238,9 @@ public class Home extends AppCompatActivity{
                     }
                     if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
                         partnerBadge_header.setVisibility(View.VISIBLE);
+                        navView_menu.getMenu().findItem(R.id.donate).setVisible(false);
+                        navView_menu.getMenu().findItem(R.id.adddisposalpg).setVisible(true);
+                        navView_menu.getMenu().findItem(R.id.donatetransactionspg).setVisible(true);
                     } else{
                         partnerBadge_header.setVisibility(View.GONE);
                     }
@@ -344,6 +347,16 @@ public class Home extends AppCompatActivity{
                         } else{
                             ShowPopup();
                         }
+                        break;
+                    }
+                    case R.id.adddisposalpg:
+                    {
+                        startActivity(new Intent(Home.this, AddDisposal.class));
+                        break;
+                    }
+                    case R.id.donatetransactionspg:
+                    {
+                        startActivity(new Intent(Home.this, DonateTransactions.class));
                         break;
                     }
                 }

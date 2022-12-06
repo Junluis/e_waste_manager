@@ -16,6 +16,18 @@
                 android:title="@string/disposal_area"/>
 
             <item
+                android:id="@+id/adddisposalpg"
+                android:icon="@drawable/ic__pin"
+                android:title="Add Disposal Area"
+                android:visible="false"/>
+
+            <item
+                android:id="@+id/donatetransactionspg"
+                android:icon="@drawable/ic__recieveddonation"
+                android:title="Donate Transactions"
+                android:visible="false"/>
+
+            <item
                 android:id="@+id/donate"
                 android:icon="@drawable/ic__donate"
                 android:title="@string/donate"/>
