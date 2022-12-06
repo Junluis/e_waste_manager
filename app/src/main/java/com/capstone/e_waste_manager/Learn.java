@@ -29,7 +29,7 @@ import java.util.Objects;
 public class Learn extends AppCompatActivity implements LearnInterface{
 
     RecyclerView learnRecycler;
-    ImageButton closebtn;
+    ImageButton closebtn, btnGuideSearch;
     View learnImage;
     MaterialButton addButton;
 
@@ -49,7 +49,9 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         learnImage = findViewById(R.id.learnImage);
         closebtn = findViewById(R.id.closebtn);
         addButton = findViewById(R.id.addButton);
+        btnGuideSearch = findViewById(R.id.btnGuideSearch);
 
+        btnGuideSearch.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), GuideSearch.class)));
         closebtn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
         addButton.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), LearnPost.class)));
 
