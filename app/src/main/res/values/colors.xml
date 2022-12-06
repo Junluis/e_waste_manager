@@ -23,4 +23,5 @@
 
     <color name="error">#f8d7da</color>
     <color name="success">#d4edda</color>
+    <color name="warning">#fff3cd</color>
 </resources>

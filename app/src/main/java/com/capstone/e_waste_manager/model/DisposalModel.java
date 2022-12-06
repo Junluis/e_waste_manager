@@ -11,14 +11,18 @@ public class DisposalModel implements Serializable {
     public String barangay;
     public GeoPoint maplocation;
     public String docId;
+    public String markerUid;
+    public String markername;
 
 
     public DisposalModel(){}
 
-    public DisposalModel(String address, String barangay, GeoPoint maplocation) {
+    public DisposalModel(String address, String barangay, GeoPoint maplocation, String markerUid, String markername) {
         this.address = address;
         this.barangay = barangay;
         this.maplocation = maplocation;
+        this.markerUid = markerUid;
+        this.markername = markername;
     }
 
     public String getAddress() {
@@ -44,6 +48,18 @@ public class DisposalModel implements Serializable {
     public GeoPoint getMaplocation() { return maplocation; }
 
     public void setMaplocation(GeoPoint maplocation) { this.maplocation = maplocation; }
+
+    public String getMarkername() { return markername; }
+
+    public void setMarkername(String markername) {
+        this.markername = markername;
+    }
+
+    public String getMarkerUid() { return markerUid; }
+
+    public void setMarkerUid(String markerUid) {
+        this.markerUid = markerUid;
+    }
 
 
 

@@ -35,6 +35,72 @@
         app:neumorph_shadowColorDark="@color/transparent"
         app:neumorph_shadowColorLight="@color/transparent" />
 
+    <soup.neumorphism.NeumorphFloatingActionButton
+        android:id="@+id/zoomin"
+        style="@style/Widget.Neumorph.FloatingActionButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:elevation="5dp"
+        android:scaleType="center"
+        android:src="@drawable/ic__plus"
+        app:layout_constraintEnd_toEndOf="@+id/myLocation"
+        app:layout_constraintStart_toStartOf="@+id/myLocation"
+        app:layout_constraintTop_toBottomOf="@+id/myLocation"
+        app:neumorph_backgroundColor="@color/whitebg"
+        app:neumorph_shadowColorDark="@color/transparent"
+        app:neumorph_shadowColorLight="@color/transparent" />
+
+    <soup.neumorphism.NeumorphFloatingActionButton
+        android:id="@+id/zoomout"
+        style="@style/Widget.Neumorph.FloatingActionButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:elevation="5dp"
+        android:scaleType="center"
+        android:src="@drawable/ic__minus"
+        app:layout_constraintEnd_toEndOf="@+id/zoomin"
+        app:layout_constraintStart_toStartOf="@+id/zoomin"
+        app:layout_constraintTop_toBottomOf="@+id/zoomin"
+        app:neumorph_backgroundColor="@color/whitebg"
+        app:neumorph_shadowColorDark="@color/transparent"
+        app:neumorph_shadowColorLight="@color/transparent" />
+
+    <soup.neumorphism.NeumorphCardView
+        style="@style/Widget.Neumorph.CardView"
+        android:id="@+id/bingmapcard"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:elevation="5dp"
+        app:neumorph_strokeColor="@color/blue"
+        app:neumorph_strokeWidth="3dp"
+        app:neumorph_shapeAppearance="@style/CustomShapeAppearance"
+        app:layout_constraintEnd_toEndOf="@+id/zoomout"
+        app:layout_constraintStart_toStartOf="@+id/zoomout"
+        app:layout_constraintTop_toBottomOf="@+id/zoomout"
+        app:neumorph_shadowColorDark="@color/transparent"
+        app:neumorph_shadowColorLight="@color/transparent">
+
+        <ImageButton
+            android:id="@+id/bingmap"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/bing_map"/>
+
+        <ImageButton
+            android:id="@+id/aerialmap"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:visibility="gone"
+            android:src="@drawable/aerial_map"/>
+
+        <ImageButton
+            android:id="@+id/defaultmap"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:visibility="gone"
+            android:src="@drawable/default_map"/>
+    </soup.neumorphism.NeumorphCardView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/disposalRecycler"
         android:layout_width="match_parent"

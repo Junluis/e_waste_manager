@@ -81,6 +81,7 @@ import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.tileprovider.tilesource.bing.BingMapTileSource;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
@@ -105,6 +106,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import soup.neumorphism.NeumorphCardView;
 import soup.neumorphism.NeumorphFloatingActionButton;
 
 public class DisposalLocation extends AppCompatActivity implements LocationListener{
@@ -126,8 +128,9 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     FirestoreRecyclerAdapter adapter;
     FirebaseUser user;
 
+    ImageView defaultmap, aerialmap, bingmap;
+
     SnapHelper snapHelper;
-    int markerpos;
 
     private final List<Marker> mClicked = new ArrayList<>();
     private final List<String> listcomparator = new ArrayList<>();
@@ -175,6 +178,52 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         mapController.setCenter(startPoint);
         map.setTilesScaledToDpi(true);
 
+        //map types
+        defaultmap = findViewById(R.id.defaultmap);
+        aerialmap = findViewById(R.id.aerialmap);
+        bingmap = findViewById(R.id.bingmap);
+
+        bingmap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                org.osmdroid.tileprovider.tilesource.bing.BingMapTileSource.setBingKey("Au_xRaQhcq-BkvxslYHS4B8Zpigts1CbdxoBDbo0o70i9AbiOvsx0NxYQKpffaDO");
+                org.osmdroid.tileprovider.tilesource.bing.BingMapTileSource bing=new org.osmdroid.tileprovider.tilesource.bing.BingMapTileSource(null);
+        //        bing.setStyle(BingMapTileSource.IMAGERYSET_AERIALWITHLABELS);
+                bing.setStyle(BingMapTileSource.IMAGERYSET_ROAD);
+                map.setTileSource(bing);
+                map.setMaxZoomLevel(19.5);
+                defaultmap.setVisibility(View.GONE);
+                bingmap.setVisibility(View.GONE);
+                aerialmap.setVisibility(View.VISIBLE);
+            }
+        });
+
+        aerialmap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                org.osmdroid.tileprovider.tilesource.bing.BingMapTileSource.setBingKey("Au_xRaQhcq-BkvxslYHS4B8Zpigts1CbdxoBDbo0o70i9AbiOvsx0NxYQKpffaDO");
+                org.osmdroid.tileprovider.tilesource.bing.BingMapTileSource bing=new org.osmdroid.tileprovider.tilesource.bing.BingMapTileSource(null);
+                bing.setStyle(BingMapTileSource.IMAGERYSET_AERIALWITHLABELS);
+//                bing.setStyle(BingMapTileSource.IMAGERYSET_ROAD);
+                map.setTileSource(bing);
+                map.setMaxZoomLevel(19.5);
+                defaultmap.setVisibility(View.VISIBLE);
+                bingmap.setVisibility(View.GONE);
+                aerialmap.setVisibility(View.GONE);
+            }
+        });
+
+        defaultmap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                map.setTileSource(TileSourceFactory.MAPNIK);
+                map.setMaxZoomLevel(20.0);
+                defaultmap.setVisibility(View.GONE);
+                bingmap.setVisibility(View.VISIBLE);
+                aerialmap.setVisibility(View.GONE);
+            }
+        });
+
         myLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -187,8 +236,8 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
 
         if (map != null) {
             addOverlays();
-
         }
+
 
         //disposal locations
         disposalRecycler = findViewById(R.id.disposalRecycler);
@@ -293,7 +342,6 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException error) {
 
                 for(int i=0; i < map.getOverlays().size();i++){
-                    Toast.makeText(ctx, i+"", Toast.LENGTH_SHORT).show();
                     Overlay overlay=map.getOverlays().get(i);
                     if(overlay instanceof Marker&&((Marker) overlay).getId().equals("marker")){
                         map.getOverlays().remove(overlay);
@@ -313,6 +361,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                                     , document.getGeoPoint("maplocation").getLongitude()));
                             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                             marker.setIcon(drawable);
+                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                             marker.setId("marker");
                             marker.setTitle("test");
                             marker.setSnippet(document.getString("address") + ", " + document.getString("barangay"));
@@ -389,26 +438,19 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
 
         public void bind(DisposalModel disposalModel){
             model = disposalModel;
+            disposalname.setText(disposalModel.markername);
             disposaladdress.setText(disposalModel.getAddress() + ", " + disposalModel.barangay);
             latitude.setText(""+disposalModel.maplocation.getLatitude());
             longitude.setText(""+disposalModel.maplocation.getLongitude());
 
-//            DocumentReference usernameReference = fStore.collection("Users").document(disposalModel.docId);
-//            usernameReference.addSnapshotListener(DisposalLocation.this, new EventListener<DocumentSnapshot>() {
-//                @Override
-//                public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-//                    disposalname.setText(documentSnapShot.getString("Username"));
-//                }
-//            });
-
-//            profile image per post
-//            StorageReference profileRef = storageReference.child("ProfileImage/"+ disposalModel.docId +"/profile.jpg");
-//            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                @Override
-//                public void onSuccess(Uri uri) {
-//                    Picasso.get().load(uri).into(disposalicon);
-//                }
-//            });
+//           image per markers
+            StorageReference profileRef = storageReference.child("MapMarkers/"+ disposalModel.docId +"/marker.jpg");
+            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.get().load(uri).into(disposalicon);
+                }
+            });
         }
     }
 
@@ -593,7 +635,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     public void onPause(){
         super.onPause();
         LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        lm.removeUpdates( this);
+        lm.removeUpdates(this);
 
         //this will refresh the osmdroid configuration on resuming.
         //if you make changes to the configuration, use
@@ -651,9 +693,4 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         overlay.setLocation(new GeoPoint(location.getLatitude(), location.getLongitude()));
         map.invalidate();
     }
-
-    public void drawmarks(){
-
-    }
-
 }

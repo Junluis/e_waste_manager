@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.capstone.e_waste_manager">
 
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -24,6 +23,12 @@
         android:theme="@style/Theme.E_waste_manager"
         tools:targetApi="31">
         <activity
+            android:name=".DonateTransactions"
+            android:exported="false" />
+        <activity
+            android:name=".AddDisposal"
+            android:exported="false" />
+        <activity
             android:name=".GoogleMapView"
             android:exported="false" />
         <activity
@@ -31,8 +36,7 @@
             android:exported="false" />
         <activity
             android:name=".EditProfile"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:exported="false"/>
         <activity
             android:name=".HomeView"
             android:exported="false"

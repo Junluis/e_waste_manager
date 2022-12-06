@@ -1,43 +1,38 @@
 package com.capstone.e_waste_manager;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -52,16 +47,20 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class EditProfile extends AppCompatActivity {
 
@@ -85,6 +84,7 @@ public class EditProfile extends AppCompatActivity {
 
     AutoCompleteTextView regBarangay;
     ArrayAdapter<String> barangayList;
+    List<String> barangay = new ArrayList<>();
 
     ScrollView edit_profile;
 
@@ -96,7 +96,6 @@ public class EditProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         prof_img = findViewById(R.id.prof_img);
         updateIcon = findViewById(R.id.updateIcon);
@@ -131,32 +130,24 @@ public class EditProfile extends AppCompatActivity {
         edit_profile = findViewById(R.id.edit_profile);
 
 
-        String[] barangayarray = getResources().getStringArray(R.array.barangay_list);
-
-        barangayList = new ArrayAdapter<String>(this, R.layout.dropdown_barangay, barangayarray);
-
-        regBarangay.setAdapter(barangayList);
-
-        //transparent inset
-        ViewCompat.setOnApplyWindowInsetsListener(edit_profile, (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            // Apply the insets as a margin to the view. Here the system is setting
-            // only the bottom, left, and right dimensions, but apply whichever insets are
-            // appropriate to your layout. You can also update the view padding
-            // if that's more appropriate.
-
-            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            mlp.leftMargin = insets.left;
-            mlp.bottomMargin = insets.bottom;
-            mlp.rightMargin = insets.right;
-            v.setLayoutParams(mlp);
-
-            // Return CONSUMED if you don't want want the window insets to keep being
-            // passed down to descendant views.
-            return WindowInsetsCompat.CONSUMED;
+        DocumentReference docRef = fStore.collection("Miscellaneous").document("cvUA8BB7Pk0Ud7kYwxoT");
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                barangay = (List<String>) documentSnapshot.get("Barangay");
+//                for(String log : barangay)
+//                {
+//                    Log.e("Tag",log);
+//                }
+                if (barangay != null) {
+                    Collections.sort(barangay, String.CASE_INSENSITIVE_ORDER);
+                    barangayList = new ArrayAdapter<String>(EditProfile.this, R.layout.dropdown_barangay, barangay);
+                    regBarangay.setAdapter(barangayList);
+                }
+            }
         });
 
-
+        //transparent inset
 
         DocumentReference documentReference = fStore.collection("Users").document(userID);
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
@@ -183,7 +174,7 @@ public class EditProfile extends AppCompatActivity {
             }
         });
 
-                //close app
+        //close app
         closeep = findViewById(R.id.closeep);
         closeep.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -494,8 +485,8 @@ public class EditProfile extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
                 if (!s.toString().isEmpty()) {
-                    for (int z = 0; z <= barangayarray.length - 1; z++) {
-                        if (!s.toString().equals(barangayarray[z])) {
+                    for (int z = 0; z <= barangay.size() - 1; z++) {
+                        if (!barangay.contains(s.toString())) {
                             if (tilBarangay.getChildCount() == 2)
                                 tilBarangay.getChildAt(1).setVisibility(View.VISIBLE);
                             tilBarangay.setError("Select barangay.");
@@ -550,7 +541,7 @@ public class EditProfile extends AppCompatActivity {
                     regBio.requestFocus();
                 }else if(!TextUtils.isEmpty(tilBarangay.getError())){
                     if(regBarangay.getText().toString().length() == 0)
-                        regBio.setText("");
+                        regBarangay.setText("");
                     regBarangay.requestFocus();
                 }else{
                     //upload Image to Firebase
@@ -564,12 +555,12 @@ public class EditProfile extends AppCompatActivity {
                             DocumentReference docRef = fStore.collection("Users").document(user.getUid());
                             Map<String, Object> edited = new HashMap<>();
                             edited.put("Email", email);
-                            edited.put("Username", regUsername.getText().toString());
-                            edited.put("FirstName", regFirstName.getText().toString());
-                            edited.put("LastName", regLastName.getText().toString());
+                            edited.put("Username", regUsername.getText().toString().trim());
+                            edited.put("FirstName", regFirstName.getText().toString().trim());
+                            edited.put("LastName", regLastName.getText().toString().trim());
                             edited.put("DateOfBirth", regDateOfBirth.getText().toString());
-                            edited.put("Bio", regBio.getText().toString());
-                            edited.put("HouseAddress", regAddressHouse.getText().toString());
+                            edited.put("Bio", regBio.getText().toString().trim());
+                            edited.put("HouseAddress", regAddressHouse.getText().toString().trim());
                             edited.put("Barangay", regBarangay.getText().toString());
 
                             docRef.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -621,6 +612,8 @@ public class EditProfile extends AppCompatActivity {
             }
         });
     }
+
+
 
 
 }

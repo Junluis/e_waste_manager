@@ -25,4 +25,11 @@
         <item name="neumorph_cornerSizeBottomLeft">16dp</item>
         <item name="neumorph_cornerSizeBottomRight">16dp</item>
     </style>
+    <style name="Theme.E_waste_manager.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.E_waste_manager.AppBarOverlay"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.E_waste_manager.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
