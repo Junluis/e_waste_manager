@@ -111,6 +111,10 @@ public class Home extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        //request
+        request = findViewById(R.id.request);
+        request.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Request.class)));
+
         //transparent status
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
@@ -149,15 +153,7 @@ public class Home extends AppCompatActivity{
         emptyView = findViewById(R.id.emptyView);
 
         //search
-        search_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                postSearch.setVisibility(View.VISIBLE);
-                titlePage.setVisibility(View.GONE);
-                search_btn.setVisibility(View.GONE);
-                postSearch.requestFocus();
-            }
-        });
+        search_btn.setOnClickListener(v ->  startActivity(new Intent(getApplicationContext(),ForumSearch.class)));
         postSearch.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -284,7 +280,7 @@ public class Home extends AppCompatActivity{
                         case R.id.notificationpg:
                         {
                             if (user != null && !user.isAnonymous()) {
-                                startActivity(new Intent(Home.this, Notification.class));
+                                startActivity(new Intent(Home.this, RequestTab.class));
                             } else{
                                 ShowPopup();
                             }

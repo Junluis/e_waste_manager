@@ -3,24 +3,32 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/drawable/bordered_rectangle_rounded_corners.xml" value="0.2625" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/drawable/search_drawable.xml" value="0.391" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_donate.xml" value="0.55" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_forum_search.xml" value="0.5" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_guide_search.xml" value="0.47314814814814815" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_home.xml" value="0.5415384615384615" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_home_view.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_learn.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_login.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_main.xml" value="0.5" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_notification.xml" value="0.325" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_partner.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_post.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_register.xml" value="0.5359375" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_request.xml" value="0.55" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_request_tab.xml" value="0.4824074074074074" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/activity_request_view.xml" value="0.4824074074074074" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/comment_each.xml" value="0.67" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/home_each.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/learn_each.xml" value="0.5" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/learnview.xml" value="0.55" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/left_nav.xml" value="0.5489583333333333" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/postview.xml" value="0.30092592592592593" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/requests_each.xml" value="0.4824074074074074" />
         <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/right_nav.xml" value="0.5489583333333333" />
+        <entry key="..\:/Files/Desktop/School/e_waste_manager/app/src/main/res/layout/search_guide_each.xml" value="0.49074074074074076" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/bordered_rectangle_rounded_corners.xml" value="0.307" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/btn_tint.xml" value="0.229" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/chip.xml" value="0.2875" />

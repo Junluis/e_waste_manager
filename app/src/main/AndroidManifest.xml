@@ -30,13 +30,28 @@
             android:exported="false" />
         <activity
             android:name=".GoogleMapView"
+            android:name=".GuideSearch"
+            android:exported="false" />
+        <activity
+            android:name=".ForumSearch"
+            android:exported="false" />
+        <activity
+            android:name=".LearnSearch"
+            android:exported="false" />
+        <activity
+            android:name=".RequestTab"
+            android:exported="false" />
+        <activity
+            android:name=".RequestView"
             android:exported="false" />
         <activity
             android:name=".NoConnection"
             android:exported="false" />
         <activity
             android:name=".EditProfile"
-            android:exported="false"/>
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".HomeView"
             android:exported="false"

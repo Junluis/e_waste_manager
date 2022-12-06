@@ -20,7 +20,7 @@
         app:layout_constraintVertical_bias="0.0">
 
         <ImageButton
-            android:id="@+id/closedd"
+            android:id="@+id/closedr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -35,7 +35,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="0dp"
-            android:layout_toEndOf="@+id/closedd"
+            android:layout_toEndOf="@+id/closedr"
             android:paddingBottom="2dp"
             android:text="Donation details"
             android:textColor="@color/black"
