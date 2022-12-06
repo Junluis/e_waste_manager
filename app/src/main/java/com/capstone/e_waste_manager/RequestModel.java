@@ -1,11 +1,11 @@
 package com.capstone.e_waste_manager;
 
 public class RequestModel {
-    String reqName, reqAddress, reqNumber, reqDesc, reqDTI, reqSEC, reqUserMail;
+    String reqName, reqAddress, reqNumber, reqDesc, reqDTI, reqSEC, reqUserMail, reqUserId;
 
     public RequestModel(){}
 
-    public RequestModel(String reqName, String reqAddress, String reqNumber, String reqDesc, String reqDTI, String reqSEC, String reqUserMail) {
+    public RequestModel(String reqName, String reqAddress, String reqNumber, String reqDesc, String reqDTI, String reqSEC, String reqUserMail, String reqUserId) {
         this.reqName = reqName;
         this.reqAddress = reqAddress;
         this.reqNumber = reqNumber;
@@ -13,6 +13,7 @@ public class RequestModel {
         this.reqDTI = reqDTI;
         this.reqSEC = reqSEC;
         this.reqUserMail = reqUserMail;
+        this.reqUserId = reqUserId;
     }
 
     public String getReqName() {
@@ -69,5 +70,13 @@ public class RequestModel {
 
     public void setReqUserMail(String reqUserMail) {
         this.reqUserMail = reqUserMail;
+    }
+
+    public String getReqUserId() {
+        return reqUserId;
+    }
+
+    public void setReqUserId(String reqUserId) {
+        this.reqUserId = reqUserId;
     }
 }

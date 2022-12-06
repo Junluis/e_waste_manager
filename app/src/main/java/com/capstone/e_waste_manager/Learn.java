@@ -81,7 +81,7 @@ public class Learn extends AppCompatActivity implements LearnInterface{
                     .get().addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult()!=null){
                             String id = task.getResult().getString("Partner");
-                            if(Objects.equals(id, "1")){
+                            if(Objects.equals(id, "1") || Objects.equals(id, "2")){
                                 addButton.setVisibility(View.VISIBLE);
                             }
                         }else{

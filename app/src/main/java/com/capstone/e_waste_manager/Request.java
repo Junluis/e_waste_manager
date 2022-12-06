@@ -20,19 +20,23 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Request extends AppCompatActivity {
 
     int REQUEST_CODE_DTI = 101;
     int REQUEST_CODE_SEC = 102;
+
     ImageButton back;
     TextInputEditText prName, prAddress, prNumber, prDesc;
     ImageView prDTI, prSEC;
@@ -41,9 +45,11 @@ public class Request extends AppCompatActivity {
     boolean isImageAdded;
 
     FirebaseAuth fAuth;
+
     FirebaseFirestore fStore;
-    DatabaseReference DataRef;
+    DatabaseReference dataRef;
     StorageReference sr;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +69,7 @@ public class Request extends AppCompatActivity {
 
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        DataRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        dataRef = FirebaseDatabase.getInstance().getReference().child("Users");
         sr = FirebaseStorage.getInstance().getReference().child("DocImage");
 
         back.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
@@ -101,45 +107,46 @@ public class Request extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
     private void uploadRequest(final String reqName, final String reqAddress,
                                final String reqNumber, final String reqDesc) {
-
-        String key = DataRef.push().getKey();
+        String key = dataRef.push().getKey();
         sr.child(key+".jpg").putFile(uriDTI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 sr.child(key+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        HashMap hashMap = new HashMap();
-                        hashMap.put("reqName", reqName);
-                        hashMap.put("reqAddress", reqAddress);
-                        hashMap.put("reqNumber", reqNumber);
-                        hashMap.put("reqDesc", reqDesc);
-                        hashMap.put("reqDTI", uriDTI.toString());
-                        hashMap.put("reqSEC", uriSEC.toString());
-
-                        fStore.collection("Request").add(hashMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentReference> task) {
-                                Toast.makeText(Request.this, "Data Successfully Uploaded", Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
-                        });
-//                        sr.child(key+".jpg").putFile(uriSEC).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                            @Override
-//                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                                sr.child(key+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                                    @Override
-//                                    public void onSuccess(Uri uri) {
-//
-//                                    }
-//                                });
-//                            }
-//                        });
+                        fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .get().addOnCompleteListener(task -> {
+                                   String reqId = task.getResult().getString("isReq");
+                                   String reqEmail = task.getResult().getString("Email");
+                                   String userId = fAuth.getUid();
+                                   if (Objects.equals(reqId, "1")){
+                                       Toast.makeText(Request.this, "This account already has a request", Toast.LENGTH_SHORT).show();
+                                       finish();
+                                   } else {
+                                       HashMap hashMap = new HashMap();
+                                       hashMap.put("reqUserId", userId);
+                                       hashMap.put("reqName", reqName);
+                                       hashMap.put("reqUserMail", reqEmail);
+                                       hashMap.put("reqAddress", reqAddress);
+                                       hashMap.put("reqNumber", reqNumber);
+                                       hashMap.put("reqDesc", reqDesc);
+                                       hashMap.put("reqDTI", uriDTI.toString());
+                                       hashMap.put("reqSEC", uriSEC.toString());
+                                       fStore.collection("Request").add(hashMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                           @Override
+                                           public void onComplete(@NonNull Task<DocumentReference> task) {
+                                               fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                       .update("isReq", "Data Successfully Uploaded");
+                                               Toast.makeText(Request.this, reqId, Toast.LENGTH_SHORT).show();
+                                               finish();
+                                           }
+                                       });
+                                   }
+                                });
                     }
                 });
             }

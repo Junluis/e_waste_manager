@@ -30,6 +30,8 @@
             android:exported="false" />
         <activity
             android:name=".GoogleMapView"
+            android:exported="false" />
+        <activity
             android:name=".GuideSearch"
             android:exported="false" />
         <activity

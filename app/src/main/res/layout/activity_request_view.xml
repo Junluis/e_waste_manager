@@ -157,6 +157,33 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textView29"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15sp"
+                            android:layout_marginTop="15sp"
+                            android:layout_marginBottom="15sp"
+                            android:text="Email: "
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:id="@+id/reqEmailTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5sp"
+                            android:layout_marginTop="15sp"
+                            android:layout_marginBottom="15sp"
+                            android:text="Email Here"
+                            android:textColor="#0C0C0C"
+                            android:textSize="24sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:orientation="vertical">
 
                         <TextView
@@ -194,7 +221,6 @@
                             android:textSize="16sp" />
 
                         <androidx.cardview.widget.CardView
-                            android:id="@+id/reqDTIIV"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal|center_vertical"
@@ -202,6 +228,7 @@
                             android:paddingEnd="15dp">
 
                             <ImageView
+                                android:id="@+id/reqDTIIV"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal|center_vertical"
@@ -226,7 +253,6 @@
                             android:textSize="16sp" />
 
                         <androidx.cardview.widget.CardView
-                            android:id="@+id/reqSECIV"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal|center_vertical"
@@ -234,6 +260,7 @@
                             android:paddingEnd="15dp">
 
                             <ImageView
+                                android:id="@+id/reqSECIV"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal|center_vertical"

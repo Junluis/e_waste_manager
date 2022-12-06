@@ -16,16 +16,15 @@ import java.util.ArrayList;
 
 public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ReqHolder> {
 
-    RequestInterface requestInterface;
     Context context;
     ArrayList<RequestModel> requestModelArrayList;
+    RequestInterface requestInterface;
 
-    public RequestAdapter(RequestInterface learnInterface, Context context, ArrayList<RequestModel> requestModelArrayList) {
-        this.requestInterface = requestInterface;
+    public RequestAdapter(Context context, ArrayList<RequestModel> requestModelArrayList, RequestInterface requestInterface) {
         this.context = context;
         this.requestModelArrayList = requestModelArrayList;
+        this.requestInterface = requestInterface;
     }
-
 
     @NonNull
     @Override
@@ -39,13 +38,13 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ReqHolde
     public void onBindViewHolder(@NonNull RequestAdapter.ReqHolder holder, int position) {
 
         RequestModel reqP = requestModelArrayList.get(position);
-        holder.reqName.setText(reqP.reqName);
-        holder.reqAddress.setText(reqP.reqAddress);
-        holder.reqUserMail.setText(reqP.reqUserMail);
-        holder.reqNumber.setText(reqP.reqNumber);
-        holder.reqDesc.setText(reqP.reqDesc);
-        Picasso.get().load(reqP.reqDTI).into(holder.reqDTI);
-        Picasso.get().load(reqP.reqSEC).into(holder.reqSEC);
+        holder.requestName.setText(reqP.reqName);
+//        holder.requestAddress.setText(reqP.reqAddress);
+        holder.requestUserMail.setText(reqP.reqUserMail);
+//        holder.requestNumber.setText(reqP.reqNumber);
+//        holder.requestDesc.setText(reqP.reqDesc);
+//        Picasso.get().load(reqP.reqDTI).into(holder.requestDTI);
+//        Picasso.get().load(reqP.reqSEC).into(holder.requestSEC);
 
     }
 
@@ -56,13 +55,13 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ReqHolde
 
     public class ReqHolder extends RecyclerView.ViewHolder{
 
-        TextView reqName, reqAddress, reqNumber, reqDesc, reqUserMail;
-        ImageView reqDTI, reqSEC;
+        TextView requestName, requestAddress, requestNumber, requestDesc, requestUserMail;
+        ImageView requestDTI, requestSEC;
 
         public ReqHolder(@NonNull View itemView, RequestInterface requestInterface) {
             super(itemView);
-                reqName = itemView.findViewById(R.id.adReqName);
-                reqUserMail = itemView.findViewById(R.id.adReqDetail);
+                requestName = itemView.findViewById(R.id.adReqName);
+                requestUserMail = itemView.findViewById(R.id.adReqDetail);
 
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
