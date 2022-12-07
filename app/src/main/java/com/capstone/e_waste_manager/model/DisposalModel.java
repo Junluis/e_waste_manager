@@ -13,16 +13,18 @@ public class DisposalModel implements Serializable {
     public String docId;
     public String markerUid;
     public String markername;
+    public Boolean hasImage;
 
 
     public DisposalModel(){}
 
-    public DisposalModel(String address, String barangay, GeoPoint maplocation, String markerUid, String markername) {
+    public DisposalModel(String address, String barangay, GeoPoint maplocation, String markerUid, String markername, Boolean hasImage) {
         this.address = address;
         this.barangay = barangay;
         this.maplocation = maplocation;
         this.markerUid = markerUid;
         this.markername = markername;
+        this.hasImage = hasImage;
     }
 
     public String getAddress() {
@@ -59,6 +61,12 @@ public class DisposalModel implements Serializable {
 
     public void setMarkerUid(String markerUid) {
         this.markerUid = markerUid;
+    }
+
+    public Boolean getHasImage() { return hasImage; }
+
+    public void setHasImage(Boolean hasImage) {
+        this.hasImage = hasImage;
     }
 
 

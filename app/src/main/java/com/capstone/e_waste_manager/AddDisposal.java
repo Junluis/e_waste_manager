@@ -7,7 +7,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
 
 import android.Manifest;
 import android.app.Activity;
@@ -26,6 +30,8 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -40,6 +46,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -81,14 +89,25 @@ import soup.neumorphism.NeumorphFloatingActionButton;
 
 public class AddDisposal extends AppCompatActivity implements LocationListener{
 
-    TextInputLayout tilAddress, tilBarangay, tilBusinessName;
-    EditText regAddress, regBusinessName;
+    MotionLayout disposallocationpg;
+
+    ActivityResultLauncher<String[]> mPermissionResultLauncher;
+    private boolean isReadPermissionGranted = false;
+    private boolean isWritePermissionGranted = false;
+    private boolean isFineLocationPermissionGranted = false;
+    private boolean isInternetPermissionGranted = false;
+    private boolean isNetAccessPermissionGranted = false;
+
+    TextInputLayout tilAddress, tilBarangay, tilBusinessName, tilAcceptedEwaste;
+    EditText regAddress, regBusinessName, regAcceptedEwaste;
     AutoCompleteTextView regBarangay;
     ImageView edit_prof_img, prof_img;
     ImageButton closead, imageButton;
     Button submitButton;
     CardView updateIcon;
     TextView coordinates;
+    ChipGroup chipGroup;
+    NestedScrollView edit_profile;
 
     //maps
     MapView map = null;
@@ -117,6 +136,29 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mPermissionResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
+            @Override
+            public void onActivityResult(Map<String, Boolean> result) {
+
+                if(result.get(Manifest.permission.ACCESS_FINE_LOCATION) != null){
+                    isFineLocationPermissionGranted = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
+                }
+                if(result.get(Manifest.permission.INTERNET) != null){
+                    isInternetPermissionGranted = result.get(Manifest.permission.INTERNET);
+                }
+                if(result.get(Manifest.permission.ACCESS_NETWORK_STATE) != null){
+                    isNetAccessPermissionGranted = result.get(Manifest.permission.ACCESS_NETWORK_STATE);
+                }
+                if(result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null){
+                    isReadPermissionGranted = result.get(Manifest.permission.READ_EXTERNAL_STORAGE);
+                }
+                if(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null){
+                    isWritePermissionGranted = result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                }
+
+            }
+        });
         setContentView(R.layout.activity_add_disposal);
 
         tilAddress = findViewById(R.id.tilAddress);
@@ -132,6 +174,11 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         updateIcon = findViewById(R.id.updateIcon);
         myLocation = findViewById(R.id.myLocation);
         imageButton = findViewById(R.id.imageButton);
+        tilAcceptedEwaste = findViewById(R.id.tilAcceptedEwaste);
+        regAcceptedEwaste = findViewById(R.id.regAcceptedEwaste);
+        chipGroup = findViewById(R.id.i_flex_box);
+        edit_profile = findViewById(R.id.edit_profile);
+        disposallocationpg = findViewById(R.id.disposallocationpg);
 
         coordinates = findViewById(R.id.textView11);
 
@@ -180,6 +227,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             public void onClick(View view) {
                 //open gallery
                 galleryOpen.launch("image/");
+                disposallocationpg.transitionToEnd();
             }
         });
 
@@ -272,6 +320,81 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             addOverlays();
         }
 
+        regAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    disposallocationpg.transitionToEnd();
+                }
+            }
+        });
+        regBarangay.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    disposallocationpg.transitionToEnd();
+                }
+            }
+        });
+        regBusinessName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    disposallocationpg.transitionToEnd();
+                }
+            }
+        });
+
+        regAcceptedEwaste.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    if (regAcceptedEwaste.getText().toString().equals(" ")){
+                        regAcceptedEwaste.getText().clear();
+                        disposallocationpg.transitionToEnd();
+                    }
+                } else {
+                    if (regAcceptedEwaste.getText().toString().equals("") && chipGroup.getChildCount() > 0) {
+                        regAcceptedEwaste.setText(" ");
+                    }
+                }
+            }
+        });
+        regAcceptedEwaste.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                String text = regAcceptedEwaste.getText().toString();
+                if (text.contains(" ")){
+                    regAcceptedEwaste.setText(text.replace(" ", "-"));
+                    regAcceptedEwaste.setSelection(regAcceptedEwaste.length());
+                }
+                if (text.contains("--")){
+                    regAcceptedEwaste.setText(text.replace("--", "-"));
+                    regAcceptedEwaste.setSelection(regAcceptedEwaste.length());
+                }
+                if (text.startsWith(" ")){
+                    regAcceptedEwaste.setText(text.replace(" ", ""));
+                    regAcceptedEwaste.setSelection(regAcceptedEwaste.length());
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String text = editable.toString();
+                if (!text.isEmpty() && text.endsWith(",")) {
+                    if(!text.trim().equals(",")){
+                        if (text.endsWith("-,")){
+                            text = text.substring(0, text.length() - 2);
+                        }
+                        addNewChip(text.replace(",", "").toLowerCase());
+                    }
+                    editable.clear();
+                }
+            }
+        });
+
         regAddress.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
@@ -339,9 +462,13 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             }
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (!s.toString().isEmpty()) {
+                if(s.toString().isEmpty()){
+                    if (tilBarangay.getChildCount() == 2)
+                        tilBarangay.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilBarangay.setError("required*");
+                } else if (!s.toString().isEmpty()) {
                     for (int z = 0; z <= barangay.size() - 1; z++) {
-                        if (regBarangay.getText().length() == 0) {
+                        if (!barangay.contains(s.toString())) {
                             if (tilBarangay.getChildCount() == 2)
                                 tilBarangay.getChildAt(1).setVisibility(View.VISIBLE);
                             tilBarangay.setError("Select barangay.");
@@ -378,6 +505,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                 if(firebasegeoPoint == null){
                     Toast.makeText(ctx, "PLease add marker on the map", Toast.LENGTH_LONG).show();
                     imageButton.performClick();
+                    disposallocationpg.transitionToStart();
                 } else if(regBusinessName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilBusinessName.getError())){
                     if(regBusinessName.getText().toString().length() == 0)
                         regBusinessName.setText("");
@@ -386,10 +514,10 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                     if(regAddress.getText().toString().length() == 0)
                         regAddress.setText("");
                     regAddress.requestFocus();
-                }else if(regBarangay.getText().length() == 0){
-                    if (tilBarangay.getChildCount() == 2)
-                        tilBarangay.getChildAt(1).setVisibility(View.VISIBLE);
-                    tilBarangay.setError("Select barangay.");
+                }else if(regBarangay.getText().toString().length() == 0 || !TextUtils.isEmpty(tilBarangay.getError())){
+                    if(regBarangay.getText().toString().length() == 0)
+                        regBarangay.setText("");
+                    regBarangay.requestFocus();
                 }else{
                     fStore.collection("Users").document(userID).get().addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null){
@@ -399,6 +527,11 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                             doc.put("barangay", regBarangay.getText().toString().trim());
                             doc.put("maplocation", firebasegeoPoint);
                             doc.put("markerUid", fAuth.getCurrentUser().getUid());
+                            if (profileImageUri != null && !profileImageUri.equals(Uri.EMPTY)){
+                                doc.put("hasImage", true);
+                            }else{
+                                doc.put("hasImage", false);
+                            }
 
                             fStore.collection("DisposalLocations").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                 @Override
@@ -600,69 +733,61 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void AccessPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
+
+        isFineLocationPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isInternetPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.INTERNET)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isNetAccessPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_NETWORK_STATE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isReadPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isWritePermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        List<String> permissionRequest = new ArrayList<String>();
+
+        if (!isFineLocationPermissionGranted){
+            permissionRequest.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.INTERNET}, 1002);
+        if (!isInternetPermissionGranted){
+            permissionRequest.add(Manifest.permission.INTERNET);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, 1003);
+        if (!isNetAccessPermissionGranted){
+            permissionRequest.add(Manifest.permission.ACCESS_NETWORK_STATE);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1004);
+        if (!isReadPermissionGranted){
+            permissionRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1005);
+        if (!isWritePermissionGranted){
+            permissionRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        if (!permissionRequest.isEmpty()){
+            mPermissionResultLauncher.launch(permissionRequest.toArray(new String[0]));
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1001:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted Fine Location", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied Fine Location", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1002:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted INTERNET", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied INTERNET", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1003:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted NETWORK STATE", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied NETWORK STATE", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1004:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted READ EXTERNAL STORAGE", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied Fine Location", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1005:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted WRITE EXTERNAL STORAGE", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied WRITE EXTERNAL STORAGE", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
+    private void addNewChip(String text) {
+        Chip newChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, chipGroup, false);
+        newChip.setId(ViewCompat.generateViewId());
+        newChip.setText(text);
+        newChip.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chipGroup.removeView(newChip);
+            }
+        });
+        chipGroup.addView(newChip);
     }
 }

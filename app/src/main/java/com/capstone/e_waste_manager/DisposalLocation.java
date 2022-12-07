@@ -2,6 +2,9 @@ package com.capstone.e_waste_manager;
 
 import static android.content.ContentValues.TAG;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -9,6 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -20,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -57,6 +63,7 @@ import com.capstone.e_waste_manager.model.DisposalModel;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
@@ -102,6 +109,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -111,8 +119,15 @@ import soup.neumorphism.NeumorphFloatingActionButton;
 
 public class DisposalLocation extends AppCompatActivity implements LocationListener{
 
+    ActivityResultLauncher<String[]> mPermissionResultLauncher;
+    private boolean isReadPermissionGranted = false;
+    private boolean isWritePermissionGranted = false;
+    private boolean isFineLocationPermissionGranted = false;
+    private boolean isInternetPermissionGranted = false;
+    private boolean isNetAccessPermissionGranted = false;
+
     MapView map = null;
-    NeumorphFloatingActionButton myLocation;
+    NeumorphFloatingActionButton myLocation, zoomin, zoomout;
     private DirectedLocationOverlay overlay;
     private boolean hasFix = false;
     private Location currentLocation = null;
@@ -128,6 +143,8 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     FirestoreRecyclerAdapter adapter;
     FirebaseUser user;
 
+    Query query;
+
     ImageView defaultmap, aerialmap, bingmap;
 
     SnapHelper snapHelper;
@@ -139,6 +156,29 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mPermissionResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
+            @Override
+            public void onActivityResult(Map<String, Boolean> result) {
+
+                if(result.get(Manifest.permission.ACCESS_FINE_LOCATION) != null){
+                    isFineLocationPermissionGranted = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
+                }
+                if(result.get(Manifest.permission.INTERNET) != null){
+                    isInternetPermissionGranted = result.get(Manifest.permission.INTERNET);
+                }
+                if(result.get(Manifest.permission.ACCESS_NETWORK_STATE) != null){
+                    isNetAccessPermissionGranted = result.get(Manifest.permission.ACCESS_NETWORK_STATE);
+                }
+                if(result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null){
+                    isReadPermissionGranted = result.get(Manifest.permission.READ_EXTERNAL_STORAGE);
+                }
+                if(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null){
+                    isWritePermissionGranted = result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                }
+
+            }
+        });
 
         //firebase
         fStore = FirebaseFirestore.getInstance();
@@ -224,6 +264,23 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             }
         });
 
+        zoomin = findViewById(R.id.zoomin);
+        zoomout = findViewById(R.id.zoomout);
+
+        zoomin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                map.getController().zoomIn(100L);
+            }
+        });
+
+        zoomout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                map.getController().zoomOut(100L);
+            }
+        });
+
         myLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -246,7 +303,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
 
         disposalRecycler.setItemAnimator(null);
 
-        Query query = fStore.collection("DisposalLocations")
+        query = fStore.collection("DisposalLocations")
                 .orderBy("barangay", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<DisposalModel> options = new FirestoreRecyclerOptions.Builder<DisposalModel>()
@@ -280,9 +337,10 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                 try {
                     RecyclerView.ViewHolder viewHolder = disposalRecycler.findViewHolderForAdapterPosition(0);
                     RelativeLayout rrl= viewHolder.itemView.findViewById(R.id.disposalcard);
+                    ImageView disposalicon = viewHolder.itemView.findViewById(R.id.disposalicon);
                     rrl.animate().scaleX(1).scaleY(1).setDuration(350).setInterpolator(new AccelerateInterpolator()).start();
-                }catch (Exception e){
-                    Toast.makeText(ctx, "there are currently no disposal areas.", Toast.LENGTH_SHORT).show();
+                }catch (Exception ignored){
+
                 }
             }
         }, 1000);
@@ -299,6 +357,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                 ToggleButton zoom = viewHolder.itemView.findViewById(R.id.zoom);
                 TextView lat = viewHolder.itemView.findViewById(R.id.latitude);
                 TextView lon = viewHolder.itemView.findViewById(R.id.longitude);
+                ImageView disposalicon = viewHolder.itemView.findViewById(R.id.disposalicon);
 
                 zoom.setChecked(false);
                 double latitude = Double.parseDouble(lat.getText().toString());
@@ -337,54 +396,6 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             return WindowInsetsCompat.CONSUMED;
         });
 
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException error) {
-
-                for(int i=0; i < map.getOverlays().size();i++){
-                    Overlay overlay=map.getOverlays().get(i);
-                    if(overlay instanceof Marker&&((Marker) overlay).getId().equals("marker")){
-                        map.getOverlays().remove(overlay);
-                        i = 0;
-                    }
-                }
-
-                listcomparator.clear();
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (DocumentSnapshot document : snapshots.getDocuments()) {
-                            final Drawable drawable = getResources().getDrawable(R.drawable.disposal);
-                            final Marker marker = new MyMarker(map);
-                            marker.setPosition(new GeoPoint(document.getGeoPoint("maplocation").getLatitude()
-                                    , document.getGeoPoint("maplocation").getLongitude()));
-                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                            marker.setIcon(drawable);
-                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                            marker.setId("marker");
-                            marker.setTitle("test");
-                            marker.setSnippet(document.getString("address") + ", " + document.getString("barangay"));
-
-                            listcomparator.add(document.getGeoPoint("maplocation").toString());
-
-                            marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
-                                @Override
-                                public boolean onMarkerClick(Marker marker, MapView mapView) {
-                                    mClicked.add(marker);
-                                    for (String member : listcomparator){
-                                        Log.i("geopoints: ", member);
-                                    }
-                                    return false;
-                                }
-                            });
-                            map.getOverlays().add(marker);
-                            map.invalidate();
-                        }
-                    }
-                },500);
-            }
-        });
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -444,18 +455,19 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             longitude.setText(""+disposalModel.maplocation.getLongitude());
 
 //           image per markers
-            StorageReference profileRef = storageReference.child("MapMarkers/"+ disposalModel.docId +"/marker.jpg");
-            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    Picasso.get().load(uri).into(disposalicon);
-                }
-            });
+            if (disposalModel.hasImage != null && disposalModel.hasImage){
+                StorageReference profileRef = storageReference.child("MapMarkers/"+ disposalModel.docId +"/marker.jpg");
+                profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.get().load(uri).into(disposalicon);
+                    }
+                });
+            }
         }
     }
 
     static private class MyMarker extends Marker {
-
         MyMarker(MapView mapView) {
             super(mapView);
         }
@@ -533,81 +545,58 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
 
         String geodata = "GeoPoint { latitude="+pMarker.getPosition().getLatitude()+", "+ "longitude="+pMarker.getPosition().getLongitude()+" }";
 
-        int result = Collections.binarySearch(listcomparator,geodata);
-        if (result == -1)
-            Toast.makeText(this, "Something went worng. Please try to restart.", Toast.LENGTH_SHORT).show();
-        else {
-            linearSmoothScroller.setTargetPosition(result);
-            linearLayoutManager.startSmoothScroll(linearSmoothScroller);
+        for (int x=0; x < listcomparator.size(); x++){
+            if (listcomparator.get(x).equals(geodata)){
+                linearSmoothScroller.setTargetPosition(x);
+                linearLayoutManager.startSmoothScroll(linearSmoothScroller);
+            }
         }
     }
 
-
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void AccessPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.INTERNET}, 1002);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, 1003);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1004);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1005);
-        }
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1001:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted Fine Location", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied Fine Location", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1002:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted INTERNET", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied INTERNET", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1003:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted NETWORK STATE", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied NETWORK STATE", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1004:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted READ EXTERNAL STORAGE", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied Fine Location", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1005:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted WRITE EXTERNAL STORAGE", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied WRITE EXTERNAL STORAGE", Toast.LENGTH_SHORT).show();
-                }
-                break;
+        isFineLocationPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isInternetPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.INTERNET)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isNetAccessPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_NETWORK_STATE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isReadPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isWritePermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        List<String> permissionRequest = new ArrayList<String>();
+
+        if (!isFineLocationPermissionGranted){
+            permissionRequest.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
+        if (!isInternetPermissionGranted){
+            permissionRequest.add(Manifest.permission.INTERNET);
+        }
+        if (!isNetAccessPermissionGranted){
+            permissionRequest.add(Manifest.permission.ACCESS_NETWORK_STATE);
+        }
+        if (!isReadPermissionGranted){
+            permissionRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (!isWritePermissionGranted){
+            permissionRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        if (!permissionRequest.isEmpty()){
+            mPermissionResultLauncher.launch(permissionRequest.toArray(new String[0]));
+        }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -624,6 +613,60 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, (LocationListener) this);
         } catch (Exception ex) {
         }
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException error) {
+
+                for(int i=0; i < map.getOverlays().size();i++){
+                    Overlay overlay=map.getOverlays().get(i);
+                    if(overlay instanceof Marker&&((Marker) overlay).getId().equals("marker")){
+                        map.getOverlays().remove(overlay);
+                        i = 0;
+                    }
+                }
+
+                listcomparator.clear();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (DocumentSnapshot document : snapshots.getDocuments()) {
+                            try{
+                                final Drawable drawable = getResources().getDrawable(R.drawable.disposal);
+                                final Marker marker = new MyMarker(map);
+                                marker.setPosition(new GeoPoint(document.getGeoPoint("maplocation").getLatitude()
+                                        , document.getGeoPoint("maplocation").getLongitude()));
+                                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                                marker.setIcon(drawable);
+                                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                                marker.setId("marker");
+                                marker.setTitle(document.getString("markername"));
+                                marker.setSnippet(document.getString("address") + ", " + document.getString("barangay"));
+
+                                listcomparator.add(document.getGeoPoint("maplocation").toString());
+
+                                marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                                    @Override
+                                    public boolean onMarkerClick(Marker marker, MapView mapView) {
+                                        mClicked.add(marker);
+                                        for (String member : listcomparator){
+                                            Log.i("geopoints: ", member);
+                                        }
+                                        return false;
+                                    }
+                                });
+                                map.getOverlays().add(marker);
+                                map.invalidate();
+                            } catch (Exception ignore){
+                                listcomparator.clear();
+                            }
+
+                        }
+                    }
+                },500);
+            }
+        });
 
         //this will refresh the osmdroid configuration on resuming.
         //if you make changes to the configuration, use

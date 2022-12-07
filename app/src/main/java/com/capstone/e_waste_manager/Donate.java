@@ -9,7 +9,6 @@ import android.widget.ImageButton;
 
 public class Donate extends AppCompatActivity {
 
-
     ImageButton closedd;
     Button regNext;
 
