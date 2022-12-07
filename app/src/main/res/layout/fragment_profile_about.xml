@@ -41,44 +41,48 @@
                         android:layout_height="wrap_content"
                         android:text="Personal Profile     |"
                         android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <Button
-                        android:id="@+id/editProfile"
-                        android:layout_width="wrap_content"
-                        android:layout_height="45dp"
-                        android:layout_marginEnd="5dp"
-                        android:background="@color/transparent"
-                        android:text="Edit"
-                        android:textColor="@color/blue"
-                        android:textStyle="bold" />
-
+                        android:textStyle="bold"
+                        android:layout_marginBottom="10dp"/>
 
                 </LinearLayout>
-
                 <TextView
-                    android:id="@+id/prof_firstname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/first_name"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="16sp" />
                 <TextView
-                    android:id="@+id/prof_lastname"
+                    android:id="@+id/prof_firstname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/first_name"
+                    android:textColor="@android:color/black" />
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/last_name"
                     android:textColor="@android:color/darker_gray"
-                    android:textSize="16sp"
-                    android:layout_marginTop="10dp"/>
+                    android:layout_marginTop="10dp"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/prof_lastname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/last_name"
+                    android:textColor="@android:color/black"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/last_name"
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginTop="10dp"
+                    android:textSize="16sp" />
                 <TextView
                     android:id="@+id/prof_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/email"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="16sp"
-                    android:layout_marginTop="10dp"/>
+                    android:textColor="@android:color/black"/>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -113,31 +117,24 @@
                         android:layout_height="wrap_content"
                         android:text="Address Book     |"
                         android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/editAddress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="45dp"
-                        android:layout_marginEnd="5dp"
-                        android:background="@color/transparent"
-                        android:text="Edit"
-                        android:textColor="@color/blue"
                         android:textStyle="bold"
-                        app:cornerRadius="300dp" />
-
+                        android:layout_marginBottom="10dp"/>
 
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/prof_addressHouse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="House/Unit/Flr #, Bldg Name, Blk or Lot #"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="16sp" />
                 <TextView
-                    android:id="@+id/prof_Barangay"
+                    android:id="@+id/prof_addressHouse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="House/Unit/Flr #, Bldg Name, Blk or Lot #"
+                    android:textColor="@android:color/black" />
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Barangay"
@@ -145,13 +142,11 @@
                     android:textSize="16sp"
                     android:layout_marginTop="10dp"/>
                 <TextView
-                    android:id="@+id/prof_Contacts"
+                    android:id="@+id/prof_Barangay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Contacts"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="16sp"
-                    android:layout_marginTop="10dp"/>
+                    android:text="Barangay"
+                    android:textColor="@android:color/black"/>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

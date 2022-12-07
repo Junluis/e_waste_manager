@@ -21,6 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="15dp"
                 android:layout_marginEnd="10dp"
                 android:layout_toStartOf="@+id/cardView2"
                 android:orientation="vertical">
@@ -28,9 +29,9 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="end"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:layout_gravity="end"
                     android:paddingTop="8dp">
 
                     <TextView
@@ -58,8 +59,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="@string/email"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="16sp" />
+                    android:textColor="@android:color/darker_gray" />
             </LinearLayout>
 
             <androidx.cardview.widget.CardView

@@ -503,7 +503,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                 }
 
                 if(firebasegeoPoint == null){
-                    Toast.makeText(ctx, "PLease add marker on the map", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ctx, "Please add marker on the map.", Toast.LENGTH_LONG).show();
                     imageButton.performClick();
                     disposallocationpg.transitionToStart();
                 } else if(regBusinessName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilBusinessName.getError())){

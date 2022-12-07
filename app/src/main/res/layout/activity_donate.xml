@@ -178,7 +178,7 @@
                 android:layout_height="60dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="40dp"
-                android:backgroundTint="#14ab69"
+                android:backgroundTint="@color/green1"
                 android:text="Next"
                 android:textSize="18sp"
                 android:textStyle="bold"

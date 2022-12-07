@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -20,15 +21,18 @@ import android.widget.EditText;
 import java.util.Calendar;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Objects;
 
 
 public class Register extends AppCompatActivity {
@@ -445,11 +449,44 @@ public class Register extends AppCompatActivity {
                             userInfo.put("DateOfBirth", regdateOfBirth.getText().toString());
                             userInfo.put("Partner", "0");
                             df.set(userInfo);
-                            startActivity(new Intent(getApplicationContext(), Home.class));
-                            finish();
-                        }).addOnFailureListener(e -> Toast.makeText(Register.this, "Failed to Create Account", Toast.LENGTH_SHORT).show());
+                            checkUserAccessLevel(authResult.getUser().getUid());
+                        }).addOnFailureListener(e -> Toast.makeText(Register.this, "Failed to Create Account. Email Already in Use.", Toast.LENGTH_LONG).show());
             }
         });
+    }
+
+    public void checkUserAccessLevel(String uid) {
+        DocumentReference df = fStore.collection("Users").document(uid);
+        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Log.d("TAG", "onSuccess: "+ documentSnapshot.getData());
+
+                if(Objects.equals(documentSnapshot.getString("Partner"), "0")){
+                    Intent intent = new Intent(getApplicationContext(), Home.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                }
+                if(Objects.equals(documentSnapshot.getString("Partner"), "1")){
+                    Intent intent = new Intent(getApplicationContext(), Home.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(FirebaseAuth.getInstance().getCurrentUser() !=null && !FirebaseAuth.getInstance().getCurrentUser().isAnonymous()){
+            startActivity(new Intent(getApplicationContext(), Home.class));
+            finish();
+        }else{
+            FirebaseAuth.getInstance().signOut();
+        }
     }
 
     //check connection
