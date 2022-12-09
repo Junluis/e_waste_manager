@@ -31,17 +31,18 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="17dp"
                 android:layout_marginStart="17dp"
+                android:layout_marginTop="17dp"
+                android:layout_marginEnd="40dp"
                 android:text="Filter disposal area by accepted E-waste"
-                android:textStyle="bold"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="17dp"
-                android:text="Select up to 10 tags. Close to apply" />
+                android:text="Select up to 10 tags." />
 
             <View
                 android:layout_width="match_parent"

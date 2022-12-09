@@ -742,6 +742,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     ArrayAdapter<String> barangayList;
     List<String> barangay = new ArrayList<>();
     ChipGroup existingtags;
+    String selectedbarangay;
     public void Showfilter(){
         NeumorphFloatingActionButton close_popup;
         TextInputLayout tilBarangay;
@@ -793,6 +794,10 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             }
         });
 
+        if (selectedbarangay != null && !selectedbarangay.trim().isEmpty()){
+            regBarangay.setText(selectedbarangay);
+        }
+
         imageButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -837,6 +842,9 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                                 hideProgressDialog();
                                 Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
                             }else{
+                                if (regBarangay.getText().toString() != null && !regBarangay.getText().toString().trim().isEmpty()){
+                                    selectedbarangay = regBarangay.getText().toString();
+                                }
                                 hideProgressDialog();
                                 close_popup.performClick();
                             }
@@ -860,6 +868,9 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                                 hideProgressDialog();
                                 Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
                             }else{
+                                if (regBarangay.getText().toString() != null && !regBarangay.getText().toString().trim().isEmpty()){
+                                    selectedbarangay = regBarangay.getText().toString();
+                                }
                                 hideProgressDialog();
                                 close_popup.performClick();
                             }
@@ -867,7 +878,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                     }, 1000);
                 }else{
                     hideProgressDialog();
-                    Toast.makeText(DisposalLocation.this, "There are no filter to apply.", Toast.LENGTH_SHORT).show();
+                    clearfilter.performClick();
                 }
             }
         });
@@ -879,6 +890,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                 filtertags.clear();
                 regBarangay.setText("");
                 existingtags.clearCheck();
+                selectedbarangay = null;
                 
                 adapter.updateOptions(options);
                 drawmarkers(query);

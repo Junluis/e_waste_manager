@@ -1,6 +1,8 @@
 package com.capstone.e_waste_manager;
 
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +27,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -644,6 +647,11 @@ public class Home extends AppCompatActivity{
                 @Override
                 public void onSuccess(Uri uri) {
                     Picasso.get().load(uri).into(prof_img);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, "No Profile Image");
                 }
             });
         }
