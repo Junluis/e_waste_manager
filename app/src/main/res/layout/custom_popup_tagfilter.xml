@@ -51,7 +51,8 @@
 
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
+                android:layout_height="150dp"
+                android:scrollbarStyle="insideInset">
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/existingtags"
@@ -60,30 +61,80 @@
                     android:layout_margin="10dp"/>
             </ScrollView>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilBarangay"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                app:boxCornerRadiusBottomEnd="10dp"
-                app:boxCornerRadiusBottomStart="10dp"
-                app:boxCornerRadiusTopEnd="10dp"
-                app:boxCornerRadiusTopStart="10dp"
-                app:endIconMode="dropdown_menu">
+                android:padding="10dp">
 
-                <AutoCompleteTextView
-                    android:id="@+id/regBarangay"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilBarangay"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:dropDownAnchor="@id/drop"
-                    android:focusable="false"
-                    android:dropDownHeight="100dp"
-                    android:hint="Sort by Barangay"
-                    android:inputType="none|text|textCapWords|textUri" />
+                    app:boxCornerRadiusBottomEnd="10dp"
+                    app:boxCornerRadiusBottomStart="10dp"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:endIconMode="dropdown_menu"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <AutoCompleteTextView
+                        android:id="@+id/regBarangay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:dropDownAnchor="@id/drop"
+                        android:dropDownHeight="100dp"
+                        android:focusable="false"
+                        android:hint="Sort by Barangay"
+                        android:inputType="none|text|textCapWords|textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
 
+                <ImageButton
+                    android:id="@+id/imageButton2"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/ic__clear"
+                    android:alpha="0.7"
+                    android:background="@drawable/custom_ripple_button"
+                    app:layout_constraintBottom_toBottomOf="@+id/tilBarangay"
+                    app:layout_constraintEnd_toEndOf="@+id/tilBarangay"
+                    app:layout_constraintHorizontal_bias="0.83"
+                    app:layout_constraintStart_toStartOf="@+id/tilBarangay"
+                    app:layout_constraintTop_toTopOf="@+id/tilBarangay"
+                    app:tint="@color/darkgray" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="10dp"
+                android:paddingHorizontal="15dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/applyfilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:paddingHorizontal="40dp"
+                    app:cornerRadius="10dp"
+                    android:text="Apply"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/clearfilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/darkgray"
+                    android:paddingHorizontal="40dp"
+                    app:cornerRadius="10dp"
+                    android:text="Clear"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 

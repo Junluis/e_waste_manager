@@ -59,6 +59,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -165,6 +166,8 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     SnapHelper snapHelper;
 
     FirestoreRecyclerOptions<DisposalModel> options;
+
+    android.app.AlertDialog dialog;
 
     private final List<Marker> mClicked = new ArrayList<>();
     private final List<String> listcomparator = new ArrayList<>();
@@ -743,12 +746,17 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         NeumorphFloatingActionButton close_popup;
         TextInputLayout tilBarangay;
         AutoCompleteTextView regBarangay;
+        Button applyfilter, clearfilter;
+        ImageButton imageButton2;
         filterdialog.setContentView(R.layout.custom_popup_tagfilter);
 
         close_popup = (NeumorphFloatingActionButton) filterdialog.findViewById(R.id.close_popup);
         existingtags = (ChipGroup) filterdialog.findViewById(R.id.existingtags);
         tilBarangay = (TextInputLayout) filterdialog.findViewById(R.id.tilBarangay);
         regBarangay = (AutoCompleteTextView) filterdialog.findViewById(R.id.regBarangay);
+        applyfilter = (Button) filterdialog.findViewById(R.id.applyfilter);
+        clearfilter = (Button) filterdialog.findViewById(R.id.clearfilter);
+        imageButton2 = (ImageButton) filterdialog.findViewById(R.id.imageButton2);
 
         DocumentReference disposaltpyes = fStore.collection("Miscellaneous").document("disposaltpyes");
         disposaltpyes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -785,10 +793,17 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             }
         });
 
-        close_popup.setOnClickListener(new View.OnClickListener() {
+        imageButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                filtertags.clear();
+                regBarangay.setText("");
+            }
+        });
+
+        applyfilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showProgressDialog();
                 List<Integer> ids = existingtags.getCheckedChipIds();
                 for (Integer id:ids){
                     Chip chip = existingtags.findViewById(id);
@@ -813,6 +828,20 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                             .build();
                     adapter.updateOptions(options2);
                     drawmarkers(querytags);
+                    disposalRecycler.setAdapter(null);
+                    disposalRecycler.setAdapter(adapter);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(adapter.getItemCount()==0){
+                                hideProgressDialog();
+                                Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
+                            }else{
+                                hideProgressDialog();
+                                close_popup.performClick();
+                            }
+                        }
+                    }, 1000);
                 }else if (!regBarangay.getText().toString().isEmpty()){
                     querytags = fStore.collection("DisposalLocations")
                             .whereEqualTo("barangay", regBarangay.getText().toString());
@@ -822,26 +851,46 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                             .build();
                     adapter.updateOptions(options2);
                     drawmarkers(querytags);
-                }else{
-                    adapter.updateOptions(options);
-                    drawmarkers(query);
-                }
-                disposalRecycler.setAdapter(null);
-                disposalRecycler.setAdapter(adapter);
-                if(adapter.getItemCount()==0){
-                    Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
+                    disposalRecycler.setAdapter(null);
+                    disposalRecycler.setAdapter(adapter);
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(DisposalLocation.this, "Try again.", Toast.LENGTH_SHORT).show();
-                            adapter.updateOptions(options);
-                            drawmarkers(query);
-                            disposalRecycler.setAdapter(null);
-                            disposalRecycler.setAdapter(adapter);
+                            if(adapter.getItemCount()==0){
+                                hideProgressDialog();
+                                Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
+                            }else{
+                                hideProgressDialog();
+                                close_popup.performClick();
+                            }
                         }
-                    }, 2000);
-
+                    }, 1000);
+                }else{
+                    hideProgressDialog();
+                    Toast.makeText(DisposalLocation.this, "There are no filter to apply.", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        clearfilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showProgressDialog();
+                filtertags.clear();
+                regBarangay.setText("");
+                existingtags.clearCheck();
+                
+                adapter.updateOptions(options);
+                drawmarkers(query);
+                disposalRecycler.setAdapter(null);
+                disposalRecycler.setAdapter(adapter);
+                hideProgressDialog();
+            }
+        });
+
+        close_popup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 filterdialog.dismiss();
             }
         });
@@ -855,12 +904,21 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         existingChip.setId(ViewCompat.generateViewId());
         existingChip.setText(text);
         existingChip.setCheckedIconVisible(true);
+        List<String> tagstrings = filtertags;
+        for (String id:tagstrings){
+            if (id.equals(text)){
+                existingChip.setChecked(true);
+            }
+        }
         existingChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 List<Integer> ids = existingtags.getCheckedChipIds();
                 if (ids.size() > 10) {
                     existingChip.setChecked(false);
+                }
+                if(!b){
+                    filtertags.remove(text);
                 }
             }
         });
@@ -924,5 +982,18 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                 }
             }
         });
+    }
+
+    public void showProgressDialog(){
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        View v = LayoutInflater.from(this).inflate(R.layout.progress_layout, null,false);
+        builder.setView(v);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+    public void hideProgressDialog(){
+        dialog.dismiss();
     }
 }
