@@ -28,11 +28,14 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -52,6 +55,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -67,6 +74,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.AggregateSource;
@@ -74,6 +84,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -127,7 +138,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     private boolean isNetAccessPermissionGranted = false;
 
     MapView map = null;
-    NeumorphFloatingActionButton myLocation, zoomin, zoomout;
+    NeumorphFloatingActionButton myLocation, zoomin, zoomout, back, filter;
     private DirectedLocationOverlay overlay;
     private boolean hasFix = false;
     private Location currentLocation = null;
@@ -143,11 +154,17 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     FirestoreRecyclerAdapter adapter;
     FirebaseUser user;
 
-    Query query;
+    List<String> disposaltags = new ArrayList<>();
+    List<String> filtertags = new ArrayList<>();
+    Dialog filterdialog;
+
+    Query query, querytags;
 
     ImageView defaultmap, aerialmap, bingmap;
 
     SnapHelper snapHelper;
+
+    FirestoreRecyclerOptions<DisposalModel> options;
 
     private final List<Marker> mClicked = new ArrayList<>();
     private final List<String> listcomparator = new ArrayList<>();
@@ -162,23 +179,36 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             public void onActivityResult(Map<String, Boolean> result) {
 
                 if(result.get(Manifest.permission.ACCESS_FINE_LOCATION) != null){
-                    isFineLocationPermissionGranted = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
+                    isFineLocationPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_FINE_LOCATION));
+                }else {
+                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.INTERNET) != null){
-                    isInternetPermissionGranted = result.get(Manifest.permission.INTERNET);
+                    isInternetPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.INTERNET));
+                }else {
+                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.ACCESS_NETWORK_STATE) != null){
-                    isNetAccessPermissionGranted = result.get(Manifest.permission.ACCESS_NETWORK_STATE);
+                    isNetAccessPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_NETWORK_STATE));
+                }else {
+                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null){
-                    isReadPermissionGranted = result.get(Manifest.permission.READ_EXTERNAL_STORAGE);
+                    isReadPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.READ_EXTERNAL_STORAGE));
+                }else {
+                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null){
-                    isWritePermissionGranted = result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    isWritePermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE));
+                }else {
+                    onBackPressed();
                 }
 
             }
         });
+
+        //filter dialog
+        filterdialog = new Dialog(this);
 
         //firebase
         fStore = FirebaseFirestore.getInstance();
@@ -266,6 +296,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
 
         zoomin = findViewById(R.id.zoomin);
         zoomout = findViewById(R.id.zoomout);
+        back = findViewById(R.id.back);
 
         zoomin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -278,6 +309,13 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View view) {
                 map.getController().zoomOut(100L);
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
 
@@ -295,7 +333,6 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             addOverlays();
         }
 
-
         //disposal locations
         disposalRecycler = findViewById(R.id.disposalRecycler);
         linearLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
@@ -304,9 +341,9 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         disposalRecycler.setItemAnimator(null);
 
         query = fStore.collection("DisposalLocations")
-                .orderBy("barangay", Query.Direction.DESCENDING);
+                .orderBy("barangay", Query.Direction.ASCENDING);
 
-        FirestoreRecyclerOptions<DisposalModel> options = new FirestoreRecyclerOptions.Builder<DisposalModel>()
+        options = new FirestoreRecyclerOptions.Builder<DisposalModel>()
                 .setQuery(query, DisposalModel.class)
                 .build();
 
@@ -394,6 +431,14 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             // Return CONSUMED if you don't want want the window insets to keep being
             // passed down to descendant views.
             return WindowInsetsCompat.CONSUMED;
+        });
+
+        filter = findViewById(R.id.filter);
+        filter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Showfilter();
+            }
         });
 
     }
@@ -613,61 +658,15 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, (LocationListener) this);
         } catch (Exception ex) {
         }
-
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException error) {
-
-                for(int i=0; i < map.getOverlays().size();i++){
-                    Overlay overlay=map.getOverlays().get(i);
-                    if(overlay instanceof Marker&&((Marker) overlay).getId().equals("marker")){
-                        map.getOverlays().remove(overlay);
-                        i = 0;
-                    }
-                }
-
-                listcomparator.clear();
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (DocumentSnapshot document : snapshots.getDocuments()) {
-                            try{
-                                final Drawable drawable = getResources().getDrawable(R.drawable.disposal);
-                                final Marker marker = new MyMarker(map);
-                                marker.setPosition(new GeoPoint(document.getGeoPoint("maplocation").getLatitude()
-                                        , document.getGeoPoint("maplocation").getLongitude()));
-                                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                                marker.setIcon(drawable);
-                                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                                marker.setId("marker");
-                                marker.setTitle(document.getString("markername"));
-                                marker.setSnippet(document.getString("address") + ", " + document.getString("barangay"));
-
-                                listcomparator.add(document.getGeoPoint("maplocation").toString());
-
-                                marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
-                                    @Override
-                                    public boolean onMarkerClick(Marker marker, MapView mapView) {
-                                        mClicked.add(marker);
-                                        for (String member : listcomparator){
-                                            Log.i("geopoints: ", member);
-                                        }
-                                        return false;
-                                    }
-                                });
-                                map.getOverlays().add(marker);
-                                map.invalidate();
-                            } catch (Exception ignore){
-                                listcomparator.clear();
-                            }
-
-                        }
-                    }
-                },500);
+        for(int i=0; i < map.getOverlays().size();i++){
+            Overlay overlay=map.getOverlays().get(i);
+            if(overlay instanceof Marker&&((Marker) overlay).getId().equals("marker")){
+                map.getOverlays().remove(overlay);
+                i = 0;
             }
-        });
+        }
 
+        drawmarkers(query);
         //this will refresh the osmdroid configuration on resuming.
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -735,5 +734,195 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         overlay.setAccuracy((int) location.getAccuracy());
         overlay.setLocation(new GeoPoint(location.getLatitude(), location.getLongitude()));
         map.invalidate();
+    }
+
+    ArrayAdapter<String> barangayList;
+    List<String> barangay = new ArrayList<>();
+    ChipGroup existingtags;
+    public void Showfilter(){
+        NeumorphFloatingActionButton close_popup;
+        TextInputLayout tilBarangay;
+        AutoCompleteTextView regBarangay;
+        filterdialog.setContentView(R.layout.custom_popup_tagfilter);
+
+        close_popup = (NeumorphFloatingActionButton) filterdialog.findViewById(R.id.close_popup);
+        existingtags = (ChipGroup) filterdialog.findViewById(R.id.existingtags);
+        tilBarangay = (TextInputLayout) filterdialog.findViewById(R.id.tilBarangay);
+        regBarangay = (AutoCompleteTextView) filterdialog.findViewById(R.id.regBarangay);
+
+        DocumentReference disposaltpyes = fStore.collection("Miscellaneous").document("disposaltpyes");
+        disposaltpyes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                disposaltags = (List<String>) documentSnapshot.get("ewastetypes");
+//                for(String log : disposaltags)
+//                {
+//                    Log.e("Tag",log);
+//                }
+                if (disposaltags != null) {
+                    for (String chipText: disposaltags){
+                        addExistingChips(chipText);
+                    }
+                }
+            }
+        });
+
+        DocumentReference docRef = fStore.collection("Miscellaneous").document("cvUA8BB7Pk0Ud7kYwxoT");
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                barangay = (List<String>) documentSnapshot.get("Barangay");
+//                for(String log : barangay)
+//                {
+//                    Log.e("Tag",log);
+//                }
+                if (barangay != null) {
+                    Collections.sort(barangay, String.CASE_INSENSITIVE_ORDER);
+                    barangayList = new ArrayAdapter<String>(filterdialog.getContext(), R.layout.dropdown_barangay, barangay);
+                    regBarangay.setDropDownAnchor(tilBarangay.getId());
+                    regBarangay.setAdapter(barangayList);
+                }
+            }
+        });
+
+        close_popup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                filtertags.clear();
+                List<Integer> ids = existingtags.getCheckedChipIds();
+                for (Integer id:ids){
+                    Chip chip = existingtags.findViewById(id);
+                    filtertags.add(chip.getText().toString());
+                }
+                if (!filtertags.isEmpty()){
+                    for(String log : filtertags)
+                    {
+                        Log.e("Tag",log);
+                    }
+
+                    if (regBarangay.getText().toString().isEmpty()){
+                        querytags = fStore.collection("DisposalLocations")
+                                .whereArrayContainsAny("ewastetypes", filtertags);
+                    }else{
+                        querytags = fStore.collection("DisposalLocations")
+                                .whereEqualTo("barangay", regBarangay.getText().toString()).whereArrayContainsAny("ewastetypes", filtertags);
+                    }
+
+                    FirestoreRecyclerOptions<DisposalModel> options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
+                            .setQuery(querytags, DisposalModel.class)
+                            .build();
+                    adapter.updateOptions(options2);
+                    drawmarkers(querytags);
+                }else if (!regBarangay.getText().toString().isEmpty()){
+                    querytags = fStore.collection("DisposalLocations")
+                            .whereEqualTo("barangay", regBarangay.getText().toString());
+
+                    FirestoreRecyclerOptions<DisposalModel> options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
+                            .setQuery(querytags, DisposalModel.class)
+                            .build();
+                    adapter.updateOptions(options2);
+                    drawmarkers(querytags);
+                }else{
+                    adapter.updateOptions(options);
+                    drawmarkers(query);
+                }
+                disposalRecycler.setAdapter(null);
+                disposalRecycler.setAdapter(adapter);
+                if(adapter.getItemCount()==0){
+                    Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(DisposalLocation.this, "Try again.", Toast.LENGTH_SHORT).show();
+                            adapter.updateOptions(options);
+                            drawmarkers(query);
+                            disposalRecycler.setAdapter(null);
+                            disposalRecycler.setAdapter(adapter);
+                        }
+                    }, 2000);
+
+                }
+                filterdialog.dismiss();
+            }
+        });
+
+        filterdialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        filterdialog.show();
+    }
+
+    private void addExistingChips(String text) {
+        Chip existingChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, existingtags, false);
+        existingChip.setId(ViewCompat.generateViewId());
+        existingChip.setText(text);
+        existingChip.setCheckedIconVisible(true);
+        existingChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                List<Integer> ids = existingtags.getCheckedChipIds();
+                if (ids.size() > 10) {
+                    existingChip.setChecked(false);
+                }
+            }
+        });
+        existingtags.addView(existingChip);
+    }
+
+    private void drawmarkers(Query query){
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException error) {
+
+                for (int i = 0; i < map.getOverlays().size(); i++) {
+                    Overlay overlay = map.getOverlays().get(i);
+                    if (overlay instanceof Marker && ((Marker) overlay).getId().equals("marker")) {
+                        map.getOverlays().remove(overlay);
+                        i = 0;
+                    }
+                }
+
+                listcomparator.clear();
+                if (error != null) {
+                    Log.d(TAG, "Error:" + error.getMessage());
+                } else {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (DocumentSnapshot document : snapshots.getDocuments()) {
+                                try {
+                                    final Drawable drawable = getResources().getDrawable(R.drawable.disposal);
+                                    final Marker marker = new MyMarker(map);
+                                    marker.setPosition(new GeoPoint(document.getGeoPoint("maplocation").getLatitude()
+                                            , document.getGeoPoint("maplocation").getLongitude()));
+                                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                                    marker.setIcon(drawable);
+                                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                                    marker.setId("marker");
+                                    marker.setTitle(document.getString("markername"));
+                                    marker.setSnippet(document.getString("address") + ", " + document.getString("barangay"));
+
+                                    listcomparator.add(document.getGeoPoint("maplocation").toString());
+
+                                    marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                                        @Override
+                                        public boolean onMarkerClick(Marker marker, MapView mapView) {
+                                            mClicked.add(marker);
+                                            for (String member : listcomparator) {
+                                                Log.i("geopoints: ", member);
+                                            }
+                                            return false;
+                                        }
+                                    });
+                                    map.getOverlays().add(marker);
+                                    map.invalidate();
+                                } catch (Exception ignore) {
+                                    listcomparator.clear();
+                                }
+
+                            }
+                        }
+                    }, 500);
+                }
+            }
+        });
     }
 }

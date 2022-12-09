@@ -86,8 +86,6 @@ public class EditProfile extends AppCompatActivity {
     ArrayAdapter<String> barangayList;
     List<String> barangay = new ArrayList<>();
 
-    ScrollView edit_profile;
-
     String Dateval;
     Integer ageInteger = 0;
 
@@ -127,7 +125,6 @@ public class EditProfile extends AppCompatActivity {
         tilAddressHouse = findViewById(R.id.tilAddressHouse);
         tilBarangay = findViewById(R.id.tilBarangay);
 
-        edit_profile = findViewById(R.id.edit_profile);
 
 
         DocumentReference docRef = fStore.collection("Miscellaneous").document("cvUA8BB7Pk0Ud7kYwxoT");

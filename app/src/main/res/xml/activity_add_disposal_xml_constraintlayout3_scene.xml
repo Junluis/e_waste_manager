@@ -17,8 +17,6 @@
                 motion:framePosition="50"
                 android:alpha="0.9" />
         </KeyFrameSet>
-        <OnClick motion:targetId="@+id/textView9" />
-        <OnSwipe motion:touchAnchorId="@+id/edit_profile" />
     </Transition>
 
     <ConstraintSet android:id="@+id/start">

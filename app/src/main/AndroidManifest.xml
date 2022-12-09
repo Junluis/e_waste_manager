@@ -27,8 +27,7 @@
             android:exported="false" />
         <activity
             android:name=".AddDisposal"
-            android:exported="false"
-            android:windowSoftInputMode="adjustNothing" />
+            android:exported="false" />
         <activity
             android:name=".GoogleMapView"
             android:exported="false" />

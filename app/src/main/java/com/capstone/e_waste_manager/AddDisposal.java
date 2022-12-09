@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -30,18 +31,24 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.capstone.e_waste_manager.Class.TimeAgo2;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -77,6 +84,7 @@ import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.mylocation.DirectedLocationOverlay;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -89,8 +97,6 @@ import soup.neumorphism.NeumorphFloatingActionButton;
 
 public class AddDisposal extends AppCompatActivity implements LocationListener{
 
-    MotionLayout disposallocationpg;
-
     ActivityResultLauncher<String[]> mPermissionResultLauncher;
     private boolean isReadPermissionGranted = false;
     private boolean isWritePermissionGranted = false;
@@ -98,7 +104,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
     private boolean isInternetPermissionGranted = false;
     private boolean isNetAccessPermissionGranted = false;
 
-    TextInputLayout tilAddress, tilBarangay, tilBusinessName, tilAcceptedEwaste;
+    TextInputLayout tilAddress, tilBarangay, tilBusinessName;
     EditText regAddress, regBusinessName, regAcceptedEwaste;
     AutoCompleteTextView regBarangay;
     ImageView edit_prof_img, prof_img;
@@ -106,8 +112,12 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
     Button submitButton;
     CardView updateIcon;
     TextView coordinates;
-    ChipGroup chipGroup;
-    NestedScrollView edit_profile;
+    ChipGroup chipGroup, existingtags;
+
+    ScrollView disposallocationpg;
+    NestedScrollView constraintLayout4;
+
+    MotionLayout constraintLayout3;
 
     //maps
     MapView map = null;
@@ -121,6 +131,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
     ArrayAdapter<String> barangayList;
     List<String> barangay = new ArrayList<>();
     ActivityResultLauncher<String> galleryOpen;
+    List<String> disposaltags = new ArrayList<>();
 
     Uri profileImageUri;
 
@@ -133,6 +144,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
 
     com.google.firebase.firestore.GeoPoint firebasegeoPoint;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,23 +154,33 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             public void onActivityResult(Map<String, Boolean> result) {
 
                 if(result.get(Manifest.permission.ACCESS_FINE_LOCATION) != null){
-                    isFineLocationPermissionGranted = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
+                    isFineLocationPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_FINE_LOCATION));
+                }else {
+                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.INTERNET) != null){
-                    isInternetPermissionGranted = result.get(Manifest.permission.INTERNET);
+                    isInternetPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.INTERNET));
+                }else {
+                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.ACCESS_NETWORK_STATE) != null){
-                    isNetAccessPermissionGranted = result.get(Manifest.permission.ACCESS_NETWORK_STATE);
+                    isNetAccessPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_NETWORK_STATE));
+                }else {
+                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null){
-                    isReadPermissionGranted = result.get(Manifest.permission.READ_EXTERNAL_STORAGE);
+                    isReadPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.READ_EXTERNAL_STORAGE));
+                }else {
+                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null){
-                    isWritePermissionGranted = result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    isWritePermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE));
+                }else {
+                    onBackPressed();
                 }
-
             }
         });
+
         setContentView(R.layout.activity_add_disposal);
 
         tilAddress = findViewById(R.id.tilAddress);
@@ -174,11 +196,12 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         updateIcon = findViewById(R.id.updateIcon);
         myLocation = findViewById(R.id.myLocation);
         imageButton = findViewById(R.id.imageButton);
-        tilAcceptedEwaste = findViewById(R.id.tilAcceptedEwaste);
         regAcceptedEwaste = findViewById(R.id.regAcceptedEwaste);
         chipGroup = findViewById(R.id.i_flex_box);
-        edit_profile = findViewById(R.id.edit_profile);
         disposallocationpg = findViewById(R.id.disposallocationpg);
+        constraintLayout3 = findViewById(R.id.constraintLayout3);
+        constraintLayout4 = findViewById(R.id.constraintLayout4);
+        existingtags = findViewById(R.id.existingtags);
 
         coordinates = findViewById(R.id.textView11);
 
@@ -205,6 +228,23 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             }
         });
 
+        DocumentReference disposaltpyes = fStore.collection("Miscellaneous").document("disposaltpyes");
+        disposaltpyes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                disposaltags = (List<String>) documentSnapshot.get("ewastetypes");
+//                for(String log : disposaltags)
+//                {
+//                    Log.e("Tag",log);
+//                }
+                if (disposaltags != null) {
+                    for (String chipText: disposaltags){
+                        addExistingChips(chipText);
+                    }
+                }
+            }
+        });
+
         closead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -227,7 +267,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             public void onClick(View view) {
                 //open gallery
                 galleryOpen.launch("image/");
-                disposallocationpg.transitionToEnd();
+                constraintLayout3.transitionToEnd();
             }
         });
 
@@ -264,6 +304,8 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         defaultmap = findViewById(R.id.defaultmap);
         aerialmap = findViewById(R.id.aerialmap);
         bingmap = findViewById(R.id.bingmap);
+
+
 
         bingmap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -320,38 +362,12 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             addOverlays();
         }
 
-        regAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(b){
-                    disposallocationpg.transitionToEnd();
-                }
-            }
-        });
-        regBarangay.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(b){
-                    disposallocationpg.transitionToEnd();
-                }
-            }
-        });
-        regBusinessName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(b){
-                    disposallocationpg.transitionToEnd();
-                }
-            }
-        });
-
         regAcceptedEwaste.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
                     if (regAcceptedEwaste.getText().toString().equals(" ")){
                         regAcceptedEwaste.getText().clear();
-                        disposallocationpg.transitionToEnd();
                     }
                 } else {
                     if (regAcceptedEwaste.getText().toString().equals("") && chipGroup.getChildCount() > 0) {
@@ -505,7 +521,6 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                 if(firebasegeoPoint == null){
                     Toast.makeText(ctx, "Please add marker on the map.", Toast.LENGTH_LONG).show();
                     imageButton.performClick();
-                    disposallocationpg.transitionToStart();
                 } else if(regBusinessName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilBusinessName.getError())){
                     if(regBusinessName.getText().toString().length() == 0)
                         regBusinessName.setText("");
@@ -527,17 +542,28 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                             doc.put("barangay", regBarangay.getText().toString().trim());
                             doc.put("maplocation", firebasegeoPoint);
                             doc.put("markerUid", fAuth.getCurrentUser().getUid());
+                            doc.put("ewastetypes", Collections.emptyList());
                             if (profileImageUri != null && !profileImageUri.equals(Uri.EMPTY)){
                                 doc.put("hasImage", true);
                             }else{
                                 doc.put("hasImage", false);
                             }
 
+
                             fStore.collection("DisposalLocations").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentReference> task) {
                                     Toast.makeText(AddDisposal.this, "New disposal location has been added.", Toast.LENGTH_SHORT).show();
                                     //upload Image to Firebase
+                                    DocumentReference disposalEtypes = fStore.collection("DisposalLocations").document(task.getResult().getId());
+                                    DocumentReference ewastetag = fStore.collection("Miscellaneous").document("disposaltpyes");
+                                    List<Integer> ids = chipGroup.getCheckedChipIds();
+                                    for (Integer id:ids){
+                                        Chip chip = chipGroup.findViewById(id);
+                                        disposalEtypes.update("ewastetypes", FieldValue.arrayUnion(chip.getText()));
+                                        ewastetag.update("ewastetypes", FieldValue.arrayUnion(chip.getText()));
+                                    }
+
                                     if (profileImageUri != null && !profileImageUri.equals(Uri.EMPTY)){
                                         uploadImageToFirebase(profileImageUri, task.getResult().getId());
                                     }
@@ -566,6 +592,16 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             }
         });
 
+        map.setOnTouchListener(new View.OnTouchListener() {
+            // Setting on Touch Listener for handling the touch inside ScrollView
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Disallow the touch request for parent scroll on touch of child view
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
     }
 
     protected void addOverlays() {
@@ -576,13 +612,16 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         MapEventsOverlay events = new MapEventsOverlay(new MapEventsReceiver() {
             @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
+                if (constraintLayout3.getProgress() == 0.0f){
+                    constraintLayout3.transitionToEnd();
+                }else{
+                    constraintLayout3.transitionToStart();
+                }
                 return false;
             }
 
             @Override
             public boolean longPressHelper(GeoPoint p) {
-
-
                 showDialog(p);
                 return true;
             }
@@ -772,7 +811,6 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         if (!isWritePermissionGranted){
             permissionRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
-
         if (!permissionRequest.isEmpty()){
             mPermissionResultLauncher.launch(permissionRequest.toArray(new String[0]));
         }
@@ -782,12 +820,45 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         Chip newChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, chipGroup, false);
         newChip.setId(ViewCompat.generateViewId());
         newChip.setText(text);
+        newChip.setCheckedIconVisible(false);
+        newChip.setChecked(true);
+        newChip.setCloseIconVisible(true);
         newChip.setOnCloseIconClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                List<Integer> ids = existingtags.getCheckedChipIds();
+                for (Integer id:ids){
+                    Chip chip = existingtags.findViewById(id);
+                    if (chip.getText() == text){
+                        chip.setChecked(false);
+                    }
+                }
                 chipGroup.removeView(newChip);
+            }
+        });
+        newChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (!b)
+                    newChip.performCloseIconClick();
             }
         });
         chipGroup.addView(newChip);
     }
+
+    private void addExistingChips(String text) {
+        Chip existingChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, existingtags, false);
+        existingChip.setId(ViewCompat.generateViewId());
+        existingChip.setText(text);
+        existingChip.setCheckedIconVisible(true);
+        existingChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b)
+                    addNewChip(existingChip.getText().toString());
+            }
+        });
+        existingtags.addView(existingChip);
+    }
+    private static final String TAG = "MyActivity";
 }
