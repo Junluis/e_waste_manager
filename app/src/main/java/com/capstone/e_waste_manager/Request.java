@@ -72,7 +72,7 @@ public class Request extends AppCompatActivity {
         dataRef = FirebaseDatabase.getInstance().getReference().child("Users");
         sr = FirebaseStorage.getInstance().getReference().child("DocImage");
 
-        back.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
+        back.setOnClickListener(v -> onBackPressed());
 
         btDTI.setOnClickListener(new View.OnClickListener() {
             @Override

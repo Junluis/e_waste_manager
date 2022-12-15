@@ -74,6 +74,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -111,6 +112,8 @@ public class Home extends AppCompatActivity{
     AlertDialog dialog;
     ConstraintLayout emptyView;
     LinearLayout activityHome;
+
+    Query querysearch, query;
 
 
     @Override
@@ -160,7 +163,15 @@ public class Home extends AppCompatActivity{
         emptyView = findViewById(R.id.emptyView);
 
         //search
-        search_btn.setOnClickListener(v ->  startActivity(new Intent(getApplicationContext(),ForumSearch.class)));
+        search_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                postSearch.setVisibility(View.VISIBLE);
+                titlePage.setVisibility(View.GONE);
+                search_btn.setVisibility(View.GONE);
+                postSearch.requestFocus();
+            }
+        });
         postSearch.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -171,6 +182,40 @@ public class Home extends AppCompatActivity{
                 }
             }
         });
+
+        postSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                querysearch = fStore.collection("Post").whereGreaterThanOrEqualTo("homeTitle",newText)
+                        .whereLessThanOrEqualTo("homeTitle",newText + "\uf8ff");
+
+                if(newText.isEmpty()){
+                    FirestoreRecyclerOptions<HomeModel> options = new FirestoreRecyclerOptions.Builder<HomeModel>()
+                            .setQuery(query, HomeModel.class)
+                            .build();
+                    adapter.updateOptions(options);
+                    homeRecycler.setAdapter(null);
+                    homeRecycler.setAdapter(adapter);
+                    search_btn.getDrawable().setTint(ContextCompat.getColor(Home.this, R.color.darkgray));
+                }else{
+                    FirestoreRecyclerOptions<HomeModel> options2 = new FirestoreRecyclerOptions.Builder<HomeModel>()
+                            .setQuery(querysearch, HomeModel.class)
+                            .build();
+                    adapter.updateOptions(options2);
+                    homeRecycler.setAdapter(null);
+                    homeRecycler.setAdapter(adapter);
+                    search_btn.getDrawable().setTint(ContextCompat.getColor(Home.this, R.color.green1));
+                }
+                return false;
+            }
+        });
+
 
         //bottomNav btn
         homeBtnHome.setOnClickListener(v -> refresh());
@@ -360,7 +405,7 @@ public class Home extends AppCompatActivity{
 
         homeRecycler.setItemAnimator(null);
 
-        Query query = fStore.collection("Post")
+        query = fStore.collection("Post")
                 .orderBy("homePostDate", Query.Direction.DESCENDING)
                 .limit(50);
 
@@ -470,9 +515,10 @@ public class Home extends AppCompatActivity{
 
                     @Override
                     public void onError(Exception e) {
-
                     }
                 });
+            }else{
+                urllink.setVisibility(View.GONE);
             }
 
             if (homeModel.hasImage != null && homeModel.hasImage){
@@ -487,10 +533,13 @@ public class Home extends AppCompatActivity{
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        postImg.setVisibility(View.VISIBLE);
                     }
                 });
+            }else{
+                postImg.setVisibility(View.GONE);
             }
+
+
 
 
             DocumentReference usernameReference = fStore.collection("Users").document(homeModel.homeAuthorUid);

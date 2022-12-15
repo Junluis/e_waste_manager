@@ -18,6 +18,7 @@ import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -264,6 +265,30 @@ public class Post extends AppCompatActivity {
             }
         });
 
+        postlink.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                if(!Patterns.WEB_URL.matcher(s).matches()){
+                    postlink.setError("Invalid link.");
+                }else{
+                    postlink.setError(null);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().equals("https:/")){
+                    postlink.setText("");
+                    postlink.setSelection(postlink.length());
+                } else if (!s.toString().contains("https://") && s.length()!=0) {
+                    postlink.setText("https://" + s);
+                    postlink.setSelection(postlink.length());
+                }
+            }
+        });
+
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -271,6 +296,10 @@ public class Post extends AppCompatActivity {
                     if(postTitle.getText().toString().length() == 0)
                         postTitle.setText("");
                     postTitle.requestFocus();
+                } else if(postlink.getText().toString().length() == 0 || !TextUtils.isEmpty(postlink.getError())){
+                    if(postlink.getText().toString().length() == 0)
+                        postlink.setText("");
+                    postlink.requestFocus();
                 }else{
                     uploadData();
                 }
@@ -289,7 +318,9 @@ public class Post extends AppCompatActivity {
                 doc.put("homeAuthorUid", fAuth.getCurrentUser().getUid());
                 doc.put("homePostDate", FieldValue.serverTimestamp());
                 if(postlink.getVisibility() == View.VISIBLE){
-                    doc.put("url", postlink.getText().toString().trim());
+                    if (postlink.getText().length()!= 0 ){
+                        doc.put("url", postlink.getText().toString().trim());
+                    }
                 }
                 if(galleryuploadbtn.getVisibility() == View.VISIBLE){
                     if (profileImageUri != null && !profileImageUri.equals(Uri.EMPTY)){
