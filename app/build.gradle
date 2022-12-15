@@ -52,4 +52,6 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'com.google.android.material:material:1.8.0-alpha02'
     implementation 'org.osmdroid:osmdroid-android:6.1.13'
+    implementation 'io.github.ponnamkarthik:richlinkpreview:1.0.9'
+    implementation 'org.jsoup:jsoup:1.15.3'
 }

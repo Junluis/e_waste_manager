@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/whitebg"
         android:layout_margin="5dp"
-        app:cardCornerRadius="20dp">
+        app:cardCornerRadius="30dp">
 
         <soup.neumorphism.NeumorphFloatingActionButton
             android:id="@+id/close_popup"
@@ -21,11 +21,14 @@
             android:src="@drawable/ic_baseline_close_24"
             android:textStyle="bold"
             android:layout_gravity="end"
+            app:neumorph_shadowColorLight="@color/transparent"
+            app:neumorph_shadowColorDark="@color/transparent"
             android:gravity="center"/>
 
         <LinearLayout
             android:layout_width="330dp"
             android:layout_height="wrap_content"
+            android:elevation="-1dp"
             android:orientation="vertical">
 
             <TextView
@@ -34,7 +37,7 @@
                 android:layout_marginStart="17dp"
                 android:layout_marginTop="17dp"
                 android:layout_marginEnd="40dp"
-                android:text="Filter disposal area by accepted E-waste"
+                android:text="Filter Disposal Areas"
                 android:textColor="@color/black"
                 android:textStyle="bold" />
 
@@ -42,30 +45,74 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="17dp"
+                android:layout_marginBottom="10dp"
                 android:text="Select up to 10 tags." />
 
-            <View
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/filtertab"
                 android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_marginTop="30dp"
-                android:background="@color/darkgray" />
+                android:layout_height="wrap_content"
+                android:background="@color/whitebg"
+                app:tabGravity="fill"
+                app:tabIndicatorAnimationMode="elastic"  />
 
-            <ScrollView
+            <LinearLayout
+                android:id="@+id/filterewaste"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:scrollbarStyle="insideInset">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/existingtags"
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"/>
-            </ScrollView>
+                    android:layout_height="150dp"
+                    android:scrollbarStyle="insideInset">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/existingtags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"/>
+                </ScrollView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/darkgray" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/filterdonation"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:scrollbarStyle="insideInset">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/existingdonationtags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"/>
+                </ScrollView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/darkgray" />
+
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp">
+                android:paddingHorizontal="10dp">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilBarangay"

@@ -49,11 +49,13 @@
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__downvotefalse.xml" value="0.307" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__edit_prof.xml" value="0.3285" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__edit_profilepic.xml" value="0.3285" />
+        <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__enter.xml" value="0.2245" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__expand.xml" value="0.202" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__fas_bar.xml" value="0.229" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__filter.xml" value="0.3245" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__gotomylocation.xml" value="0.202" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__guest_profile.xml" value="0.2875" />
+        <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__history.xml" value="0.2245" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__image_icon.xml" value="0.229" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__info.xml" value="0.314" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__link_icon.xml" value="0.2255" />
@@ -102,7 +104,7 @@
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_post.xml" value="0.358695652173913" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_register.xml" value="0.358695652173913" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_replies_view.xml" value="0.35260416666666666" />
-        <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_user_profile_page.xml" value="0.358695652173913" />
+        <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_user_profile_page.xml" value="0.25" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/chip_item.xml" value="0.30434782608695654" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/comment_each.xml" value="0.33" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/content_donate_transactions.xml" value="0.30434782608695654" />
@@ -125,11 +127,13 @@
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/progress_layout.xml" value="0.36096014492753625" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/reply_each.xml" value="0.36096014492753625" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/right_nav.xml" value="0.358695652173913" />
+        <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/menu-v26/nav_leftmenu.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/menu/menu.xml" value="0.5" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/menu/nav_guestmenu.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/menu/nav_leftmenu.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/menu/nav_menu.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/menu/nav_rightmenu.xml" value="0.36102564102564105" />
+        <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/menu/settings.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2355" />
       </map>
     </option>

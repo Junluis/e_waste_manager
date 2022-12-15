@@ -145,7 +145,6 @@ public class EditProfile extends AppCompatActivity {
         });
 
         //transparent inset
-
         DocumentReference documentReference = fStore.collection("Users").document(userID);
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
@@ -465,7 +464,7 @@ public class EditProfile extends AppCompatActivity {
             }
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if(!(s.toString().length() < 160)){
+                if(!(s.toString().length() <= 160)){
                     tilBio.setError("Oops! You run out of characters.");
                 }else{
                     tilBio.setError(null);
@@ -584,9 +583,6 @@ public class EditProfile extends AppCompatActivity {
         });
 
     }
-
-
-
 
     private void uploadImageToFirebase(Uri imageUri){
 

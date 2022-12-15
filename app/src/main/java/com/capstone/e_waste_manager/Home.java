@@ -78,6 +78,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import io.github.ponnamkarthik.richlinkpreview.RichLinkView;
+import io.github.ponnamkarthik.richlinkpreview.RichLinkViewSkype;
+import io.github.ponnamkarthik.richlinkpreview.RichLinkViewTelegram;
+import io.github.ponnamkarthik.richlinkpreview.ViewListener;
 import soup.neumorphism.NeumorphFloatingActionButton;
 
 
@@ -241,11 +245,11 @@ public class Home extends AppCompatActivity{
                     }
                     if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
                         partnerBadge_header.setVisibility(View.VISIBLE);
-                        navView_menu.getMenu().findItem(R.id.donate).setVisible(false);
                         navView_menu.getMenu().findItem(R.id.adddisposalpg).setVisible(true);
-                        navView_menu.getMenu().findItem(R.id.donatetransactionspg).setVisible(true);
-                    } else{
+                    } else if (Objects.equals(documentSnapShot.getString("Partner"), "0")){
                         partnerBadge_header.setVisibility(View.GONE);
+                    } else{
+                        navView_profile.getMenu().findItem(R.id.notificationpg).setVisible(true);
                     }
                     StorageReference profileRef = storageReference.child("ProfileImage/"+fAuth.getCurrentUser().getUid()+"/profile.jpg");
                     profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -343,23 +347,9 @@ public class Home extends AppCompatActivity{
                         startActivity(new Intent(Home.this, DisposalLocation.class));
                         break;
                     }
-                    case R.id.donate:
-                    {
-                        if (user != null && !user.isAnonymous()) {
-                            startActivity(new Intent(Home.this, Donate.class));
-                        } else{
-                            ShowPopup();
-                        }
-                        break;
-                    }
                     case R.id.adddisposalpg:
                     {
                         startActivity(new Intent(Home.this, AddDisposal.class));
-                        break;
-                    }
-                    case R.id.donatetransactionspg:
-                    {
-                        startActivity(new Intent(Home.this, DonateTransactions.class));
                         break;
                     }
                 }
@@ -414,8 +404,9 @@ public class Home extends AppCompatActivity{
         TextView author, title, body, authorUid, docId, timestamp, upvotecount, downvotecount;
         Button addcoment;
         ToggleButton upvote, downvote;
-        ImageView prof_img, partnerBadge;
+        ImageView prof_img, partnerBadge, postImg;
         HomeModel model;
+        RichLinkViewTelegram urllink;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -434,6 +425,8 @@ public class Home extends AppCompatActivity{
             upvotecount = itemView.findViewById(R.id.upvotecount);
             downvotecount = itemView.findViewById(R.id.downvotecount);
             partnerBadge = itemView.findViewById(R.id.partnerBadge);
+            urllink = itemView.findViewById(R.id.urllink);
+            postImg = itemView.findViewById(R.id.postImg);
 
             addcoment.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -465,6 +458,44 @@ public class Home extends AppCompatActivity{
                 String timeago = timeAgo2.covertTimeToText(homeModel.getHomePostDate().toString());
                 timestamp.setText(timeago);
             }
+
+            if (body.getText().length() == 0){
+                body.setVisibility(View.GONE);
+            }
+
+            if(homeModel.url != null){
+                urllink.setVisibility(View.VISIBLE);
+                urllink.setLink(homeModel.url, new ViewListener() {
+
+                    @Override
+                    public void onSuccess(boolean status) {
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+                });
+            }
+
+            if (homeModel.hasImage != null && homeModel.hasImage){
+                //profile image per post
+                StorageReference profileRef = storageReference.child("ForumPost/"+homeModel.docId+"/postimg.jpg");
+                profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.get().load(uri).into(postImg);
+                        postImg.setVisibility(View.VISIBLE);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        postImg.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
 
             DocumentReference usernameReference = fStore.collection("Users").document(homeModel.homeAuthorUid);
             usernameReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {

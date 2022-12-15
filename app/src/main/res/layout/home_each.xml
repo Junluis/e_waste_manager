@@ -18,13 +18,14 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="20dp"
+            android:animateLayoutChanges="true"
             android:paddingVertical="10dp">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView2"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
+                android:layout_marginHorizontal="20dp"
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="250dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -92,6 +93,7 @@
                 android:id="@+id/homeTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
                 android:text="@string/title"
                 android:textSize="24sp"
                 android:textColor="@color/darkgray"
@@ -124,10 +126,36 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
 
+            <io.github.ponnamkarthik.richlinkpreview.RichLinkViewTelegram
+                android:id="@+id/urllink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/homeBody">
+
+            </io.github.ponnamkarthik.richlinkpreview.RichLinkViewTelegram>
+
+            <ImageView
+                android:id="@+id/postImg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/testimg"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/urllink" />
+
             <TextView
                 android:id="@+id/homeBody"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:text="@string/lorem_ipsum"
@@ -141,9 +169,10 @@
                 android:id="@+id/linearLayout7"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginHorizontal="20dp"
                 android:orientation="horizontal"
                 android:layout_marginTop="10dp"
-                app:layout_constraintTop_toBottomOf="@+id/homeBody"
+                app:layout_constraintTop_toBottomOf="@+id/postImg"
                 tools:layout_editor_absoluteX="20dp">
 
                 <ToggleButton
@@ -151,9 +180,9 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center"
-                    android:textOn=""
+                    android:background="@drawable/vote_toggle"
                     android:textOff=""
-                    android:background="@drawable/vote_toggle" />
+                    android:textOn="" />
 
                 <TextView
                     android:id="@+id/upvotecount"
@@ -170,10 +199,10 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:layout_marginStart="10dp"
-                    android:textOn=""
-                    android:textOff=""
                     android:background="@drawable/downvote_toggle"
-                    android:rotation="180"/>
+                    android:rotation="180"
+                    android:textOff=""
+                    android:textOn="" />
 
                 <TextView
                     android:id="@+id/downvotecount"
@@ -202,7 +231,7 @@
                     android:textColor="@color/black"
                     app:icon="@drawable/ic__comment"
                     app:iconSize="20dp"
-                    app:iconTintMode="multiply"/>
+                    app:iconTintMode="multiply" />
 
 
             </LinearLayout>
@@ -214,6 +243,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_baseline_more_vert_24"
+                android:layout_marginHorizontal="20dp"
                 app:layout_constraintBottom_toBottomOf="@+id/homeAuthor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"

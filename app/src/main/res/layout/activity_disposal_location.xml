@@ -22,118 +22,128 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:elevation="5dp"
+        android:rotation="-90"
         android:scaleType="center"
         android:src="@drawable/ic_baseline_keyboard_arrow_up_24"
-        android:rotation="-90"
-        app:layout_constraintBottom_toBottomOf="@+id/myLocation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/myLocation"
-        app:layout_constraintVertical_bias="0.05"
+        app:layout_constraintTop_toTopOf="@+id/controllers"
         app:neumorph_backgroundColor="@color/whitebg"
         app:neumorph_shadowColorDark="@color/transparent"
         app:neumorph_shadowColorLight="@color/transparent" />
 
-    <soup.neumorphism.NeumorphFloatingActionButton
-        android:id="@+id/myLocation"
-        style="@style/Widget.Neumorph.FloatingActionButton"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/controllers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:elevation="5dp"
-        android:scaleType="center"
-        android:src="@drawable/ic__gotomylocation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.05"
-        app:neumorph_backgroundColor="@color/whitebg"
-        app:neumorph_shadowColorDark="@color/transparent"
-        app:neumorph_shadowColorLight="@color/transparent" />
+        app:layout_constraintVertical_bias="0.05">
 
-    <soup.neumorphism.NeumorphFloatingActionButton
-        android:id="@+id/zoomin"
-        style="@style/Widget.Neumorph.FloatingActionButton"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:elevation="5dp"
-        android:scaleType="center"
-        android:src="@drawable/ic__plus"
-        app:layout_constraintEnd_toEndOf="@+id/myLocation"
-        app:layout_constraintStart_toStartOf="@+id/myLocation"
-        app:layout_constraintTop_toBottomOf="@+id/myLocation"
-        app:neumorph_backgroundColor="@color/whitebg"
-        app:neumorph_shadowColorDark="@color/transparent"
-        app:neumorph_shadowColorLight="@color/transparent" />
+        <soup.neumorphism.NeumorphFloatingActionButton
+            android:id="@+id/myLocation"
+            style="@style/Widget.Neumorph.FloatingActionButton"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:elevation="5dp"
+            android:scaleType="center"
+            android:src="@drawable/ic__gotomylocation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:neumorph_backgroundColor="@color/whitebg"
+            app:neumorph_shadowColorDark="@color/transparent"
+            app:neumorph_shadowColorLight="@color/transparent" />
 
-    <soup.neumorphism.NeumorphFloatingActionButton
-        android:id="@+id/zoomout"
-        style="@style/Widget.Neumorph.FloatingActionButton"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:elevation="5dp"
-        android:scaleType="center"
-        android:src="@drawable/ic__minus"
-        app:layout_constraintEnd_toEndOf="@+id/zoomin"
-        app:layout_constraintStart_toStartOf="@+id/zoomin"
-        app:layout_constraintTop_toBottomOf="@+id/zoomin"
-        app:neumorph_backgroundColor="@color/whitebg"
-        app:neumorph_shadowColorDark="@color/transparent"
-        app:neumorph_shadowColorLight="@color/transparent" />
+        <soup.neumorphism.NeumorphFloatingActionButton
+            android:id="@+id/zoomin"
+            style="@style/Widget.Neumorph.FloatingActionButton"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:elevation="5dp"
+            android:scaleType="center"
+            android:src="@drawable/ic__plus"
+            app:layout_constraintEnd_toEndOf="@+id/myLocation"
+            app:layout_constraintStart_toStartOf="@+id/myLocation"
+            app:layout_constraintTop_toBottomOf="@+id/myLocation"
+            app:neumorph_backgroundColor="@color/whitebg"
+            app:neumorph_shadowColorDark="@color/transparent"
+            app:neumorph_shadowColorLight="@color/transparent" />
 
-    <soup.neumorphism.NeumorphFloatingActionButton
-        android:id="@+id/filter"
-        style="@style/Widget.Neumorph.FloatingActionButton"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:elevation="5dp"
-        android:scaleType="center"
-        android:src="@drawable/ic__filter"
-        app:layout_constraintEnd_toEndOf="@+id/zoomout"
-        app:layout_constraintStart_toStartOf="@+id/zoomout"
-        app:layout_constraintTop_toBottomOf="@+id/zoomout"
-        app:neumorph_backgroundColor="@color/whitebg"
-        app:neumorph_shadowColorDark="@color/transparent"
-        app:neumorph_shadowColorLight="@color/transparent" />
+        <soup.neumorphism.NeumorphFloatingActionButton
+            android:id="@+id/zoomout"
+            style="@style/Widget.Neumorph.FloatingActionButton"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:elevation="5dp"
+            android:scaleType="center"
+            android:src="@drawable/ic__minus"
+            app:layout_constraintEnd_toEndOf="@+id/zoomin"
+            app:layout_constraintStart_toStartOf="@+id/zoomin"
+            app:layout_constraintTop_toBottomOf="@+id/zoomin"
+            app:neumorph_backgroundColor="@color/whitebg"
+            app:neumorph_shadowColorDark="@color/transparent"
+            app:neumorph_shadowColorLight="@color/transparent" />
 
-    <soup.neumorphism.NeumorphCardView
-        style="@style/Widget.Neumorph.CardView"
-        android:id="@+id/bingmapcard"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:elevation="5dp"
-        app:neumorph_strokeColor="@color/blue"
-        app:neumorph_strokeWidth="3dp"
-        app:neumorph_shapeAppearance="@style/CustomShapeAppearance"
-        app:layout_constraintEnd_toEndOf="@+id/filter"
-        app:layout_constraintStart_toStartOf="@+id/filter"
-        app:layout_constraintTop_toBottomOf="@+id/filter"
-        app:neumorph_shadowColorDark="@color/transparent"
-        app:neumorph_shadowColorLight="@color/transparent">
+        <soup.neumorphism.NeumorphFloatingActionButton
+            android:id="@+id/filter"
+            style="@style/Widget.Neumorph.FloatingActionButton"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:elevation="5dp"
+            android:scaleType="center"
+            android:src="@drawable/ic__filter"
+            app:layout_constraintEnd_toEndOf="@+id/zoomout"
+            app:layout_constraintStart_toStartOf="@+id/zoomout"
+            app:layout_constraintTop_toBottomOf="@+id/zoomout"
+            app:neumorph_backgroundColor="@color/whitebg"
+            app:neumorph_shadowColorDark="@color/transparent"
+            app:neumorph_shadowColorLight="@color/transparent" />
 
-        <ImageButton
-            android:id="@+id/bingmap"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/bing_map"/>
+        <soup.neumorphism.NeumorphCardView
+            android:id="@+id/bingmapcard"
+            style="@style/Widget.Neumorph.CardView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:elevation="5dp"
+            app:layout_constraintEnd_toEndOf="@+id/filter"
+            app:layout_constraintStart_toStartOf="@+id/filter"
+            app:layout_constraintTop_toBottomOf="@+id/filter"
+            app:neumorph_shadowColorDark="@color/transparent"
+            app:neumorph_shadowColorLight="@color/transparent"
+            app:neumorph_shapeAppearance="@style/CustomShapeAppearance"
+            app:neumorph_strokeColor="@color/blue"
+            app:neumorph_strokeWidth="3dp">
 
-        <ImageButton
-            android:id="@+id/aerialmap"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:visibility="gone"
-            android:src="@drawable/aerial_map"/>
+            <ImageButton
+                android:id="@+id/bingmap"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/bing_map" />
 
-        <ImageButton
-            android:id="@+id/defaultmap"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:visibility="gone"
-            android:src="@drawable/default_map"/>
-    </soup.neumorphism.NeumorphCardView>
+            <ImageButton
+                android:id="@+id/aerialmap"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/aerial_map"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/defaultmap"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/default_map"
+                android:visibility="gone" />
+        </soup.neumorphism.NeumorphCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/disposalRecycler"

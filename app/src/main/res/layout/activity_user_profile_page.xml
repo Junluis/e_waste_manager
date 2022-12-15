@@ -31,6 +31,16 @@
             android:src="@drawable/ic_baseline_arrow_back_ios_new_24"
             app:tint="@color/darkgray" />
 
+        <ImageButton
+            android:id="@+id/settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic__settings"
+            app:tint="@color/darkgray" />
+
     </RelativeLayout>
 
 
@@ -48,11 +58,11 @@
         app:layout_constraintVertical_bias="0.00999999">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_toStartOf="@+id/prof_img"
             android:gravity="center"
-            android:layout_gravity="center"
             android:orientation="vertical"
             android:paddingHorizontal="20dp"
             android:paddingVertical="10dp">
@@ -93,17 +103,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/username"
+                    android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/partnerBadge"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_marginStart="5dp"
-                    android:visibility="gone"
-                    android:src="@drawable/ic__verified_badge" />
+                    android:src="@drawable/ic__verified_badge"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -122,30 +132,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:maxLines="4"
-                android:textAlignment="center"
                 android:text=""
+                android:textAlignment="center"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="14sp" />
 
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/editProfilebtn"
-                android:layout_width="wrap_content"
-                android:layout_height="45dp"
+            <View
+                android:layout_width="50dp"
+                android:layout_height="5dp"
                 android:layout_marginTop="15dp"
-                android:backgroundTint="@color/darkgray"
-                android:text="Edit Profile"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:cornerRadius="300dp" />
-
-
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginEnd="130dp"
-                android:layout_marginStart="130dp"
+                android:background="@drawable/custom_button_round"
                 android:src="@drawable/ic_baseline_keyboard_arrow_up_24"
                 app:tint="@color/green1" />
 

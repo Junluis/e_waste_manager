@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -22,6 +23,8 @@ import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.Manifest;
 import android.animation.AnimatorSet;
@@ -59,9 +62,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -77,6 +84,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -156,7 +164,9 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     FirebaseUser user;
 
     List<String> disposaltags = new ArrayList<>();
+    List<String> donationtags = new ArrayList<>();
     List<String> filtertags = new ArrayList<>();
+    List<String> filterdonationtags = new ArrayList<>();
     Dialog filterdialog;
 
     Query query, querytags;
@@ -168,6 +178,8 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     FirestoreRecyclerOptions<DisposalModel> options;
 
     android.app.AlertDialog dialog;
+
+    ConstraintLayout controllers;
 
     private final List<Marker> mClicked = new ArrayList<>();
     private final List<String> listcomparator = new ArrayList<>();
@@ -300,6 +312,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         zoomin = findViewById(R.id.zoomin);
         zoomout = findViewById(R.id.zoomout);
         back = findViewById(R.id.back);
+        controllers = findViewById(R.id.controllers);
 
         zoomin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -377,7 +390,6 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                 try {
                     RecyclerView.ViewHolder viewHolder = disposalRecycler.findViewHolderForAdapterPosition(0);
                     RelativeLayout rrl= viewHolder.itemView.findViewById(R.id.disposalcard);
-                    ImageView disposalicon = viewHolder.itemView.findViewById(R.id.disposalicon);
                     rrl.animate().scaleX(1).scaleY(1).setDuration(350).setInterpolator(new AccelerateInterpolator()).start();
                 }catch (Exception ignored){
 
@@ -395,17 +407,21 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                 RecyclerView.ViewHolder viewHolder = disposalRecycler.findViewHolderForAdapterPosition(pos);
                 RelativeLayout rrl = viewHolder.itemView.findViewById(R.id.disposalcard);
                 ToggleButton zoom = viewHolder.itemView.findViewById(R.id.zoom);
+                ToggleButton showmore = viewHolder.itemView.findViewById(R.id.showmore);
                 TextView lat = viewHolder.itemView.findViewById(R.id.latitude);
                 TextView lon = viewHolder.itemView.findViewById(R.id.longitude);
-                ImageView disposalicon = viewHolder.itemView.findViewById(R.id.disposalicon);
+                ConstraintLayout details = viewHolder.itemView.findViewById(R.id.details);
 
                 zoom.setChecked(false);
+                showmore.setChecked(false);
+                details.setVisibility(View.GONE);
                 double latitude = Double.parseDouble(lat.getText().toString());
                 double longitude = Double.parseDouble(lon.getText().toString());
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE){
                     rrl.animate().setDuration(350).scaleX(1).scaleY(1).setInterpolator(new AccelerateInterpolator()).start();
                     map.getController().animateTo(new GeoPoint(latitude, longitude),14.0, 2000L);
+                    controllers.animate().translationX(0f).setDuration(500);
                 }else{
                     rrl.animate().setDuration(350).scaleX(0.75f).scaleY(0.75f).setInterpolator(new AccelerateInterpolator()).start();
                 }
@@ -447,13 +463,21 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView disposalname, disposaladdress, latitude, longitude;
+        TextView disposalname, disposaladdress, latitude, longitude, disposaldesc, donationdesc, ewasteabout, donationabout, textView20, textView21;
         ImageView disposalicon;
         MaterialButton track;
-        ToggleButton zoom;
+        ToggleButton zoom, showmore;
+        ConstraintLayout details;
+        HorizontalScrollView acceptedewaste, accepteddonation;
+        Chip collectdonation, collectewaste;
+        ChipGroup acceptedewastechipgroup, accepteddonationchipgroup;
 
         DisposalModel model;
 
+        List<String> acceptedewastetags = new ArrayList<>();
+        List<String> accepteddonationtags = new ArrayList<>();
+
+        @SuppressLint("ClickableViewAccessibility")
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             disposalname = itemView.findViewById(R.id.disposalname);
@@ -463,6 +487,20 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             disposalicon = itemView.findViewById(R.id.disposalicon);
             track = itemView.findViewById(R.id.track);
             zoom = itemView.findViewById(R.id.zoom);
+            showmore = itemView.findViewById(R.id.showmore);
+            details = itemView.findViewById(R.id.details);
+            acceptedewaste = itemView.findViewById(R.id.scrollView4);
+            accepteddonation = itemView.findViewById(R.id.scrollView5);
+            collectewaste = itemView.findViewById(R.id.collectewaste);
+            collectdonation = itemView.findViewById(R.id.collectdonation);
+            disposaldesc = itemView.findViewById(R.id.disposaldesc);
+            donationdesc = itemView.findViewById(R.id.donationdesc);
+            acceptedewastechipgroup = itemView.findViewById(R.id.acceptedewastechipgroup);
+            accepteddonationchipgroup = itemView.findViewById(R.id.accepteddonationchipgroup);
+            ewasteabout = itemView.findViewById(R.id.ewasteabout);
+            donationabout = itemView.findViewById(R.id.donationabout);
+            textView20 = itemView.findViewById(R.id.textView20);
+            textView21 = itemView.findViewById(R.id.textView21);
 
             track.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -493,6 +531,38 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                     }
                 }
             });
+
+            showmore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (showmore.isChecked()){
+                        details.setVisibility(View.VISIBLE);
+                        controllers.animate().translationX(3000f).setDuration(1000);
+                    }else{
+                        details.setVisibility(View.GONE);
+                        controllers.animate().translationX(0f).setDuration(500);
+                    }
+                }
+            });
+
+            acceptedewaste.setOnTouchListener(new View.OnTouchListener() {
+                // Setting on Touch Listener for handling the touch inside ScrollView
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    // Disallow the touch request for parent scroll on touch of child view
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
+                    return false;
+                }
+            });
+            accepteddonation.setOnTouchListener(new View.OnTouchListener() {
+                // Setting on Touch Listener for handling the touch inside ScrollView
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    // Disallow the touch request for parent scroll on touch of child view
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
+                    return false;
+                }
+            });
         }
 
         public void bind(DisposalModel disposalModel){
@@ -501,6 +571,8 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             disposaladdress.setText(disposalModel.getAddress() + ", " + disposalModel.barangay);
             latitude.setText(""+disposalModel.maplocation.getLatitude());
             longitude.setText(""+disposalModel.maplocation.getLongitude());
+            disposaldesc.setText(disposalModel.disposaldesc);
+            donationdesc.setText(disposalModel.donationdesc);
 
 //           image per markers
             if (disposalModel.hasImage != null && disposalModel.hasImage){
@@ -512,6 +584,62 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                     }
                 });
             }
+            if(disposalModel.collect_ewaste != null){
+                if(disposalModel.collect_ewaste){
+                    collectewaste.setVisibility(View.VISIBLE);
+                }
+            }else{
+                disposaldesc.setVisibility(View.GONE);
+                acceptedewastechipgroup.setVisibility(View.GONE);
+                ewasteabout.setVisibility(View.GONE);
+                textView21.setVisibility(View.GONE);
+            }
+            if(disposalModel.collect_donation != null){
+                if (disposalModel.collect_donation){
+                    collectdonation.setVisibility(View.VISIBLE);
+                }
+            }else{
+                donationdesc.setVisibility(View.GONE);
+                accepteddonationchipgroup.setVisibility(View.GONE);
+                donationabout.setVisibility(View.GONE);
+                textView20.setVisibility(View.GONE);
+            }
+
+            DocumentReference acceptedewaste = fStore.collection("DisposalLocations").document(disposalModel.docId);
+            acceptedewaste.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    acceptedewastetags = (List<String>) documentSnapshot.get("ewastetypes");
+//                for(String log : disposaltags)
+//                {
+//                    Log.e("Tag",log);
+//                }
+                    if (acceptedewastetags != null) {
+                        Collections.sort(acceptedewastetags, String.CASE_INSENSITIVE_ORDER);
+                        for (String chipText: acceptedewastetags){
+                            acceptedchips(chipText, acceptedewastechipgroup);
+                        }
+                    }
+                }
+            });
+
+            DocumentReference accepteddonation = fStore.collection("DisposalLocations").document(disposalModel.docId);
+            accepteddonation.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    accepteddonationtags = (List<String>) documentSnapshot.get("donationtags");
+//                for(String log : disposaltags)
+//                {
+//                    Log.e("Tag",log);
+//                }
+                    if (accepteddonationtags != null) {
+                        Collections.sort(accepteddonationtags, String.CASE_INSENSITIVE_ORDER);
+                        for (String chipText: accepteddonationtags){
+                            acceptedchips(chipText, accepteddonationchipgroup);
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -698,10 +826,12 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
     @Override
     public void onStop() {
         super.onStop();
-
+        filterdialog.dismiss();
+        filter.getDrawable().setTint(ContextCompat.getColor(DisposalLocation.this, R.color.darkgray));
         if (adapter != null) {
             adapter.stopListening();
         }
+        finish();
     }
 
     public void onLocationChanged(Location location) {
@@ -741,7 +871,7 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
 
     ArrayAdapter<String> barangayList;
     List<String> barangay = new ArrayList<>();
-    ChipGroup existingtags;
+    ChipGroup existingtags, existingdonationtags;
     String selectedbarangay;
     public void Showfilter(){
         NeumorphFloatingActionButton close_popup;
@@ -750,17 +880,49 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
         Button applyfilter, clearfilter;
         ImageButton imageButton2;
         filterdialog.setContentView(R.layout.custom_popup_tagfilter);
+        LinearLayout filterewaste,filterdonation;
+        TabLayout filtertab;
 
         close_popup = (NeumorphFloatingActionButton) filterdialog.findViewById(R.id.close_popup);
         existingtags = (ChipGroup) filterdialog.findViewById(R.id.existingtags);
+        existingdonationtags = (ChipGroup) filterdialog.findViewById(R.id.existingdonationtags);
         tilBarangay = (TextInputLayout) filterdialog.findViewById(R.id.tilBarangay);
         regBarangay = (AutoCompleteTextView) filterdialog.findViewById(R.id.regBarangay);
         applyfilter = (Button) filterdialog.findViewById(R.id.applyfilter);
         clearfilter = (Button) filterdialog.findViewById(R.id.clearfilter);
         imageButton2 = (ImageButton) filterdialog.findViewById(R.id.imageButton2);
+        filterewaste = (LinearLayout) filterdialog.findViewById(R.id.filterewaste);
+        filterdonation = (LinearLayout) filterdialog.findViewById(R.id.filterdonation);
+        filtertab = (TabLayout) filterdialog.findViewById(R.id.filtertab);
 
-        DocumentReference disposaltpyes = fStore.collection("Miscellaneous").document("disposaltpyes");
-        disposaltpyes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        filtertab.addTab(filtertab.newTab().setText("E-waste Filter"));
+        filtertab.addTab(filtertab.newTab().setText("Donation Filter"));
+
+        filtertab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if(tab.getPosition() == 0){
+                    filterewaste.setVisibility(View.VISIBLE);
+                    filterdonation.setVisibility(View.GONE);
+                }else{
+                    filterewaste.setVisibility(View.GONE);
+                    filterdonation.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        DocumentReference disposaltypes = fStore.collection("Miscellaneous").document("disposaltypes");
+        disposaltypes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 disposaltags = (List<String>) documentSnapshot.get("ewastetypes");
@@ -769,8 +931,27 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
 //                    Log.e("Tag",log);
 //                }
                 if (disposaltags != null) {
+                    Collections.sort(disposaltags, String.CASE_INSENSITIVE_ORDER);
                     for (String chipText: disposaltags){
                         addExistingChips(chipText);
+                    }
+                }
+            }
+        });
+
+        DocumentReference donationtypes = fStore.collection("Miscellaneous").document("donationtypes");
+        donationtypes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                donationtags = (List<String>) documentSnapshot.get("donationtags");
+//                for(String log : disposaltags)
+//                {
+//                    Log.e("Tag",log);
+//                }
+                if (donationtags != null) {
+                    Collections.sort(donationtags, String.CASE_INSENSITIVE_ORDER);
+                    for (String chipText: donationtags){
+                        addExistingDonationChips(chipText);
                     }
                 }
             }
@@ -809,77 +990,175 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View view) {
                 showProgressDialog();
-                List<Integer> ids = existingtags.getCheckedChipIds();
-                for (Integer id:ids){
-                    Chip chip = existingtags.findViewById(id);
-                    filtertags.add(chip.getText().toString());
-                }
-                if (!filtertags.isEmpty()){
-                    for(String log : filtertags)
-                    {
-                        Log.e("Tag",log);
+
+                if(filtertab.getSelectedTabPosition() == 0){
+                    List<Integer> ids = existingtags.getCheckedChipIds();
+                    for (Integer id:ids){
+                        Chip chip = existingtags.findViewById(id);
+                        filtertags.add(chip.getText().toString());
                     }
 
-                    if (regBarangay.getText().toString().isEmpty()){
+                    if (!filtertags.isEmpty()){
+                        for(String log : filtertags)
+                        {
+                            Log.e("Tag",log);
+                        }
+
+                        if (regBarangay.getText().toString().isEmpty()){
+                            querytags = fStore.collection("DisposalLocations")
+                                    .whereArrayContainsAny("ewastetypes", filtertags);
+                        }else{
+                            querytags = fStore.collection("DisposalLocations")
+                                    .whereEqualTo("barangay", regBarangay.getText().toString()).whereArrayContainsAny("ewastetypes", filtertags);
+                        }
+
+                        FirestoreRecyclerOptions<DisposalModel> options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
+                                .setQuery(querytags, DisposalModel.class)
+                                .build();
+                        adapter.updateOptions(options2);
+                        drawmarkers(querytags);
+                        disposalRecycler.setAdapter(null);
+                        disposalRecycler.setAdapter(adapter);
+
+                        filterdonationtags.clear();
+                        existingdonationtags.clearCheck();
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(adapter.getItemCount()==0){
+                                    hideProgressDialog();
+                                    selectedbarangay = regBarangay.getText().toString();
+                                    Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
+                                    filter.getDrawable().setTint(ContextCompat.getColor(DisposalLocation.this, R.color.green1));
+                                }else{
+                                    if (regBarangay.getText().toString() != null && !regBarangay.getText().toString().trim().isEmpty()){
+                                        selectedbarangay = regBarangay.getText().toString();
+                                    }
+                                    hideProgressDialog();
+                                    close_popup.performClick();
+                                    filter.getDrawable().setTint(ContextCompat.getColor(DisposalLocation.this, R.color.green1));
+                                }
+                            }
+                        }, 1000);
+                    }else if (!regBarangay.getText().toString().isEmpty()){
                         querytags = fStore.collection("DisposalLocations")
-                                .whereArrayContainsAny("ewastetypes", filtertags);
+                                .whereEqualTo("barangay", regBarangay.getText().toString());
+
+                        FirestoreRecyclerOptions<DisposalModel> options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
+                                .setQuery(querytags, DisposalModel.class)
+                                .build();
+                        adapter.updateOptions(options2);
+                        drawmarkers(querytags);
+                        disposalRecycler.setAdapter(null);
+                        disposalRecycler.setAdapter(adapter);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(adapter.getItemCount()==0){
+                                    hideProgressDialog();
+                                    selectedbarangay = regBarangay.getText().toString();
+                                    Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
+                                    filter.getDrawable().setTint(ContextCompat.getColor(DisposalLocation.this, R.color.green1));
+                                }else{
+                                    if (regBarangay.getText().toString() != null && !regBarangay.getText().toString().trim().isEmpty()){
+                                        selectedbarangay = regBarangay.getText().toString();
+                                    }
+                                    hideProgressDialog();
+                                    close_popup.performClick();
+                                    filter.getDrawable().setTint(ContextCompat.getColor(DisposalLocation.this, R.color.green1));
+                                }
+                            }
+                        }, 1000);
                     }else{
-                        querytags = fStore.collection("DisposalLocations")
-                                .whereEqualTo("barangay", regBarangay.getText().toString()).whereArrayContainsAny("ewastetypes", filtertags);
+                        hideProgressDialog();
+                        clearfilter.performClick();
+                    }
+                }else{
+                    List<Integer> ids = existingdonationtags.getCheckedChipIds();
+                    for (Integer id:ids){
+                        Chip chip = existingdonationtags.findViewById(id);
+                        filterdonationtags.add(chip.getText().toString());
                     }
 
-                    FirestoreRecyclerOptions<DisposalModel> options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
-                            .setQuery(querytags, DisposalModel.class)
-                            .build();
-                    adapter.updateOptions(options2);
-                    drawmarkers(querytags);
-                    disposalRecycler.setAdapter(null);
-                    disposalRecycler.setAdapter(adapter);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(adapter.getItemCount()==0){
-                                hideProgressDialog();
-                                Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
-                            }else{
-                                if (regBarangay.getText().toString() != null && !regBarangay.getText().toString().trim().isEmpty()){
-                                    selectedbarangay = regBarangay.getText().toString();
-                                }
-                                hideProgressDialog();
-                                close_popup.performClick();
-                            }
+                    if (!filterdonationtags.isEmpty()){
+                        for(String log : filterdonationtags)
+                        {
+                            Log.e("Tag",log);
                         }
-                    }, 1000);
-                }else if (!regBarangay.getText().toString().isEmpty()){
-                    querytags = fStore.collection("DisposalLocations")
-                            .whereEqualTo("barangay", regBarangay.getText().toString());
 
-                    FirestoreRecyclerOptions<DisposalModel> options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
-                            .setQuery(querytags, DisposalModel.class)
-                            .build();
-                    adapter.updateOptions(options2);
-                    drawmarkers(querytags);
-                    disposalRecycler.setAdapter(null);
-                    disposalRecycler.setAdapter(adapter);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(adapter.getItemCount()==0){
-                                hideProgressDialog();
-                                Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
-                            }else{
-                                if (regBarangay.getText().toString() != null && !regBarangay.getText().toString().trim().isEmpty()){
-                                    selectedbarangay = regBarangay.getText().toString();
-                                }
-                                hideProgressDialog();
-                                close_popup.performClick();
-                            }
+                        if (regBarangay.getText().toString().isEmpty()){
+                            querytags = fStore.collection("DisposalLocations")
+                                    .whereArrayContainsAny("ewastetypes", filterdonationtags);
+                        }else{
+                            querytags = fStore.collection("DisposalLocations")
+                                    .whereEqualTo("barangay", regBarangay.getText().toString()).whereArrayContainsAny("ewastetypes", filterdonationtags);
                         }
-                    }, 1000);
-                }else{
-                    hideProgressDialog();
-                    clearfilter.performClick();
+
+                        FirestoreRecyclerOptions<DisposalModel> options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
+                                .setQuery(querytags, DisposalModel.class)
+                                .build();
+                        adapter.updateOptions(options2);
+                        drawmarkers(querytags);
+                        disposalRecycler.setAdapter(null);
+                        disposalRecycler.setAdapter(adapter);
+
+                        filtertags.clear();
+                        existingtags.clearCheck();
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(adapter.getItemCount()==0){
+                                    hideProgressDialog();
+                                    selectedbarangay = regBarangay.getText().toString();
+                                    Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
+                                    filter.getDrawable().setTint(ContextCompat.getColor(DisposalLocation.this, R.color.green1));
+                                }else{
+                                    if (regBarangay.getText().toString() != null && !regBarangay.getText().toString().trim().isEmpty()){
+                                        selectedbarangay = regBarangay.getText().toString();
+                                    }
+                                    hideProgressDialog();
+                                    close_popup.performClick();
+                                    filter.getDrawable().setTint(ContextCompat.getColor(DisposalLocation.this, R.color.green1));
+                                }
+                            }
+                        }, 1000);
+                    }else if (!regBarangay.getText().toString().isEmpty()){
+                        querytags = fStore.collection("DisposalLocations")
+                                .whereEqualTo("barangay", regBarangay.getText().toString());
+
+                        FirestoreRecyclerOptions<DisposalModel> options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
+                                .setQuery(querytags, DisposalModel.class)
+                                .build();
+                        adapter.updateOptions(options2);
+                        drawmarkers(querytags);
+                        disposalRecycler.setAdapter(null);
+                        disposalRecycler.setAdapter(adapter);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(adapter.getItemCount()==0){
+                                    hideProgressDialog();
+                                    selectedbarangay = regBarangay.getText().toString();
+                                    Toast.makeText(DisposalLocation.this, "No results found.", Toast.LENGTH_LONG).show();
+                                    filter.getDrawable().setTint(ContextCompat.getColor(DisposalLocation.this, R.color.green1));
+                                }else{
+                                    if (regBarangay.getText().toString() != null && !regBarangay.getText().toString().trim().isEmpty()){
+                                        selectedbarangay = regBarangay.getText().toString();
+                                    }
+                                    hideProgressDialog();
+                                    close_popup.performClick();
+                                    filter.getDrawable().setTint(ContextCompat.getColor(DisposalLocation.this, R.color.green1));
+                                }
+                            }
+                        }, 1000);
+                    }else{
+                        hideProgressDialog();
+                        clearfilter.performClick();
+                    }
                 }
+
             }
         });
 
@@ -888,10 +1167,13 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             public void onClick(View view) {
                 showProgressDialog();
                 filtertags.clear();
-                regBarangay.setText("");
+                filterdonationtags.clear();
                 existingtags.clearCheck();
+                existingdonationtags.clearCheck();
+                regBarangay.setText("");
                 selectedbarangay = null;
-                
+
+                filter.getDrawable().setTint(ContextCompat.getColor(DisposalLocation.this, R.color.darkgray));
                 adapter.updateOptions(options);
                 drawmarkers(query);
                 disposalRecycler.setAdapter(null);
@@ -935,6 +1217,40 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
             }
         });
         existingtags.addView(existingChip);
+    }
+
+    private void addExistingDonationChips(String text) {
+        Chip existingChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, existingdonationtags, false);
+        existingChip.setId(ViewCompat.generateViewId());
+        existingChip.setText(text);
+        existingChip.setCheckedIconVisible(true);
+        List<String> tagstrings = filterdonationtags;
+        for (String id:tagstrings){
+            if (id.equals(text)){
+                existingChip.setChecked(true);
+            }
+        }
+        existingChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                List<Integer> ids = existingdonationtags.getCheckedChipIds();
+                if (ids.size() > 10) {
+                    existingChip.setChecked(false);
+                }
+                if(!b){
+                    filterdonationtags.remove(text);
+                }
+            }
+        });
+        existingdonationtags.addView(existingChip);
+    }
+
+    private void acceptedchips(String text, ChipGroup group) {
+        Chip existingChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, group, false);
+        existingChip.setId(ViewCompat.generateViewId());
+        existingChip.setText(text);
+        existingChip.setClickable(false);
+        group.addView(existingChip);
     }
 
     private void drawmarkers(Query query){

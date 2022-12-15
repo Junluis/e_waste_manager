@@ -3,7 +3,10 @@ package com.capstone.e_waste_manager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -29,6 +32,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -68,13 +72,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import io.github.ponnamkarthik.richlinkpreview.RichLinkViewTelegram;
+import io.github.ponnamkarthik.richlinkpreview.ViewListener;
 import soup.neumorphism.NeumorphFloatingActionButton;
 
 public class HomeView extends AppCompatActivity {
 
     ImageButton bckBtn;
     Button commentBtn;
-    ImageView prof_img, partnerBadge;
+    ImageView prof_img, partnerBadge, postImg;
     EditText pComment;
     TextView pTitle, pAuthor, pBody, pAuthorUid, pdocId, ptimestamp, upvotecount, downvotecount;
     RecyclerView commentRecycler;
@@ -89,8 +95,12 @@ public class HomeView extends AppCompatActivity {
     ToggleButton upvote, downvote;
     TextInputLayout tilpComment;
 
+    RichLinkViewTelegram urllink;
+
     AlertDialog dialog;
     Dialog guestDialog;
+
+    RelativeLayout insetaddcomment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,15 +118,17 @@ public class HomeView extends AppCompatActivity {
         user = fAuth.getCurrentUser();
 
         //post
-        pTitle = findViewById(R.id.pTitle);
-        pAuthor = findViewById(R.id.pAuthor);
-        pAuthorUid = findViewById(R.id.pAuthorUid);
-        pdocId = findViewById(R.id.pdocId);
-        pBody = findViewById(R.id.pBody);
-        ptimestamp = findViewById(R.id.ptimestamp);
+        pTitle = findViewById(R.id.homeTitle);
+        pAuthor = findViewById(R.id.homeAuthor);
+        pAuthorUid = findViewById(R.id.homeAuthorUid);
+        pdocId = findViewById(R.id.docId);
+        pBody = findViewById(R.id.homeBody);
+        ptimestamp = findViewById(R.id.timestamp);
         prof_img = findViewById(R.id.prof_img);
         swipeRefresh = findViewById(R.id.swipeRefresh);
         partnerBadge = findViewById(R.id.partnerBadge);
+        urllink = findViewById(R.id.urllink);
+        postImg = findViewById(R.id.postImg);
 
         //comments
         pComment = findViewById(R.id.pComment);
@@ -124,6 +136,7 @@ public class HomeView extends AppCompatActivity {
         commentBtn = findViewById(R.id.commentBtn);
         bckBtn = findViewById(R.id.bckBtn);
         commentRecycler = findViewById(R.id.commentRecycler);
+        insetaddcomment = findViewById(R.id.insetaddcomment);
 
         //votes
         upvotecount = findViewById(R.id.upvotecount);
@@ -140,6 +153,23 @@ public class HomeView extends AppCompatActivity {
         //Guest dialog
         guestDialog = new Dialog(this);
 
+        //transparent inset
+        ViewCompat.setOnApplyWindowInsetsListener(commentRecycler, (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            // Apply the insets as a margin to the view. Here the system is setting
+            // only the bottom, left, and right dimensions, but apply whichever insets are
+            // appropriate to your layout. You can also update the view padding
+            // if that's more appropriate.
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            mlp.leftMargin = insets.left;
+            mlp.bottomMargin = insets.bottom;
+            mlp.rightMargin = insets.right;
+            v.setLayoutParams(mlp);
+
+            // Return CONSUMED if you don't want want the window insets to keep being
+            // passed down to descendant views.
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         //post comment
         pComment.addTextChangedListener(new TextWatcher() {
@@ -335,6 +365,41 @@ public class HomeView extends AppCompatActivity {
         ptimestamp.setText(timeago);
         pdocId.setText(model.docId);
         pBody.setText(model.getHomeBody());
+        if (pBody.getText().length() == 0){
+            pBody.setVisibility(View.GONE);
+        }
+        if(model.url != null){
+            urllink.setVisibility(View.VISIBLE);
+            urllink.setLink(model.url, new ViewListener() {
+
+                @Override
+                public void onSuccess(boolean status) {
+
+                }
+
+                @Override
+                public void onError(Exception e) {
+
+                }
+            });
+        }
+
+        if (model.hasImage != null && model.hasImage){
+            //profile image per post
+            StorageReference profileRef = storageReference.child("ForumPost/"+model.docId+"/postimg.jpg");
+            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.get().load(uri).into(postImg);
+                    postImg.setVisibility(View.VISIBLE);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    postImg.setVisibility(View.VISIBLE);
+                }
+            });
+        }
 
         DocumentReference usernameReference = fStore.collection("Users").document(model.getHomeAuthorUid());
         usernameReference.addSnapshotListener(HomeView.this, new EventListener<DocumentSnapshot>() {
@@ -500,7 +565,6 @@ public class HomeView extends AppCompatActivity {
                 String timeago = timeAgo2.covertTimeToText(commentModel.getCommentPostDate().toString());
                 timestamp.setText(timeago);
             }
-            replyChip.setText("@"+commentModel.commentAuthor);
 
             DocumentReference usernameReference = fStore.collection("Users").document(commentModel.commentUid);
             usernameReference.addSnapshotListener(HomeView.this, new EventListener<DocumentSnapshot>() {
@@ -508,6 +572,7 @@ public class HomeView extends AppCompatActivity {
                 public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
                     author.setText(documentSnapShot.getString("Username"));
 
+                    replyChip.setText("@"+author.getText().toString());
                     if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
                         partnerBadge.setVisibility(View.VISIBLE);
                     } else{
@@ -515,6 +580,7 @@ public class HomeView extends AppCompatActivity {
                     }
                 }
             });
+
 
             //post counter
             CollectionReference reply = fStore.collection("Post").document(pdocId.getText().toString())

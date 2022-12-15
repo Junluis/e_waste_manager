@@ -42,9 +42,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +57,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -104,8 +107,8 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
     private boolean isInternetPermissionGranted = false;
     private boolean isNetAccessPermissionGranted = false;
 
-    TextInputLayout tilAddress, tilBarangay, tilBusinessName;
-    EditText regAddress, regBusinessName, regAcceptedEwaste;
+    TextInputLayout tilAddress, tilBarangay, tilBusinessName, tilDonatedesc, tilAcceptedEwaste, tilAcceptedDonations, tilDisposaldesc;
+    EditText regAddress, regBusinessName, regAcceptedEwaste, regDonatedesc, regAcceptedDonations, regDisposaldesc;
     AutoCompleteTextView regBarangay;
     ImageView edit_prof_img, prof_img;
     ImageButton closead, imageButton;
@@ -113,11 +116,15 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
     CardView updateIcon;
     TextView coordinates;
     ChipGroup chipGroup, existingtags;
+    ChipGroup donationchipGroup, donationexistingtags;
 
-    ScrollView disposallocationpg;
+    ScrollView disposallocationpg, disposalchipscroll;
     NestedScrollView constraintLayout4;
 
     MotionLayout constraintLayout3;
+
+    SwitchMaterial donationswitch, disposalswitch;
+    FrameLayout donationview, disposalview;
 
     //maps
     MapView map = null;
@@ -132,6 +139,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
     List<String> barangay = new ArrayList<>();
     ActivityResultLauncher<String> galleryOpen;
     List<String> disposaltags = new ArrayList<>();
+    List<String> donationtags = new ArrayList<>();
 
     Uri profileImageUri;
 
@@ -186,6 +194,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         tilAddress = findViewById(R.id.tilAddress);
         tilBarangay = findViewById(R.id.tilBarangay);
         tilBusinessName = findViewById(R.id.tilBusinessName);
+        tilAcceptedEwaste = findViewById(R.id.tilAcceptedEwaste);
         regBusinessName = findViewById(R.id.regBusinessName);
         regAddress = findViewById(R.id.regAddress);
         regBarangay = findViewById(R.id.regBarangay);
@@ -202,6 +211,22 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         constraintLayout3 = findViewById(R.id.constraintLayout3);
         constraintLayout4 = findViewById(R.id.constraintLayout4);
         existingtags = findViewById(R.id.existingtags);
+        disposalchipscroll = findViewById(R.id.disposalchipscroll);
+        disposalview = findViewById(R.id.disposalview);
+        disposalswitch = findViewById(R.id.disposalswitch);
+
+        tilDisposaldesc = findViewById(R.id.tilDisposaldesc);
+        regDisposaldesc = findViewById(R.id.regDisposaldesc);
+
+        tilDonatedesc = findViewById(R.id.tilDonatedesc);
+        tilAcceptedDonations = findViewById(R.id.tilAcceptedDonations);
+        regDonatedesc = findViewById(R.id.regDonatedesc);
+        donationswitch = findViewById(R.id.donationswitch);
+        donationview = findViewById(R.id.donationview);
+
+        donationchipGroup = findViewById(R.id.i_flex_box2);
+        donationexistingtags = findViewById(R.id.donationexistingtags);
+        regAcceptedDonations = findViewById(R.id.regAcceptedDonations);
 
         coordinates = findViewById(R.id.textView11);
 
@@ -228,8 +253,8 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             }
         });
 
-        DocumentReference disposaltpyes = fStore.collection("Miscellaneous").document("disposaltpyes");
-        disposaltpyes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        DocumentReference disposaltypes = fStore.collection("Miscellaneous").document("disposaltypes");
+        disposaltypes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 disposaltags = (List<String>) documentSnapshot.get("ewastetypes");
@@ -237,9 +262,28 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
 //                {
 //                    Log.e("Tag",log);
 //                }
+                Collections.sort(disposaltags, String.CASE_INSENSITIVE_ORDER);
                 if (disposaltags != null) {
                     for (String chipText: disposaltags){
                         addExistingChips(chipText);
+                    }
+                }
+            }
+        });
+
+        DocumentReference donationtypes = fStore.collection("Miscellaneous").document("donationtypes");
+        donationtypes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                donationtags = (List<String>) documentSnapshot.get("donationtags");
+//                for(String log : donationtags)
+//                {
+//                    Log.e("Tag",log);
+//                }
+                Collections.sort(donationtags, String.CASE_INSENSITIVE_ORDER);
+                if (donationtags != null) {
+                    for (String chipText: donationtags){
+                        addExistingDonationChips(chipText);
                     }
                 }
             }
@@ -406,6 +450,72 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                         }
                         addNewChip(text.replace(",", "").toLowerCase());
                     }
+                    tilAcceptedEwaste.setError(null);
+                    editable.clear();
+                }
+            }
+        });
+
+        //donation tags
+        regAcceptedDonations.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    if (regAcceptedEwaste.getText().toString().equals(" ")){
+                        regAcceptedEwaste.getText().clear();
+                    }
+                } else {
+                    if (regAcceptedEwaste.getText().toString().equals("") && chipGroup.getChildCount() > 0) {
+                        regAcceptedEwaste.setText(" ");
+                    }
+                }
+            }
+        });
+        regAcceptedDonations.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    if (regAcceptedDonations.getText().toString().equals(" ")){
+                        regAcceptedDonations.getText().clear();
+                    }
+                } else {
+                    if (regAcceptedDonations.getText().toString().equals("") && donationchipGroup.getChildCount() > 0) {
+                        regAcceptedDonations.setText(" ");
+                    }
+                }
+            }
+        });
+        regAcceptedDonations.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                String text = regAcceptedDonations.getText().toString();
+                if (text.contains(" ")){
+                    regAcceptedDonations.setText(text.replace(" ", "-"));
+                    regAcceptedDonations.setSelection(regAcceptedDonations.length());
+                }
+                if (text.contains("--")){
+                    regAcceptedDonations.setText(text.replace("--", "-"));
+                    regAcceptedDonations.setSelection(regAcceptedDonations.length());
+                }
+                if (text.startsWith(" ")){
+                    regAcceptedDonations.setText(text.replace(" ", ""));
+                    regAcceptedDonations.setSelection(regAcceptedDonations.length());
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String text = editable.toString();
+                if (!text.isEmpty() && text.endsWith(",")) {
+                    if(!text.trim().equals(",")){
+                        if (text.endsWith("-,")){
+                            text = text.substring(0, text.length() - 2);
+                        }
+                        addNewDonationChip(text.replace(",", "").toLowerCase());
+                    }
+                    tilAcceptedDonations.setError(null);
                     editable.clear();
                 }
             }
@@ -482,12 +592,14 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                     if (tilBarangay.getChildCount() == 2)
                         tilBarangay.getChildAt(1).setVisibility(View.VISIBLE);
                     tilBarangay.setError("required*");
+                    tilBarangay.setErrorIconDrawable(0);
                 } else if (!s.toString().isEmpty()) {
                     for (int z = 0; z <= barangay.size() - 1; z++) {
                         if (!barangay.contains(s.toString())) {
                             if (tilBarangay.getChildCount() == 2)
                                 tilBarangay.getChildAt(1).setVisibility(View.VISIBLE);
                             tilBarangay.setError("Select barangay.");
+                            tilBarangay.setErrorIconDrawable(0);
                         }else{
                             tilBarangay.setError(null);
                             if (tilBarangay.getChildCount() == 2)
@@ -499,6 +611,51 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                     tilBarangay.setError(null);
                     if (tilBarangay.getChildCount() == 2)
                         tilBarangay.getChildAt(1).setVisibility(View.GONE);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        regDonatedesc.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                if(s.toString().isEmpty()){
+                    if (tilDonatedesc.getChildCount() == 2)
+                        tilDonatedesc.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilDonatedesc.setError("required*");
+                } else if(!(s.toString().length() <= 280)){
+                    if (tilDonatedesc.getChildCount() == 2)
+                        tilDonatedesc.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilDonatedesc.setError("Oops! You run out of characters.");
+                }else{
+                    tilDonatedesc.setError(null);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        regDisposaldesc.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                if(s.toString().isEmpty()){
+                    if (tilDisposaldesc.getChildCount() == 2)
+                        tilDisposaldesc.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilDisposaldesc.setError("required*");
+                } else if(!(s.toString().length() <= 280)){
+                    if (tilDisposaldesc.getChildCount() == 2)
+                        tilDisposaldesc.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilDisposaldesc.setError("Oops! You run out of characters.");
+                }else{
+                    tilDisposaldesc.setError(null);
                 }
             }
             @Override
@@ -533,6 +690,26 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                     if(regBarangay.getText().toString().length() == 0)
                         regBarangay.setText("");
                     regBarangay.requestFocus();
+                }else if(!donationswitch.isChecked() && !disposalswitch.isChecked()){
+                    Toast.makeText(ctx, "Please select what your organization collects.", Toast.LENGTH_LONG).show();
+                }else if((regDisposaldesc.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDisposaldesc.getError())) && disposalswitch.isChecked()){
+                    if(regDisposaldesc.getText().toString().length() == 0)
+                        regDisposaldesc.setText("");
+                    regDisposaldesc.requestFocus();
+                }else if(chipGroup.getChildCount() == 0 && disposalswitch.isChecked()){
+                    if (tilAcceptedEwaste.getChildCount() == 2)
+                        tilAcceptedEwaste.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilAcceptedEwaste.setError("place a COMMA to add a tag. required*");
+                    regAcceptedEwaste.requestFocus();
+                }else if((regDonatedesc.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDonatedesc.getError())) && donationswitch.isChecked()){
+                    if(regDonatedesc.getText().toString().length() == 0)
+                        regDonatedesc.setText("");
+                    regDonatedesc.requestFocus();
+                }else if(donationchipGroup.getChildCount() == 0 && donationswitch.isChecked()){
+                    if (tilAcceptedDonations.getChildCount() == 2)
+                        tilAcceptedDonations.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilAcceptedDonations.setError("place a COMMA to add a tag. required*");
+                    regAcceptedDonations.requestFocus();
                 }else{
                     fStore.collection("Users").document(userID).get().addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null){
@@ -542,13 +719,21 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                             doc.put("barangay", regBarangay.getText().toString().trim());
                             doc.put("maplocation", firebasegeoPoint);
                             doc.put("markerUid", fAuth.getCurrentUser().getUid());
-                            doc.put("ewastetypes", Collections.emptyList());
                             if (profileImageUri != null && !profileImageUri.equals(Uri.EMPTY)){
                                 doc.put("hasImage", true);
                             }else{
                                 doc.put("hasImage", false);
                             }
-
+                            if (disposalswitch.isChecked()){
+                                doc.put("disposaldesc", regDisposaldesc.getText().toString().trim());
+                                doc.put("ewastetypes", Collections.emptyList());
+                                doc.put("collect_ewaste", true);
+                            }
+                            if (donationswitch.isChecked()){
+                                doc.put("donationdesc", regDonatedesc.getText().toString().trim());
+                                doc.put("donationtags", Collections.emptyList());
+                                doc.put("collect_donation", true);
+                            }
 
                             fStore.collection("DisposalLocations").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                 @Override
@@ -556,12 +741,23 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                                     Toast.makeText(AddDisposal.this, "New disposal location has been added.", Toast.LENGTH_SHORT).show();
                                     //upload Image to Firebase
                                     DocumentReference disposalEtypes = fStore.collection("DisposalLocations").document(task.getResult().getId());
-                                    DocumentReference ewastetag = fStore.collection("Miscellaneous").document("disposaltpyes");
+                                    DocumentReference ewastetag = fStore.collection("Miscellaneous").document("disposaltypes");
                                     List<Integer> ids = chipGroup.getCheckedChipIds();
                                     for (Integer id:ids){
                                         Chip chip = chipGroup.findViewById(id);
                                         disposalEtypes.update("ewastetypes", FieldValue.arrayUnion(chip.getText()));
                                         ewastetag.update("ewastetypes", FieldValue.arrayUnion(chip.getText()));
+                                    }
+
+                                    if (donationswitch.isChecked()){
+                                        DocumentReference donatetypes = fStore.collection("DisposalLocations").document(task.getResult().getId());
+                                        DocumentReference donatetag = fStore.collection("Miscellaneous").document("donationtypes");
+                                        List<Integer> donationids = donationchipGroup.getCheckedChipIds();
+                                        for (Integer id:donationids){
+                                            Chip chip = donationchipGroup.findViewById(id);
+                                            donatetypes.update("donationtags", FieldValue.arrayUnion(chip.getText()));
+                                            donatetag.update("donationtags", FieldValue.arrayUnion(chip.getText()));
+                                        }
                                     }
 
                                     if (profileImageUri != null && !profileImageUri.equals(Uri.EMPTY)){
@@ -599,6 +795,48 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                 // Disallow the touch request for parent scroll on touch of child view
                 v.getParent().requestDisallowInterceptTouchEvent(true);
                 return false;
+            }
+        });
+
+        disposalchipscroll.setOnTouchListener(new View.OnTouchListener() {
+            // Setting on Touch Listener for handling the touch inside ScrollView
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Disallow the touch request for parent scroll on touch of child view
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
+        regDonatedesc.setOnTouchListener(new View.OnTouchListener() {
+            // Setting on Touch Listener for handling the touch inside ScrollView
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Disallow the touch request for parent scroll on touch of child view
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
+        donationswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    donationview.setVisibility(View.VISIBLE);
+                } else{
+                    donationview.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        disposalswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    disposalview.setVisibility(View.VISIBLE);
+                } else{
+                    disposalview.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -846,6 +1084,36 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         chipGroup.addView(newChip);
     }
 
+    private void addNewDonationChip(String text) {
+        Chip newChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, donationchipGroup, false);
+        newChip.setId(ViewCompat.generateViewId());
+        newChip.setText(text);
+        newChip.setCheckedIconVisible(false);
+        newChip.setChecked(true);
+        newChip.setCloseIconVisible(true);
+        newChip.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                List<Integer> ids = donationexistingtags.getCheckedChipIds();
+                for (Integer id:ids){
+                    Chip chip = donationexistingtags.findViewById(id);
+                    if (chip.getText() == text){
+                        chip.setChecked(false);
+                    }
+                }
+                donationchipGroup.removeView(newChip);
+            }
+        });
+        newChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (!b)
+                    newChip.performCloseIconClick();
+            }
+        });
+        donationchipGroup.addView(newChip);
+    }
+
     private void addExistingChips(String text) {
         Chip existingChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, existingtags, false);
         existingChip.setId(ViewCompat.generateViewId());
@@ -854,11 +1122,48 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         existingChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b)
+                if (b) {
                     addNewChip(existingChip.getText().toString());
+                    tilAcceptedEwaste.setError(null);
+                }
+                else{
+                    List<Integer> ids = chipGroup.getCheckedChipIds();
+                    for (Integer id:ids){
+                        Chip chip = chipGroup.findViewById(id);
+                        if(chip.getText().toString() == text){
+                            chip.performCloseIconClick();
+                        }
+                    }
+                }
             }
         });
         existingtags.addView(existingChip);
+    }
+
+    private void addExistingDonationChips(String text) {
+        Chip existingChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, donationexistingtags, false);
+        existingChip.setId(ViewCompat.generateViewId());
+        existingChip.setText(text);
+        existingChip.setCheckedIconVisible(true);
+        existingChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    addNewDonationChip(existingChip.getText().toString());
+                    tilAcceptedDonations.setError(null);
+                }
+                else{
+                    List<Integer> ids = donationchipGroup.getCheckedChipIds();
+                    for (Integer id:ids){
+                        Chip chip = donationchipGroup.findViewById(id);
+                        if(chip.getText().toString() == text){
+                            chip.performCloseIconClick();
+                        }
+                    }
+                }
+            }
+        });
+        donationexistingtags.addView(existingChip);
     }
     private static final String TAG = "MyActivity";
 }
