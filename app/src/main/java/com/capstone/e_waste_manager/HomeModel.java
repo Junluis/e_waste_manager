@@ -14,17 +14,21 @@ public class HomeModel implements Serializable {
     public String docId;
     public String homeAuthorUid;
     public Date homePostDate;
+    public Boolean hasImage;
+    public String url;
 
 
     public HomeModel(){}
 
-    public HomeModel(String homeTitle, String homeAuthor, String homeBody, String homeAuthorUid, Date homePostDate, String docId) {
+    public HomeModel(String homeTitle, String homeAuthor, String homeBody, String homeAuthorUid, Date homePostDate, String docId, Boolean hasImage, String url) {
         this.homeTitle = homeTitle;
         this.homeAuthor = homeAuthor;
         this.homeBody = homeBody;
         this.homeAuthorUid = homeAuthorUid;
         this.homePostDate = homePostDate;
         this.docId = docId;
+        this.hasImage = hasImage;
+        this.url = url;
     }
 
     public String getHomeTitle() {
@@ -60,6 +64,18 @@ public class HomeModel implements Serializable {
     public String getHomeAuthorUid() { return homeAuthorUid; }
 
     public void setHomeAuthorUid(String homeAuthorUid) {this.homeAuthorUid = homeAuthorUid; }
+
+    public Boolean getHasImage() { return hasImage; }
+
+    public void setHasImage(Boolean hasImage) {this.hasImage = hasImage; }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     @Override
     public String toString(){

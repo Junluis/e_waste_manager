@@ -1,127 +1,356 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/disposalcard"
     android:layout_height="wrap_content"
     android:layout_width="330dp"
+    android:layout_gravity="center"
     android:scaleY="0.75"
     android:scaleX="0.75"
-    android:layout_gravity="center">
+    android:background="@color/transparent">
 
-    <androidx.cardview.widget.CardView
+    <soup.neumorphism.NeumorphCardView
+        style="@style/Widget.Neumorph.CardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        app:cardCornerRadius="20dp"
-        android:background="@color/whitebg">
+        app:neumorph_shapeType="pressed"
+        app:neumorph_strokeColor="@color/gray"
+        app:neumorph_strokeWidth="2dp"
+        app:neumorph_shadowColorLight="@color/Darkmodeneumorph"
+        app:neumorph_shadowColorDark="@color/Darkmodeneumorph"
+        app:neumorph_shapeAppearance="@style/CustomShapeAppearance20dp"
+        android:backgroundTint="@color/transparent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/whitebg"
+            android:background="@color/transparent"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/custom_border">
+                android:layout_height="80dp">
 
                 <ImageView
                     android:id="@+id/disposalicon"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:scaleType="fitXY"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:alpha="0.85"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/profilelogotest"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/disposalname"
-                    android:layout_width="160dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:text="Disposal Name"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/disposalicon"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.120000005" />
-
-                <TextView
-                    android:id="@+id/disposaladdress"
-                    android:layout_width="160dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
-                    android:layout_marginTop="10dp"
-                    android:ellipsize="end"
-                    android:maxLines="3"
-                    android:text="Disposal Name"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/disposalname"
-                    app:layout_constraintStart_toStartOf="@+id/disposalname"
-                    app:layout_constraintTop_toBottomOf="@+id/disposalname"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <ToggleButton
-                    android:id="@+id/zoom"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:background="@drawable/zoom_toggle"
-                    android:textOff=""
-                    android:textOn=""
-                    android:layout_margin="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="140dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/latitude"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Latitude"/>
-                    <TextView
-                        android:id="@+id/longitude"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Longitude"/>
-
-
-                </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/track"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAllCaps="false"
-                    android:text="Track location"
-                    app:cornerRadius="10dp"/>
+                    app:icon="@drawable/ic__enter"
+                    android:text="Go"
+                    app:iconGravity="end"
+                    app:cornerRadius="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/blue"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/whitebg"
+                android:orientation="vertical">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintHeight_max="400dp"
+                        android:background="@color/whitebg"
+                        android:fadeScrollbars="false"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:animateLayoutChanges="true"
+                            android:background="@drawable/custom_border">
+
+                            <TextView
+                                android:id="@+id/disposalname"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="10dp"
+                                android:layout_marginTop="15dp"
+                                android:ellipsize="end"
+                                android:maxLines="2"
+                                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quis volutpat leo, sed pulvinar tortor. Morbi nisl ipsum, eleifend scelerisque metus eu, scelerisque molestie odio. Phasellus et tellus metus. Etiam vitae vehicula nibh, sed tincidunt lectus. Nulla velit arcu, euismod ut sodales nec, scelerisque id mauris. Curabitur iaculis fermentum turpis nec lobortis. Nulla sed eros sed turpis dictum sodales eu vel tortor. Suspendisse non nulla urna."
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toStartOf="@+id/zoom"
+                                app:layout_constraintHorizontal_bias="0.0"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/disposaladdress"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginBottom="10dp"
+                                android:maxLines="2"
+                                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quis volutpat leo, sed pulvinar tortor. Morbi nisl ipsum, eleifend scelerisque metus eu, scelerisque molestie odio. Phasellus et tellus metus. Etiam vitae vehicula nibh, sed tincidunt lectus. Nulla velit arcu, euismod ut sodales nec, scelerisque id mauris. Curabitur iaculis fermentum turpis nec lobortis. Nulla sed eros sed turpis dictum sodales eu vel tortor. Suspendisse non nulla urna."
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="@+id/disposalname"
+                                app:layout_constraintStart_toStartOf="@+id/disposalname"
+                                app:layout_constraintTop_toBottomOf="@+id/disposalname"
+                                app:layout_constraintVertical_bias="0.0" />
+
+                            <ToggleButton
+                                android:id="@+id/showmore"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="100dp"
+                                android:background="@color/transparent"
+                                android:gravity="start|center"
+                                android:textAllCaps="false"
+                                android:textColor="@color/blue"
+                                android:textOff="Show more"
+                                android:textOn="Show less"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="@+id/disposaladdress"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintVertical_bias="0.0" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/details"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:visibility="gone"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/showmore">
+
+                                <TextView
+                                    android:id="@+id/ewasteabout"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginTop="10dp"
+                                    android:ellipsize="end"
+                                    android:text="About e-waste collection"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="0.0"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias="0.0" />
+
+                                <TextView
+                                    android:autoLink="web"
+                                    android:id="@+id/disposaldesc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="10dp"
+                                    android:ellipsize="end"
+                                    android:text="E-waste Collection description"
+                                    android:textColor="@color/black"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="0.0"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/ewasteabout" />
+
+                                <TextView
+                                    android:id="@+id/textView21"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="10dp"
+                                    android:ellipsize="end"
+                                    android:text="Accepted E-waste:"
+                                    android:textColor="@color/black"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="0.0"
+                                    app:layout_constraintStart_toStartOf="@+id/ewasteabout"
+                                    app:layout_constraintTop_toBottomOf="@+id/disposaldesc" />
+
+                                <HorizontalScrollView
+                                    android:id="@+id/scrollView4"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="10dp"
+                                    android:fadeScrollbars="false"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/textView21">
+
+                                    <com.google.android.material.chip.ChipGroup
+                                        android:id="@+id/acceptedewastechipgroup"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        app:singleLine="true">
+                                    </com.google.android.material.chip.ChipGroup>
+
+                                </HorizontalScrollView>
+
+                                <TextView
+                                    android:id="@+id/donationabout"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="20dp"
+                                    android:ellipsize="end"
+                                    android:text="About donation collection"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="0.0"
+                                    app:layout_constraintStart_toStartOf="@+id/textView21"
+                                    app:layout_constraintTop_toBottomOf="@+id/scrollView4" />
+
+                                <TextView
+                                    android:autoLink="web"
+                                    android:id="@+id/donationdesc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="10dp"
+                                    android:text="Donate collection description"
+                                    android:textColor="@color/black"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="0.0"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/donationabout" />
+
+                                <TextView
+                                    android:id="@+id/textView20"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="10dp"
+                                    android:ellipsize="end"
+                                    android:text="Accepted Donation:"
+                                    android:textColor="@color/black"
+                                    app:layout_constraintEnd_toEndOf="@+id/textView21"
+                                    app:layout_constraintHorizontal_bias="0.0"
+                                    app:layout_constraintStart_toStartOf="@+id/donationabout"
+                                    app:layout_constraintTop_toBottomOf="@+id/donationdesc" />
+
+                                <HorizontalScrollView
+                                    android:id="@+id/scrollView5"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="10dp"
+                                    android:fadeScrollbars="false"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/textView20">
+
+                                    <com.google.android.material.chip.ChipGroup
+                                        android:id="@+id/accepteddonationchipgroup"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        app:singleLine="true">
+                                    </com.google.android.material.chip.ChipGroup>
+
+                                </HorizontalScrollView>
+
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <ToggleButton
+                                android:id="@+id/zoom"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginBottom="5dp"
+                                android:background="@drawable/zoom_toggle"
+                                android:textOff=""
+                                android:textOn=""
+                                app:layout_constraintBottom_toBottomOf="@+id/disposalname"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.95"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="@+id/disposalname"
+                                app:layout_constraintVertical_bias="0.12" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </ScrollView>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/transparent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_gravity="center"
+                        android:text="Collects: "/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/collectewaste"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="E-waste"
+                        android:visibility="gone"
+                        app:chipBackgroundColor="@color/success" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/collectdonation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:text="Donation"
+                        android:visibility="gone"
+                        app:chipBackgroundColor="@color/success" />
+
+                    <TextView
+                        android:id="@+id/latitude"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:textColor="@color/blue"
+                        android:text="Latitude"/>
+                    <TextView
+                        android:id="@+id/longitude"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:textColor="@color/blue"
+                        android:text="Longitude"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+    </soup.neumorphism.NeumorphCardView>
+
 </RelativeLayout>

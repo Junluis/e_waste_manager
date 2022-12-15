@@ -86,8 +86,6 @@ public class EditProfile extends AppCompatActivity {
     ArrayAdapter<String> barangayList;
     List<String> barangay = new ArrayList<>();
 
-    ScrollView edit_profile;
-
     String Dateval;
     Integer ageInteger = 0;
 
@@ -127,7 +125,6 @@ public class EditProfile extends AppCompatActivity {
         tilAddressHouse = findViewById(R.id.tilAddressHouse);
         tilBarangay = findViewById(R.id.tilBarangay);
 
-        edit_profile = findViewById(R.id.edit_profile);
 
 
         DocumentReference docRef = fStore.collection("Miscellaneous").document("cvUA8BB7Pk0Ud7kYwxoT");
@@ -148,7 +145,6 @@ public class EditProfile extends AppCompatActivity {
         });
 
         //transparent inset
-
         DocumentReference documentReference = fStore.collection("Users").document(userID);
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
@@ -468,7 +464,7 @@ public class EditProfile extends AppCompatActivity {
             }
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if(!(s.toString().length() < 160)){
+                if(!(s.toString().length() <= 160)){
                     tilBio.setError("Oops! You run out of characters.");
                 }else{
                     tilBio.setError(null);
@@ -587,9 +583,6 @@ public class EditProfile extends AppCompatActivity {
         });
 
     }
-
-
-
 
     private void uploadImageToFirebase(Uri imageUri){
 

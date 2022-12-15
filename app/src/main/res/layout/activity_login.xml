@@ -130,7 +130,7 @@
                 android:layout_width="300dp"
                 android:layout_height="60dp"
                 android:layout_marginTop="30dp"
-                android:backgroundTint="#14ab69"
+                android:backgroundTint="@color/green1"
                 android:text="@string/login"
                 android:textSize="18sp"
                 android:textStyle="bold"

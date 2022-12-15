@@ -792,7 +792,7 @@ public class RepliesToComment extends BottomSheetDialogFragment {
                     if (b) {
                         replypop.setChecked(true);
                         if (user != null && !user.isAnonymous()) {
-                            replyChip.setText("@" + replyModel.replyAuthor);
+                            replyChip.setText("@" + replyAuthor.getText().toString());
                             replyChipView.setText("@" + replyModel.replyAuthorUid);
                             replyChip.setVisibility(View.VISIBLE);
                             pReply.requestFocus();

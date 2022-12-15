@@ -7,9 +7,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -26,20 +31,33 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.capstone.e_waste_manager.Class.TimeAgo2;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -69,6 +87,7 @@ import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.mylocation.DirectedLocationOverlay;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -81,14 +100,31 @@ import soup.neumorphism.NeumorphFloatingActionButton;
 
 public class AddDisposal extends AppCompatActivity implements LocationListener{
 
-    TextInputLayout tilAddress, tilBarangay, tilBusinessName;
-    EditText regAddress, regBusinessName;
+    ActivityResultLauncher<String[]> mPermissionResultLauncher;
+    private boolean isReadPermissionGranted = false;
+    private boolean isWritePermissionGranted = false;
+    private boolean isFineLocationPermissionGranted = false;
+    private boolean isInternetPermissionGranted = false;
+    private boolean isNetAccessPermissionGranted = false;
+
+    TextInputLayout tilAddress, tilBarangay, tilBusinessName, tilDonatedesc, tilAcceptedEwaste, tilAcceptedDonations, tilDisposaldesc;
+    EditText regAddress, regBusinessName, regAcceptedEwaste, regDonatedesc, regAcceptedDonations, regDisposaldesc;
     AutoCompleteTextView regBarangay;
     ImageView edit_prof_img, prof_img;
     ImageButton closead, imageButton;
     Button submitButton;
     CardView updateIcon;
     TextView coordinates;
+    ChipGroup chipGroup, existingtags;
+    ChipGroup donationchipGroup, donationexistingtags;
+
+    ScrollView disposallocationpg, disposalchipscroll;
+    NestedScrollView constraintLayout4;
+
+    MotionLayout constraintLayout3;
+
+    SwitchMaterial donationswitch, disposalswitch;
+    FrameLayout donationview, disposalview;
 
     //maps
     MapView map = null;
@@ -102,6 +138,8 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
     ArrayAdapter<String> barangayList;
     List<String> barangay = new ArrayList<>();
     ActivityResultLauncher<String> galleryOpen;
+    List<String> disposaltags = new ArrayList<>();
+    List<String> donationtags = new ArrayList<>();
 
     Uri profileImageUri;
 
@@ -114,14 +152,49 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
 
     com.google.firebase.firestore.GeoPoint firebasegeoPoint;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mPermissionResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
+            @Override
+            public void onActivityResult(Map<String, Boolean> result) {
+
+                if(result.get(Manifest.permission.ACCESS_FINE_LOCATION) != null){
+                    isFineLocationPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_FINE_LOCATION));
+                }else {
+                    onBackPressed();
+                }
+                if(result.get(Manifest.permission.INTERNET) != null){
+                    isInternetPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.INTERNET));
+                }else {
+                    onBackPressed();
+                }
+                if(result.get(Manifest.permission.ACCESS_NETWORK_STATE) != null){
+                    isNetAccessPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_NETWORK_STATE));
+                }else {
+                    onBackPressed();
+                }
+                if(result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null){
+                    isReadPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.READ_EXTERNAL_STORAGE));
+                }else {
+                    onBackPressed();
+                }
+                if(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null){
+                    isWritePermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE));
+                }else {
+                    onBackPressed();
+                }
+            }
+        });
+
         setContentView(R.layout.activity_add_disposal);
 
         tilAddress = findViewById(R.id.tilAddress);
         tilBarangay = findViewById(R.id.tilBarangay);
         tilBusinessName = findViewById(R.id.tilBusinessName);
+        tilAcceptedEwaste = findViewById(R.id.tilAcceptedEwaste);
         regBusinessName = findViewById(R.id.regBusinessName);
         regAddress = findViewById(R.id.regAddress);
         regBarangay = findViewById(R.id.regBarangay);
@@ -132,6 +205,28 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         updateIcon = findViewById(R.id.updateIcon);
         myLocation = findViewById(R.id.myLocation);
         imageButton = findViewById(R.id.imageButton);
+        regAcceptedEwaste = findViewById(R.id.regAcceptedEwaste);
+        chipGroup = findViewById(R.id.i_flex_box);
+        disposallocationpg = findViewById(R.id.disposallocationpg);
+        constraintLayout3 = findViewById(R.id.constraintLayout3);
+        constraintLayout4 = findViewById(R.id.constraintLayout4);
+        existingtags = findViewById(R.id.existingtags);
+        disposalchipscroll = findViewById(R.id.disposalchipscroll);
+        disposalview = findViewById(R.id.disposalview);
+        disposalswitch = findViewById(R.id.disposalswitch);
+
+        tilDisposaldesc = findViewById(R.id.tilDisposaldesc);
+        regDisposaldesc = findViewById(R.id.regDisposaldesc);
+
+        tilDonatedesc = findViewById(R.id.tilDonatedesc);
+        tilAcceptedDonations = findViewById(R.id.tilAcceptedDonations);
+        regDonatedesc = findViewById(R.id.regDonatedesc);
+        donationswitch = findViewById(R.id.donationswitch);
+        donationview = findViewById(R.id.donationview);
+
+        donationchipGroup = findViewById(R.id.i_flex_box2);
+        donationexistingtags = findViewById(R.id.donationexistingtags);
+        regAcceptedDonations = findViewById(R.id.regAcceptedDonations);
 
         coordinates = findViewById(R.id.textView11);
 
@@ -158,6 +253,42 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             }
         });
 
+        DocumentReference disposaltypes = fStore.collection("Miscellaneous").document("disposaltypes");
+        disposaltypes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                disposaltags = (List<String>) documentSnapshot.get("ewastetypes");
+//                for(String log : disposaltags)
+//                {
+//                    Log.e("Tag",log);
+//                }
+                Collections.sort(disposaltags, String.CASE_INSENSITIVE_ORDER);
+                if (disposaltags != null) {
+                    for (String chipText: disposaltags){
+                        addExistingChips(chipText);
+                    }
+                }
+            }
+        });
+
+        DocumentReference donationtypes = fStore.collection("Miscellaneous").document("donationtypes");
+        donationtypes.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                donationtags = (List<String>) documentSnapshot.get("donationtags");
+//                for(String log : donationtags)
+//                {
+//                    Log.e("Tag",log);
+//                }
+                Collections.sort(donationtags, String.CASE_INSENSITIVE_ORDER);
+                if (donationtags != null) {
+                    for (String chipText: donationtags){
+                        addExistingDonationChips(chipText);
+                    }
+                }
+            }
+        });
+
         closead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -180,6 +311,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             public void onClick(View view) {
                 //open gallery
                 galleryOpen.launch("image/");
+                constraintLayout3.transitionToEnd();
             }
         });
 
@@ -216,6 +348,8 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         defaultmap = findViewById(R.id.defaultmap);
         aerialmap = findViewById(R.id.aerialmap);
         bingmap = findViewById(R.id.bingmap);
+
+
 
         bingmap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,6 +405,121 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         if (map != null) {
             addOverlays();
         }
+
+        regAcceptedEwaste.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    if (regAcceptedEwaste.getText().toString().equals(" ")){
+                        regAcceptedEwaste.getText().clear();
+                    }
+                } else {
+                    if (regAcceptedEwaste.getText().toString().equals("") && chipGroup.getChildCount() > 0) {
+                        regAcceptedEwaste.setText(" ");
+                    }
+                }
+            }
+        });
+        regAcceptedEwaste.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                String text = regAcceptedEwaste.getText().toString();
+                if (text.contains(" ")){
+                    regAcceptedEwaste.setText(text.replace(" ", "-"));
+                    regAcceptedEwaste.setSelection(regAcceptedEwaste.length());
+                }
+                if (text.contains("--")){
+                    regAcceptedEwaste.setText(text.replace("--", "-"));
+                    regAcceptedEwaste.setSelection(regAcceptedEwaste.length());
+                }
+                if (text.startsWith(" ")){
+                    regAcceptedEwaste.setText(text.replace(" ", ""));
+                    regAcceptedEwaste.setSelection(regAcceptedEwaste.length());
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String text = editable.toString();
+                if (!text.isEmpty() && text.endsWith(",")) {
+                    if(!text.trim().equals(",")){
+                        if (text.endsWith("-,")){
+                            text = text.substring(0, text.length() - 2);
+                        }
+                        addNewChip(text.replace(",", "").toLowerCase());
+                    }
+                    tilAcceptedEwaste.setError(null);
+                    editable.clear();
+                }
+            }
+        });
+
+        //donation tags
+        regAcceptedDonations.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    if (regAcceptedEwaste.getText().toString().equals(" ")){
+                        regAcceptedEwaste.getText().clear();
+                    }
+                } else {
+                    if (regAcceptedEwaste.getText().toString().equals("") && chipGroup.getChildCount() > 0) {
+                        regAcceptedEwaste.setText(" ");
+                    }
+                }
+            }
+        });
+        regAcceptedDonations.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    if (regAcceptedDonations.getText().toString().equals(" ")){
+                        regAcceptedDonations.getText().clear();
+                    }
+                } else {
+                    if (regAcceptedDonations.getText().toString().equals("") && donationchipGroup.getChildCount() > 0) {
+                        regAcceptedDonations.setText(" ");
+                    }
+                }
+            }
+        });
+        regAcceptedDonations.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                String text = regAcceptedDonations.getText().toString();
+                if (text.contains(" ")){
+                    regAcceptedDonations.setText(text.replace(" ", "-"));
+                    regAcceptedDonations.setSelection(regAcceptedDonations.length());
+                }
+                if (text.contains("--")){
+                    regAcceptedDonations.setText(text.replace("--", "-"));
+                    regAcceptedDonations.setSelection(regAcceptedDonations.length());
+                }
+                if (text.startsWith(" ")){
+                    regAcceptedDonations.setText(text.replace(" ", ""));
+                    regAcceptedDonations.setSelection(regAcceptedDonations.length());
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String text = editable.toString();
+                if (!text.isEmpty() && text.endsWith(",")) {
+                    if(!text.trim().equals(",")){
+                        if (text.endsWith("-,")){
+                            text = text.substring(0, text.length() - 2);
+                        }
+                        addNewDonationChip(text.replace(",", "").toLowerCase());
+                    }
+                    tilAcceptedDonations.setError(null);
+                    editable.clear();
+                }
+            }
+        });
 
         regAddress.addTextChangedListener(new TextWatcher() {
             @Override
@@ -339,12 +588,18 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             }
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if (!s.toString().isEmpty()) {
+                if(s.toString().isEmpty()){
+                    if (tilBarangay.getChildCount() == 2)
+                        tilBarangay.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilBarangay.setError("required*");
+                    tilBarangay.setErrorIconDrawable(0);
+                } else if (!s.toString().isEmpty()) {
                     for (int z = 0; z <= barangay.size() - 1; z++) {
-                        if (regBarangay.getText().length() == 0) {
+                        if (!barangay.contains(s.toString())) {
                             if (tilBarangay.getChildCount() == 2)
                                 tilBarangay.getChildAt(1).setVisibility(View.VISIBLE);
                             tilBarangay.setError("Select barangay.");
+                            tilBarangay.setErrorIconDrawable(0);
                         }else{
                             tilBarangay.setError(null);
                             if (tilBarangay.getChildCount() == 2)
@@ -356,6 +611,51 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                     tilBarangay.setError(null);
                     if (tilBarangay.getChildCount() == 2)
                         tilBarangay.getChildAt(1).setVisibility(View.GONE);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        regDonatedesc.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                if(s.toString().isEmpty()){
+                    if (tilDonatedesc.getChildCount() == 2)
+                        tilDonatedesc.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilDonatedesc.setError("required*");
+                } else if(!(s.toString().length() <= 280)){
+                    if (tilDonatedesc.getChildCount() == 2)
+                        tilDonatedesc.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilDonatedesc.setError("Oops! You run out of characters.");
+                }else{
+                    tilDonatedesc.setError(null);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        regDisposaldesc.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                if(s.toString().isEmpty()){
+                    if (tilDisposaldesc.getChildCount() == 2)
+                        tilDisposaldesc.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilDisposaldesc.setError("required*");
+                } else if(!(s.toString().length() <= 280)){
+                    if (tilDisposaldesc.getChildCount() == 2)
+                        tilDisposaldesc.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilDisposaldesc.setError("Oops! You run out of characters.");
+                }else{
+                    tilDisposaldesc.setError(null);
                 }
             }
             @Override
@@ -376,7 +676,7 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                 }
 
                 if(firebasegeoPoint == null){
-                    Toast.makeText(ctx, "PLease add marker on the map", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ctx, "Please add marker on the map.", Toast.LENGTH_LONG).show();
                     imageButton.performClick();
                 } else if(regBusinessName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilBusinessName.getError())){
                     if(regBusinessName.getText().toString().length() == 0)
@@ -386,10 +686,30 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                     if(regAddress.getText().toString().length() == 0)
                         regAddress.setText("");
                     regAddress.requestFocus();
-                }else if(regBarangay.getText().length() == 0){
-                    if (tilBarangay.getChildCount() == 2)
-                        tilBarangay.getChildAt(1).setVisibility(View.VISIBLE);
-                    tilBarangay.setError("Select barangay.");
+                }else if(regBarangay.getText().toString().length() == 0 || !TextUtils.isEmpty(tilBarangay.getError())){
+                    if(regBarangay.getText().toString().length() == 0)
+                        regBarangay.setText("");
+                    regBarangay.requestFocus();
+                }else if(!donationswitch.isChecked() && !disposalswitch.isChecked()){
+                    Toast.makeText(ctx, "Please select what your organization collects.", Toast.LENGTH_LONG).show();
+                }else if((regDisposaldesc.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDisposaldesc.getError())) && disposalswitch.isChecked()){
+                    if(regDisposaldesc.getText().toString().length() == 0)
+                        regDisposaldesc.setText("");
+                    regDisposaldesc.requestFocus();
+                }else if(chipGroup.getChildCount() == 0 && disposalswitch.isChecked()){
+                    if (tilAcceptedEwaste.getChildCount() == 2)
+                        tilAcceptedEwaste.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilAcceptedEwaste.setError("place a COMMA to add a tag. required*");
+                    regAcceptedEwaste.requestFocus();
+                }else if((regDonatedesc.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDonatedesc.getError())) && donationswitch.isChecked()){
+                    if(regDonatedesc.getText().toString().length() == 0)
+                        regDonatedesc.setText("");
+                    regDonatedesc.requestFocus();
+                }else if(donationchipGroup.getChildCount() == 0 && donationswitch.isChecked()){
+                    if (tilAcceptedDonations.getChildCount() == 2)
+                        tilAcceptedDonations.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilAcceptedDonations.setError("place a COMMA to add a tag. required*");
+                    regAcceptedDonations.requestFocus();
                 }else{
                     fStore.collection("Users").document(userID).get().addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null){
@@ -399,12 +719,47 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
                             doc.put("barangay", regBarangay.getText().toString().trim());
                             doc.put("maplocation", firebasegeoPoint);
                             doc.put("markerUid", fAuth.getCurrentUser().getUid());
+                            if (profileImageUri != null && !profileImageUri.equals(Uri.EMPTY)){
+                                doc.put("hasImage", true);
+                            }else{
+                                doc.put("hasImage", false);
+                            }
+                            if (disposalswitch.isChecked()){
+                                doc.put("disposaldesc", regDisposaldesc.getText().toString().trim());
+                                doc.put("ewastetypes", Collections.emptyList());
+                                doc.put("collect_ewaste", true);
+                            }
+                            if (donationswitch.isChecked()){
+                                doc.put("donationdesc", regDonatedesc.getText().toString().trim());
+                                doc.put("donationtags", Collections.emptyList());
+                                doc.put("collect_donation", true);
+                            }
 
                             fStore.collection("DisposalLocations").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentReference> task) {
                                     Toast.makeText(AddDisposal.this, "New disposal location has been added.", Toast.LENGTH_SHORT).show();
                                     //upload Image to Firebase
+                                    DocumentReference disposalEtypes = fStore.collection("DisposalLocations").document(task.getResult().getId());
+                                    DocumentReference ewastetag = fStore.collection("Miscellaneous").document("disposaltypes");
+                                    List<Integer> ids = chipGroup.getCheckedChipIds();
+                                    for (Integer id:ids){
+                                        Chip chip = chipGroup.findViewById(id);
+                                        disposalEtypes.update("ewastetypes", FieldValue.arrayUnion(chip.getText()));
+                                        ewastetag.update("ewastetypes", FieldValue.arrayUnion(chip.getText()));
+                                    }
+
+                                    if (donationswitch.isChecked()){
+                                        DocumentReference donatetypes = fStore.collection("DisposalLocations").document(task.getResult().getId());
+                                        DocumentReference donatetag = fStore.collection("Miscellaneous").document("donationtypes");
+                                        List<Integer> donationids = donationchipGroup.getCheckedChipIds();
+                                        for (Integer id:donationids){
+                                            Chip chip = donationchipGroup.findViewById(id);
+                                            donatetypes.update("donationtags", FieldValue.arrayUnion(chip.getText()));
+                                            donatetag.update("donationtags", FieldValue.arrayUnion(chip.getText()));
+                                        }
+                                    }
+
                                     if (profileImageUri != null && !profileImageUri.equals(Uri.EMPTY)){
                                         uploadImageToFirebase(profileImageUri, task.getResult().getId());
                                     }
@@ -433,6 +788,58 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
             }
         });
 
+        map.setOnTouchListener(new View.OnTouchListener() {
+            // Setting on Touch Listener for handling the touch inside ScrollView
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Disallow the touch request for parent scroll on touch of child view
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
+        disposalchipscroll.setOnTouchListener(new View.OnTouchListener() {
+            // Setting on Touch Listener for handling the touch inside ScrollView
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Disallow the touch request for parent scroll on touch of child view
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
+        regDonatedesc.setOnTouchListener(new View.OnTouchListener() {
+            // Setting on Touch Listener for handling the touch inside ScrollView
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Disallow the touch request for parent scroll on touch of child view
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
+        donationswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    donationview.setVisibility(View.VISIBLE);
+                } else{
+                    donationview.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        disposalswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    disposalview.setVisibility(View.VISIBLE);
+                } else{
+                    disposalview.setVisibility(View.GONE);
+                }
+            }
+        });
+
     }
 
     protected void addOverlays() {
@@ -443,13 +850,16 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         MapEventsOverlay events = new MapEventsOverlay(new MapEventsReceiver() {
             @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
+                if (constraintLayout3.getProgress() == 0.0f){
+                    constraintLayout3.transitionToEnd();
+                }else{
+                    constraintLayout3.transitionToStart();
+                }
                 return false;
             }
 
             @Override
             public boolean longPressHelper(GeoPoint p) {
-
-
                 showDialog(p);
                 return true;
             }
@@ -600,69 +1010,160 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     void AccessPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
+
+        isFineLocationPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isInternetPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.INTERNET)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isNetAccessPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_NETWORK_STATE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isReadPermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        isWritePermissionGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        List<String> permissionRequest = new ArrayList<String>();
+
+        if (!isFineLocationPermissionGranted){
+            permissionRequest.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.INTERNET}, 1002);
+        if (!isInternetPermissionGranted){
+            permissionRequest.add(Manifest.permission.INTERNET);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, 1003);
+        if (!isNetAccessPermissionGranted){
+            permissionRequest.add(Manifest.permission.ACCESS_NETWORK_STATE);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1004);
+        if (!isReadPermissionGranted){
+            permissionRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1005);
+        if (!isWritePermissionGranted){
+            permissionRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (!permissionRequest.isEmpty()){
+            mPermissionResultLauncher.launch(permissionRequest.toArray(new String[0]));
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1001:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted Fine Location", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied Fine Location", Toast.LENGTH_SHORT).show();
+    private void addNewChip(String text) {
+        Chip newChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, chipGroup, false);
+        newChip.setId(ViewCompat.generateViewId());
+        newChip.setText(text);
+        newChip.setCheckedIconVisible(false);
+        newChip.setChecked(true);
+        newChip.setCloseIconVisible(true);
+        newChip.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                List<Integer> ids = existingtags.getCheckedChipIds();
+                for (Integer id:ids){
+                    Chip chip = existingtags.findViewById(id);
+                    if (chip.getText() == text){
+                        chip.setChecked(false);
+                    }
                 }
-                break;
-            case 1002:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted INTERNET", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied INTERNET", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1003:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted NETWORK STATE", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied NETWORK STATE", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1004:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted READ EXTERNAL STORAGE", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied Fine Location", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1005:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted WRITE EXTERNAL STORAGE", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied WRITE EXTERNAL STORAGE", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
+                chipGroup.removeView(newChip);
+            }
+        });
+        newChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (!b)
+                    newChip.performCloseIconClick();
+            }
+        });
+        chipGroup.addView(newChip);
     }
+
+    private void addNewDonationChip(String text) {
+        Chip newChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, donationchipGroup, false);
+        newChip.setId(ViewCompat.generateViewId());
+        newChip.setText(text);
+        newChip.setCheckedIconVisible(false);
+        newChip.setChecked(true);
+        newChip.setCloseIconVisible(true);
+        newChip.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                List<Integer> ids = donationexistingtags.getCheckedChipIds();
+                for (Integer id:ids){
+                    Chip chip = donationexistingtags.findViewById(id);
+                    if (chip.getText() == text){
+                        chip.setChecked(false);
+                    }
+                }
+                donationchipGroup.removeView(newChip);
+            }
+        });
+        newChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (!b)
+                    newChip.performCloseIconClick();
+            }
+        });
+        donationchipGroup.addView(newChip);
+    }
+
+    private void addExistingChips(String text) {
+        Chip existingChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, existingtags, false);
+        existingChip.setId(ViewCompat.generateViewId());
+        existingChip.setText(text);
+        existingChip.setCheckedIconVisible(true);
+        existingChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    addNewChip(existingChip.getText().toString());
+                    tilAcceptedEwaste.setError(null);
+                }
+                else{
+                    List<Integer> ids = chipGroup.getCheckedChipIds();
+                    for (Integer id:ids){
+                        Chip chip = chipGroup.findViewById(id);
+                        if(chip.getText().toString() == text){
+                            chip.performCloseIconClick();
+                        }
+                    }
+                }
+            }
+        });
+        existingtags.addView(existingChip);
+    }
+
+    private void addExistingDonationChips(String text) {
+        Chip existingChip = (Chip) LayoutInflater.from(this).inflate(R.layout.chip_item, donationexistingtags, false);
+        existingChip.setId(ViewCompat.generateViewId());
+        existingChip.setText(text);
+        existingChip.setCheckedIconVisible(true);
+        existingChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    addNewDonationChip(existingChip.getText().toString());
+                    tilAcceptedDonations.setError(null);
+                }
+                else{
+                    List<Integer> ids = donationchipGroup.getCheckedChipIds();
+                    for (Integer id:ids){
+                        Chip chip = donationchipGroup.findViewById(id);
+                        if(chip.getText().toString() == text){
+                            chip.performCloseIconClick();
+                        }
+                    }
+                }
+            }
+        });
+        donationexistingtags.addView(existingChip);
+    }
+    private static final String TAG = "MyActivity";
 }

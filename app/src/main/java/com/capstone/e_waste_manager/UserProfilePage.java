@@ -14,13 +14,17 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.capstone.e_waste_manager.adapter.ProfileAdapter;
@@ -39,14 +43,15 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
-public class UserProfilePage extends AppCompatActivity {
-    ImageButton closeup;
-    Button editProfilebtn;
+public class UserProfilePage extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
+    ImageButton closeup, settings;
     TabLayout profiletabLayout;
     ViewPager2 profilePager;
     ProfileAdapter adapter;
     TextView prof_username, prof_email, prof_bio;
     ImageView partnerBadge, prof_img;
+
+    RelativeLayout relativeLayout3;
 
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
@@ -73,7 +78,8 @@ public class UserProfilePage extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference();
 
         closeup = findViewById(R.id.closeup);
-        editProfilebtn = findViewById(R.id.editProfilebtn);
+        settings = findViewById(R.id.settings);
+        relativeLayout3 = findViewById(R.id.relativeLayout3);
 
         profiletabLayout = findViewById(R.id.profiletabLayout);
         profilePager = findViewById(R.id.profilePager);
@@ -127,11 +133,10 @@ public class UserProfilePage extends AppCompatActivity {
             }
         });
 
-        editProfilebtn.setOnClickListener(new View.OnClickListener() {
+        settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(view.getContext(), EditProfile.class);
-                startActivity(i);
+                showpopup(relativeLayout3);
             }
         });
 
@@ -140,7 +145,7 @@ public class UserProfilePage extends AppCompatActivity {
         profilePager.setAdapter(adapter);
         profiletabLayout.addTab(profiletabLayout.newTab().setText("Posts"));
         profiletabLayout.addTab(profiletabLayout.newTab().setText("Comments"));
-        profiletabLayout.addTab(profiletabLayout.newTab().setText("Account Details"));
+        profiletabLayout.addTab(profiletabLayout.newTab().setText("About"));
 
         profiletabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -180,5 +185,24 @@ public class UserProfilePage extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void showpopup(View v){
+        PopupMenu popup = new PopupMenu(this, v, Gravity.END);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.settings);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.editprof:
+                Intent i = new Intent(this, EditProfile.class);
+                startActivity(i);
+                return true;
+            default:
+                return false;
+        }
     }
 }
