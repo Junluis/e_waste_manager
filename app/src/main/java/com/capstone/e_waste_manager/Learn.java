@@ -30,7 +30,6 @@ public class Learn extends AppCompatActivity implements LearnInterface{
 
     RecyclerView learnRecycler;
     ImageButton closebtn, btnGuideSearch;
-    View learnImage;
     MaterialButton addButton;
 
     ArrayList<LearnModel> learnModelArrayList;
@@ -46,13 +45,12 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         setContentView(R.layout.activity_learn);
 
         learnRecycler = findViewById(R.id.learnRecycler);
-        learnImage = findViewById(R.id.learnImage);
         closebtn = findViewById(R.id.closebtn);
         addButton = findViewById(R.id.addButton);
         btnGuideSearch = findViewById(R.id.btnGuideSearch);
 
         btnGuideSearch.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), GuideSearch.class)));
-        closebtn.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Home.class)));
+        closebtn.setOnClickListener(v -> onBackPressed());
         addButton.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), LearnPost.class)));
 
         pd = new ProgressDialog(this);

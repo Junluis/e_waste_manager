@@ -33,7 +33,7 @@ public class LearnView extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         cover = findViewById(R.id.cover);
 
-        backButton.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Learn.class)));
+        backButton.setOnClickListener(v -> onBackPressed());
 
         lTitle.setText(title);
         lAuthor.setText(author);
