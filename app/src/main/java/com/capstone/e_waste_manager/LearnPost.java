@@ -362,7 +362,7 @@ public class LearnPost extends AppCompatActivity {
                     LearnPostTitle.requestFocus();
                 } else if(profileImageUri == null || profileImageUri.equals(Uri.EMPTY)){
                     Toast.makeText(LearnPost.this, "Please upload Cover image", Toast.LENGTH_SHORT).show();
-                } else if((postPDFUri == null && postPDFUri.equals(Uri.EMPTY)) && UploadPDF.getVisibility() == View.VISIBLE){
+                } else if(!(postPDFUri != null && !postPDFUri.equals(Uri.EMPTY)) && UploadPDF.getVisibility() == View.VISIBLE){
                     Toast.makeText(LearnPost.this, "Please upload PDF file", Toast.LENGTH_SHORT).show();
                 } else if((postlink.getText().toString().length() == 0 || !TextUtils.isEmpty(postlink.getError())) && postlink.getVisibility() == View.VISIBLE){
                     if(postlink.getText().toString().length() == 0)

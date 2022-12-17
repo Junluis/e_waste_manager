@@ -12,6 +12,9 @@ dependencyResolutionManagement {
         mavenCentral()
         jcenter()
         maven { url "https://jitpack.io" }
+        maven {
+            url 'https://customers.pspdfkit.com/maven/'
+        }
     }
 }
 rootProject.name = "e_waste_manager"

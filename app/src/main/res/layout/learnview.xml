@@ -78,22 +78,6 @@
 
             </soup.neumorphism.NeumorphCardView>
 
-<!--            <androidx.cardview.widget.CardView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_margin="15dp"-->
-<!--                app:cardMaxElevation="15dp">-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/cover"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:adjustViewBounds="true"-->
-<!--                    app:srcCompat="@drawable/cover" />-->
-
-<!--            </androidx.cardview.widget.CardView>-->
-
-
             <TextView
                 android:id="@+id/lTitle"
                 android:layout_width="wrap_content"
@@ -124,29 +108,101 @@
                 android:textColor="#0C0C0C" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:text="Description"
-                android:textColor="#0C0C0C"
-                android:textSize="18sp" />
-
-            <TextView
                 android:id="@+id/lBody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:text="@string/body"
-                android:textColor="#0C0C0C"
-                android:textSize="18sp" />
+                android:textColor="#0C0C0C" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Read more"
+                android:textColor="@color/blue" />
+
+            <soup.neumorphism.NeumorphCardView
+                android:id="@+id/ebook"
+                android:layout_width="match_parent"
+                android:layout_height="600dp"
+                style="@style/Widget.Neumorph.CardView"
+                app:neumorph_shadowColorDark="@color/gray"
+                app:neumorph_shadowColorLight="@color/gray">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
 
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/ic__swipe"
+                        android:elevation="5dp"
+                        android:visibility="gone"
+                        app:tint="@color/green1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/imageView3"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/ic__swiperight"
+                        android:elevation="5dp"
+                        android:visibility="gone"
+                        app:tint="@color/green1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/pdf_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </soup.neumorphism.NeumorphCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/downloadPDF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="@color/darkgray"
+                android:text="Download PDF"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:maxWidth="200dp"
+                app:icon="@drawable/ic__download"
+                android:layout_marginStart="20dp"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:ignore="TouchTargetSizeCheck" />
+            
             <io.github.ponnamkarthik.richlinkpreview.RichLinkViewTelegram
                 android:id="@+id/urllink"
-                android:layout_marginHorizontal="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp">
