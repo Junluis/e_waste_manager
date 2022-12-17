@@ -75,7 +75,6 @@ public class Post extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -95,7 +94,7 @@ public class Post extends AppCompatActivity {
         uploadimgbtn = findViewById(R.id.uploadimgbtn);
         galleryuploadbtn = findViewById(R.id.galleryuploadbtn);
 
-        //update profile icon
+        //upload photo
         galleryOpen = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
             @Override
             public void onActivityResult(Uri imageUri) {

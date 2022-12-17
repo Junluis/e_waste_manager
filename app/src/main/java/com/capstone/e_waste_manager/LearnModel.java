@@ -1,15 +1,19 @@
 package com.capstone.e_waste_manager;
 
+import com.google.firebase.firestore.DocumentId;
+
 public class LearnModel {
-    String learnTitle, learnAuthor, learnBody, learnImage;
+    String learnTitle, learnAuthor, learnBody, url, filepdf, learnSubTitle, docId;
 
     public LearnModel(){}
 
-    public LearnModel(String learnTitle, String learnAuthor, String learnBody, String learnImage) {
+    public LearnModel(String learnTitle, String learnAuthor, String learnBody, String url, String learnSubTitle, String filepdf) {
         this.learnTitle = learnTitle;
         this.learnAuthor = learnAuthor;
         this.learnBody = learnBody;
-        this.learnImage = learnImage;
+        this.url = url;
+        this.filepdf = filepdf;
+        this.learnSubTitle = learnSubTitle;
     }
 
     public String getLearnTitle() {
@@ -36,11 +40,33 @@ public class LearnModel {
         this.learnBody = learnBody;
     }
 
-    public String getLearnImage() {
-        return learnImage;
+    public String getUrl() {
+        return url;
     }
 
-    public void setLearnImage(String learnImage) {
-        this.learnImage = learnImage;
+    public void setUrl(String url) {
+        this.url = url;
     }
+
+    public String getFilepdf() {
+        return filepdf;
+    }
+
+    public void setFilepdf(String filepdf) {
+        this.filepdf = filepdf;
+    }
+
+    public String getLearnSubTitle() {
+        return learnSubTitle;
+    }
+
+    public void setLearnSubTitle(String learnSubTitle) {
+        this.learnSubTitle = learnSubTitle;
+    }
+
+    @DocumentId
+    public String getDocId() {return docId;}
+
+    @DocumentId
+    public void setDocId(String docId) {this.docId = docId;}
 }

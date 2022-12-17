@@ -26,11 +26,13 @@ import com.google.firebase.firestore.auth.User;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import soup.neumorphism.NeumorphFloatingActionButton;
+
 public class Learn extends AppCompatActivity implements LearnInterface{
 
     RecyclerView learnRecycler;
     ImageButton closebtn, btnGuideSearch;
-    MaterialButton addButton;
+    NeumorphFloatingActionButton addButton;
 
     ArrayList<LearnModel> learnModelArrayList;
     LearnAdapter learnAdapter;
@@ -86,10 +88,7 @@ public class Learn extends AppCompatActivity implements LearnInterface{
                             addButton.setVisibility(View.GONE);
                         }
                     });
-        }else{
-
         }
-
     }
 
     private void EventChangeListener() {
@@ -119,7 +118,11 @@ public class Learn extends AppCompatActivity implements LearnInterface{
         intent.putExtra("learnTitle", learnModelArrayList.get(position).getLearnTitle());
         intent.putExtra("learnAuthor", learnModelArrayList.get(position).getLearnAuthor());
         intent.putExtra("learnBody", learnModelArrayList.get(position).getLearnBody());
-        intent.putExtra("cover", learnModelArrayList.get(position).getLearnImage());
+        intent.putExtra("docId", learnModelArrayList.get(position).getDocId());
+        intent.putExtra("url", learnModelArrayList.get(position).getUrl());
+        intent.putExtra("filepdf", learnModelArrayList.get(position).getFilepdf());
+        intent.putExtra("learnSubTitle", learnModelArrayList.get(position).getLearnSubTitle());
+
 
         startActivity(intent);
 

@@ -27,6 +27,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -505,24 +506,26 @@ public class Home extends AppCompatActivity{
             }
 
             if(homeModel.url != null){
-                urllink.setVisibility(View.VISIBLE);
                 urllink.setLink(homeModel.url, new ViewListener() {
-
                     @Override
                     public void onSuccess(boolean status) {
-
                     }
 
                     @Override
                     public void onError(Exception e) {
                     }
                 });
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        urllink.setVisibility(View.VISIBLE);
+                    }
+                }, 1500);
             }else{
                 urllink.setVisibility(View.GONE);
             }
 
             if (homeModel.hasImage != null && homeModel.hasImage){
-                //profile image per post
                 StorageReference profileRef = storageReference.child("ForumPost/"+homeModel.docId+"/postimg.jpg");
                 profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
@@ -538,9 +541,6 @@ public class Home extends AppCompatActivity{
             }else{
                 postImg.setVisibility(View.GONE);
             }
-
-
-
 
             DocumentReference usernameReference = fStore.collection("Users").document(homeModel.homeAuthorUid);
             usernameReference.addSnapshotListener(Home.this, new EventListener<DocumentSnapshot>() {

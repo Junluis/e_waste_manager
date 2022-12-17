@@ -1,165 +1,223 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LearnPost">
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout3"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:focusableInTouchMode="true"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/closepg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_baseline_close_24"
-            app:tint="@color/darkgray" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_toStartOf="@+id/LearnPostButton"
-            android:layout_toEndOf="@+id/closepg"
-            android:paddingBottom="2dp"
-            android:text="Create Guide"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/LearnPostButton"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="5dp"
-            android:backgroundTint="@color/darkgray"
-            android:text="@string/postb"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:visibility="visible"
-            app:cornerRadius="300dp" />
-
-    </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout8"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout3">
-
-        <EditText
-            android:id="@+id/LearnPostTitle"
+        <RelativeLayout
+            android:id="@+id/relativeLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:background="@color/transparent"
-            android:ems="10"
-            android:hint="Interesting title"
-            android:inputType="text"
-            android:paddingBottom="20dp"
-            android:textSize="23sp"
-            android:textStyle="bold" />
+            android:focusableInTouchMode="true"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
 
-        <EditText
-            android:id="@+id/LearnPostTag"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:background="@color/transparent"
-            android:ems="10"
-            android:hint="Tag"
-            android:inputType="text"
-            android:paddingBottom="20dp"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            />
-
-        <EditText
-            android:id="@+id/LearnPostBody"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:background="@color/transparent"
-            android:ems="10"
-            android:hint="Add optional body text"
-            android:inputType="textMultiLine"
-            android:paddingBottom="100dp"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout8">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/LearnPostCover"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:contentDescription="@string/cover_placeholder"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic__image_icon" />
-
-            <LinearLayout
+            <ImageButton
+                android:id="@+id/closepg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/LearnPostCover">
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_baseline_close_24"
+                app:tint="@color/darkgray" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_toStartOf="@+id/LearnPostButton"
+                android:layout_toEndOf="@+id/closepg"
+                android:paddingBottom="2dp"
+                android:text="Create Guide"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/LearnPostButton"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="@color/darkgray"
+                android:text="@string/postb"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:cornerRadius="300dp" />
+
+        </RelativeLayout>
+
+        <ScrollView
+            android:id="@+id/scrollView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="100dp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayout3"
+            app:layout_constraintVertical_bias="0.0">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/LearnPostTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:hint="Title"
+                    android:inputType="text"
+                    android:paddingBottom="20dp"
+                    android:textSize="23sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/LearnSubTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:hint="Subtitle or tagline (optional)"
+                    android:inputType="text"
+                    android:paddingBottom="20dp"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/LearnPostCover"
+                    android:layout_width="150dp"
+                    android:layout_height="200dp"
+                    android:scaleType="fitXY"
+                    android:layout_marginStart="15dp"
+                    android:src="@drawable/ic_add_svgrepo_com"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Upload cover"/>
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/postlink"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:hint="URL"
+                    android:visibility="gone"
+                    android:inputType="textWebEditText"
+                    android:paddingBottom="20dp"
+                    android:textSize="14sp" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/UploadImage"
+                    android:id="@+id/UploadPDF"
                     android:layout_width="wrap_content"
-                    android:layout_height="45dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
-                    android:layout_weight="1"
                     android:backgroundTint="@color/darkgray"
-                    android:text="Upload Cover"
+                    android:text="Upload PDF"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:maxWidth="200dp"
+                    app:icon="@drawable/ic__pdf"
+                    android:layout_marginStart="15dp"
                     android:textSize="12sp"
                     android:textStyle="bold"
-                    app:cornerRadius="300dp"
                     tools:ignore="TouchTargetSizeCheck" />
 
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/LearnPostBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:hint="Description"
+                    android:inputType="textMultiLine"
+                    android:paddingBottom="100dp"
+                    android:textSize="14sp" />
             </LinearLayout>
+        </ScrollView>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/whitebg">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/uploadimgbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic__pdf"
+                android:background="@drawable/custom_ripple_button"
+                android:paddingVertical="16dp"
+                android:paddingHorizontal="32dp"
+                app:tint="@color/darkgray" />
+
+            <ImageView
+                android:id="@+id/linkbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic__link_icon"
+                android:background="@drawable/custom_ripple_button"
+                android:paddingVertical="16dp"
+                android:paddingHorizontal="32dp"
+                app:tint="@color/darkgray" />
+
+            <ImageView
+                android:id="@+id/postbodybtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_message_24"
+                android:background="@drawable/custom_ripple_button"
+                android:paddingVertical="16dp"
+                android:paddingHorizontal="32dp"
+                app:tint="@color/darkgray" />
+
+            <ImageView
+                android:id="@+id/morebtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_more_horiz_24"
+                android:background="@drawable/custom_ripple_button"
+                android:paddingVertical="16dp"
+                android:paddingHorizontal="32dp"
+                app:tint="@color/darkgray" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include layout="@layout/item_bottom_sheet2" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -80,7 +80,6 @@ public class GuideSearch extends AppCompatActivity implements LearnInterface{
         intent.putExtra("learnTitle", learnModelArrayList.get(position).getLearnTitle());
         intent.putExtra("learnAuthor", learnModelArrayList.get(position).getLearnAuthor());
         intent.putExtra("learnBody", learnModelArrayList.get(position).getLearnBody());
-        intent.putExtra("cover", learnModelArrayList.get(position).getLearnImage());
 
         startActivity(intent);
     }
