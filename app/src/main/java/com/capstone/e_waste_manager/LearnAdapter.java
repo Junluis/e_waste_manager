@@ -1,5 +1,6 @@
 package com.capstone.e_waste_manager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -16,12 +18,18 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.concurrent.Executor;
 
 public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder> {
 
@@ -62,7 +70,14 @@ public class LearnAdapter extends RecyclerView.Adapter<LearnAdapter.MyViewHolder
             }
         });
 
-        holder.author.setText(learnP.learnAuthor);
+        DocumentReference usernameReference = holder.fStore.collection("Users").document(learnP.learnAuthor);
+        usernameReference.addSnapshotListener((Activity) context, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                holder.author.setText(documentSnapShot.getString("Username"));
+            }
+        });
+
         holder.title.setText(learnP.learnTitle);
         holder.body.setText(learnP.learnBody);
 

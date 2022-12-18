@@ -295,7 +295,7 @@ public class Post extends AppCompatActivity {
                     if(postTitle.getText().toString().length() == 0)
                         postTitle.setText("");
                     postTitle.requestFocus();
-                } else if(postlink.getText().toString().length() == 0 || !TextUtils.isEmpty(postlink.getError())){
+                } else if((postlink.getText().toString().length() == 0 || !TextUtils.isEmpty(postlink.getError())) && postlink.getVisibility() == View.VISIBLE){
                     if(postlink.getText().toString().length() == 0)
                         postlink.setText("");
                     postlink.requestFocus();
@@ -334,8 +334,6 @@ public class Post extends AppCompatActivity {
                 fStore.collection("Post").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentReference> task) {
-                        postBody.setText("");
-                        postTitle.setText("");
                         if (profileImageUri != null && !profileImageUri.equals(Uri.EMPTY)){
                             uploadImageToFirebase(profileImageUri, task.getResult().getId());
                         }
