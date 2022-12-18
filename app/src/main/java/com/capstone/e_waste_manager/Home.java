@@ -763,11 +763,15 @@ public class Home extends AppCompatActivity{
                         if(Objects.equals(documentSnapShot.getString("Partner"), "0")){
                             request.setVisibility(View.VISIBLE);
                             requesttext.setVisibility(View.VISIBLE);
-
+                            if (Objects.equals(documentSnapShot.getBoolean("isReq"), true)){
+                                request.setEnabled(false);
+                                requesttext.setText("Partnership request submitted. Wait for approval.");
+                            }
                         } else{
                             request.setVisibility(View.GONE);
                             requesttext.setVisibility(View.GONE);
                         }
+
                     }
                 });
 

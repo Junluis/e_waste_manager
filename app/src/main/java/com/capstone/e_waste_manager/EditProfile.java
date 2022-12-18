@@ -125,8 +125,6 @@ public class EditProfile extends AppCompatActivity {
         tilAddressHouse = findViewById(R.id.tilAddressHouse);
         tilBarangay = findViewById(R.id.tilBarangay);
 
-
-
         DocumentReference docRef = fStore.collection("Miscellaneous").document("cvUA8BB7Pk0Ud7kYwxoT");
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override

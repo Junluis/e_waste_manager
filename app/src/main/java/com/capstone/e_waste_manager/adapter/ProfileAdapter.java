@@ -33,8 +33,6 @@ public class ProfileAdapter extends FragmentStateAdapter {
 
         switch (position){
             case 1:
-                return new ProfileCommentFragment();
-            case 2:
                 return new ProfileAboutFragment();
         }
         return new ProfilePostFragment();
@@ -45,7 +43,7 @@ public class ProfileAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 3;
+        return 2;
     }
 
 

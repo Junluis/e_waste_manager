@@ -144,7 +144,6 @@ public class UserProfilePage extends AppCompatActivity implements PopupMenu.OnMe
         adapter = new ProfileAdapter(fragmentManager, getLifecycle());
         profilePager.setAdapter(adapter);
         profiletabLayout.addTab(profiletabLayout.newTab().setText("Posts"));
-        profiletabLayout.addTab(profiletabLayout.newTab().setText("Comments"));
         profiletabLayout.addTab(profiletabLayout.newTab().setText("About"));
 
         profiletabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

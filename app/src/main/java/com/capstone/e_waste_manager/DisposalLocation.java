@@ -1089,10 +1089,10 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
 
                         if (regBarangay.getText().toString().isEmpty()){
                             querytags = fStore.collection("DisposalLocations")
-                                    .whereArrayContainsAny("ewastetypes", filterdonationtags);
+                                    .whereArrayContainsAny("donationtags", filterdonationtags);
                         }else{
                             querytags = fStore.collection("DisposalLocations")
-                                    .whereEqualTo("barangay", regBarangay.getText().toString()).whereArrayContainsAny("ewastetypes", filterdonationtags);
+                                    .whereEqualTo("barangay", regBarangay.getText().toString()).whereArrayContainsAny("donationtags", filterdonationtags);
                         }
 
                         FirestoreRecyclerOptions<DisposalModel> options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
