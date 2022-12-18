@@ -163,28 +163,18 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
 
                 if(result.get(Manifest.permission.ACCESS_FINE_LOCATION) != null){
                     isFineLocationPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_FINE_LOCATION));
-                }else {
-                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.INTERNET) != null){
                     isInternetPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.INTERNET));
-                }else {
-                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.ACCESS_NETWORK_STATE) != null){
                     isNetAccessPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_NETWORK_STATE));
-                }else {
-                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.READ_EXTERNAL_STORAGE) != null){
                     isReadPermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.READ_EXTERNAL_STORAGE));
-                }else {
-                    onBackPressed();
                 }
                 if(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) != null){
                     isWritePermissionGranted = Boolean.TRUE.equals(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE));
-                }else {
-                    onBackPressed();
                 }
             }
         });
