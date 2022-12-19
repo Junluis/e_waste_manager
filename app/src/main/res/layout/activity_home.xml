@@ -62,7 +62,7 @@
                 android:layout_toStartOf="@+id/search_btn"
                 android:layout_toEndOf="@+id/menu_nav"
                 android:paddingBottom="2dp"
-                android:text="Home"
+                android:text="Home - Forum"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 

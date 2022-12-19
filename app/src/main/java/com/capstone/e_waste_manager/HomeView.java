@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +73,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import io.github.ponnamkarthik.richlinkpreview.RichLinkViewSkype;
 import io.github.ponnamkarthik.richlinkpreview.RichLinkViewTelegram;
+import io.github.ponnamkarthik.richlinkpreview.RichLinkViewTwitter;
 import io.github.ponnamkarthik.richlinkpreview.ViewListener;
 import soup.neumorphism.NeumorphFloatingActionButton;
 
@@ -82,7 +85,7 @@ public class HomeView extends AppCompatActivity {
     Button commentBtn;
     ImageView prof_img, partnerBadge, postImg;
     EditText pComment;
-    TextView pTitle, pAuthor, pBody, pAuthorUid, pdocId, ptimestamp, upvotecount, downvotecount;
+    TextView pTitle, pAuthor, pBody, pAuthorUid, pdocId, ptimestamp, upvotecount, downvotecount, urltext;
     RecyclerView commentRecycler;
     FirebaseFirestore fStore;
     FirebaseAuth fAuth;
@@ -95,7 +98,7 @@ public class HomeView extends AppCompatActivity {
     ToggleButton upvote, downvote;
     TextInputLayout tilpComment;
 
-    RichLinkViewTelegram urllink;
+    RichLinkViewTwitter urllink;
 
     AlertDialog dialog;
     Dialog guestDialog;
@@ -129,6 +132,7 @@ public class HomeView extends AppCompatActivity {
         partnerBadge = findViewById(R.id.partnerBadge);
         urllink = findViewById(R.id.urllink);
         postImg = findViewById(R.id.postImg);
+        urltext = findViewById(R.id.urltext);
 
         //comments
         pComment = findViewById(R.id.pComment);
@@ -365,23 +369,29 @@ public class HomeView extends AppCompatActivity {
         ptimestamp.setText(timeago);
         pdocId.setText(model.docId);
         pBody.setText(model.getHomeBody());
+        urltext.setText(model.url);
+
         if (pBody.getText().length() == 0){
             pBody.setVisibility(View.GONE);
+        }else{
+            pBody.setVisibility(View.VISIBLE);
         }
-        if(model.url != null){
-            urllink.setVisibility(View.VISIBLE);
-            urllink.setLink(model.url, new ViewListener() {
 
+        if(urltext.getText() != null && Patterns.WEB_URL.matcher(urltext.getText().toString()).matches()){
+            urltext.setVisibility(View.VISIBLE);
+            urllink.setLink(urltext.getText().toString(), new ViewListener() {
                 @Override
                 public void onSuccess(boolean status) {
-
+                    urllink.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onError(Exception e) {
-
                 }
             });
+        }else{
+            urltext.setVisibility(View.GONE);
+            urllink.setVisibility(View.GONE);
         }
 
         if (model.hasImage != null && model.hasImage){

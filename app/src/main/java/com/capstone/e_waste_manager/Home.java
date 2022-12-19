@@ -29,6 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,8 +38,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.paging.CombinedLoadStates;
+import androidx.paging.LoadState;
+import androidx.paging.PagedList;
+import androidx.paging.PagingConfig;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -52,6 +58,8 @@ import android.widget.ToggleButton;
 import com.capstone.e_waste_manager.Class.TimeAgo2;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
+import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -83,7 +91,10 @@ import java.util.Objects;
 import io.github.ponnamkarthik.richlinkpreview.RichLinkView;
 import io.github.ponnamkarthik.richlinkpreview.RichLinkViewSkype;
 import io.github.ponnamkarthik.richlinkpreview.RichLinkViewTelegram;
+import io.github.ponnamkarthik.richlinkpreview.RichLinkViewTwitter;
 import io.github.ponnamkarthik.richlinkpreview.ViewListener;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import soup.neumorphism.NeumorphFloatingActionButton;
 
 
@@ -93,7 +104,7 @@ public class Home extends AppCompatActivity{
     FirebaseFirestore fStore;
     StorageReference storageReference;
     FirebaseAuth fAuth;
-    FirestoreRecyclerAdapter adapter;
+    FirestorePagingAdapter<HomeModel, ViewHolder> adapter;
     FirebaseUser user;
 
     DrawerLayout drawerLayout;
@@ -115,6 +126,8 @@ public class Home extends AppCompatActivity{
     LinearLayout activityHome;
 
     Query querysearch, query;
+
+    PagingConfig config;
 
 
     @Override
@@ -197,16 +210,18 @@ public class Home extends AppCompatActivity{
                         .whereLessThanOrEqualTo("homeTitle",newText + "\uf8ff");
 
                 if(newText.isEmpty()){
-                    FirestoreRecyclerOptions<HomeModel> options = new FirestoreRecyclerOptions.Builder<HomeModel>()
-                            .setQuery(query, HomeModel.class)
+                    FirestorePagingOptions<HomeModel> options = new FirestorePagingOptions.Builder<HomeModel>()
+                            .setLifecycleOwner(Home.this)
+                            .setQuery(query, config, HomeModel.class)
                             .build();
                     adapter.updateOptions(options);
                     homeRecycler.setAdapter(null);
                     homeRecycler.setAdapter(adapter);
                     search_btn.getDrawable().setTint(ContextCompat.getColor(Home.this, R.color.darkgray));
                 }else{
-                    FirestoreRecyclerOptions<HomeModel> options2 = new FirestoreRecyclerOptions.Builder<HomeModel>()
-                            .setQuery(querysearch, HomeModel.class)
+                    FirestorePagingOptions<HomeModel> options2 = new FirestorePagingOptions.Builder<HomeModel>()
+                            .setLifecycleOwner(Home.this)
+                            .setQuery(querysearch, config, HomeModel.class)
                             .build();
                     adapter.updateOptions(options2);
                     homeRecycler.setAdapter(null);
@@ -400,36 +415,90 @@ public class Home extends AppCompatActivity{
         });
         //drawer end
 
-        //forum
         linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         homeRecycler.setLayoutManager(linearLayoutManager);
 
         homeRecycler.setItemAnimator(null);
 
+        //forums
         query = fStore.collection("Post")
                 .orderBy("homePostDate", Query.Direction.DESCENDING)
-                .limit(50);
+                .limit(3);
 
-        FirestoreRecyclerOptions<HomeModel> options = new FirestoreRecyclerOptions.Builder<HomeModel>()
-                .setQuery(query, HomeModel.class)
+        config = new PagingConfig(/* page size */ 2, /* prefetchDistance */ 2,
+                /* enablePlaceHolders */ false);
+
+        FirestorePagingOptions<HomeModel> options = new FirestorePagingOptions.Builder<HomeModel>()
+                .setLifecycleOwner(this)
+                .setQuery(query, config, HomeModel.class)
                 .build();
 
-        adapter = new FirestoreRecyclerAdapter<HomeModel, ViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull HomeModel model) {
-                holder.bind(model);
-            }
+        adapter =
+                new FirestorePagingAdapter<HomeModel, ViewHolder>(options) {
+                    @NonNull
+                    @Override
+                    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        // Create the ItemViewHolder
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.home_each, parent,false);
+                        return new ViewHolder(view);
+                        // ...
+                    }
 
-            @NonNull
-            @Override
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup group, int i) {
-                View view = LayoutInflater.from(group.getContext())
-                        .inflate(R.layout.home_each, group,false);
-                return new ViewHolder(view);
-            }
-        };
+                    @Override
+                    protected void onBindViewHolder(@NonNull ViewHolder holder,
+                                                    int position,
+                                                    @NonNull HomeModel model) {
+                        // Bind the item to the view holder
+                        holder.bind(model);
+                        // ...
+                    }
+
+
+                };
 
         homeRecycler.setAdapter(adapter);
+
+        adapter.addLoadStateListener(new Function1<CombinedLoadStates, Unit>() {
+            @Override
+            public Unit invoke(CombinedLoadStates states) {
+                LoadState refresh = states.getRefresh();
+                LoadState append = states.getAppend();
+
+                if (refresh instanceof LoadState.Error || append instanceof LoadState.Error) {
+                    // The previous load (either initial or additional) failed. Call
+                    // the retry() method in order to retry the load operation.
+                    // ...
+                    adapter.retry();
+                }
+
+                if (refresh instanceof LoadState.Loading) {
+                    // The initial Load has begun
+                    // ...
+                }
+
+                if (append instanceof LoadState.Loading) {
+                    // The adapter has started to load an additional page
+                    // ...
+                }
+
+                if (append instanceof LoadState.NotLoading) {
+                    LoadState.NotLoading notLoading = (LoadState.NotLoading) append;
+                    if (notLoading.getEndOfPaginationReached()) {
+                        // The adapter has finished loading all of the data set
+                        // ...
+                        return null;
+                    }
+
+                    if (refresh instanceof LoadState.NotLoading) {
+                        // The previous load (either initial or additional) completed
+                        // ...
+                        return null;
+                    }
+                }
+                return null;
+            }
+        });
 
         //swipe up to refresh
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -443,12 +512,12 @@ public class Home extends AppCompatActivity{
 
     //forum
     class ViewHolder extends RecyclerView.ViewHolder{
-        TextView author, title, body, authorUid, docId, timestamp, upvotecount, downvotecount;
+        TextView author, title, body, authorUid, docId, timestamp, upvotecount, downvotecount, urltext;
         Button addcoment;
         ToggleButton upvote, downvote;
         ImageView prof_img, partnerBadge, postImg;
         HomeModel model;
-        RichLinkViewTelegram urllink;
+        FrameLayout urllink;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -469,6 +538,7 @@ public class Home extends AppCompatActivity{
             partnerBadge = itemView.findViewById(R.id.partnerBadge);
             urllink = itemView.findViewById(R.id.urllink);
             postImg = itemView.findViewById(R.id.postImg);
+            urltext = itemView.findViewById(R.id.urltext);
 
             addcoment.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -495,6 +565,7 @@ public class Home extends AppCompatActivity{
             body.setText(homeModel.homeBody);
             docId.setText(homeModel.docId);
             authorUid.setText(homeModel.homeAuthorUid);
+            urltext.setText(homeModel.url);
             TimeAgo2 timeAgo2 = new TimeAgo2();
             if(homeModel.getHomePostDate() != null){
                 String timeago = timeAgo2.covertTimeToText(homeModel.getHomePostDate().toString());
@@ -503,35 +574,37 @@ public class Home extends AppCompatActivity{
 
             if (body.getText().length() == 0){
                 body.setVisibility(View.GONE);
+            }else{
+                body.setVisibility(View.VISIBLE);
             }
 
-            if(homeModel.url != null){
-                urllink.setLink(homeModel.url, new ViewListener() {
+            if(urltext.getText() != null && Patterns.WEB_URL.matcher(urltext.getText().toString()).matches()){
+                urltext.setVisibility(View.VISIBLE);
+                RichLinkViewTwitter richLinkView = (RichLinkViewTwitter) View.inflate(Home.this, R.layout.links, null);
+                richLinkView.setLink(urltext.getText().toString(), new ViewListener() {
                     @Override
                     public void onSuccess(boolean status) {
+                        urllink.setVisibility(View.VISIBLE);
                     }
 
                     @Override
                     public void onError(Exception e) {
                     }
                 });
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        urllink.setVisibility(View.VISIBLE);
-                    }
-                }, 1500);
+                urllink.addView(richLinkView);
             }else{
+                urltext.setVisibility(View.GONE);
                 urllink.setVisibility(View.GONE);
             }
 
+
             if (homeModel.hasImage != null && homeModel.hasImage){
+                postImg.setVisibility(View.VISIBLE);
                 StorageReference profileRef = storageReference.child("ForumPost/"+homeModel.docId+"/postimg.jpg");
                 profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                         Picasso.get().load(uri).into(postImg);
-                        postImg.setVisibility(View.VISIBLE);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -539,6 +612,7 @@ public class Home extends AppCompatActivity{
                     }
                 });
             }else{
+                postImg.setImageBitmap(null);
                 postImg.setVisibility(View.GONE);
             }
 
@@ -873,6 +947,8 @@ public class Home extends AppCompatActivity{
 
     public void refresh(){
         swipeRefresh.setRefreshing(true);
+        adapter.stopListening();
+        homeRecycler.setAdapter(null);
         if (user != null && !user.isAnonymous()) {
             StorageReference profileRef = storageReference.child("ProfileImage/" + fAuth.getCurrentUser().getUid() + "/profile.jpg");
             profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -891,10 +967,9 @@ public class Home extends AppCompatActivity{
                 }
             });
         }
-        homeRecycler.setAdapter(null);
         homeRecycler.setAdapter(adapter);
         adapter.startListening();
-        adapter.notifyDataSetChanged();
+        adapter.refresh();
         swipeRefresh.setRefreshing(false);
     }
 }

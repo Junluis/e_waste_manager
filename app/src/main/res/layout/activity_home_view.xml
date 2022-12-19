@@ -141,10 +141,11 @@
 
                             <TextView
                                 android:id="@+id/homeTitle"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginHorizontal="20dp"
                                 android:text="@string/title"
+                                android:textIsSelectable="true"
                                 android:textSize="24sp"
                                 android:textColor="@color/darkgray"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -176,17 +177,30 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintVertical_bias="0.0" />
 
-                            <io.github.ponnamkarthik.richlinkpreview.RichLinkViewTelegram
+                            <TextView
+                                android:id="@+id/urltext"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="20dp"
+                                android:autoLink="web"
+                                android:textColorLink="@color/blue"
+                                android:layout_marginTop="5dp"
+                                android:textIsSelectable="true"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.0"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/homeBody" />
+
+                            <io.github.ponnamkarthik.richlinkpreview.RichLinkViewTwitter
                                 android:id="@+id/urllink"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="5dp"
-                                android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/homeBody">
+                                app:layout_constraintTop_toBottomOf="@+id/urltext">
 
-                            </io.github.ponnamkarthik.richlinkpreview.RichLinkViewTelegram>
+                            </io.github.ponnamkarthik.richlinkpreview.RichLinkViewTwitter>
 
                             <ImageView
                                 android:id="@+id/postImg"
@@ -195,21 +209,21 @@
                                 android:layout_marginTop="5dp"
                                 android:adjustViewBounds="true"
                                 android:scaleType="fitCenter"
-                                android:src="@drawable/testimg"
-                                android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/urllink" />
 
                             <TextView
                                 android:id="@+id/homeBody"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginHorizontal="20dp"
-                                android:ellipsize="end"
-                                android:maxLines="2"
+                                android:autoLink="web"
+                                android:textColorLink="@color/blue"
                                 android:text="@string/lorem_ipsum"
                                 android:textAlignment="viewStart"
+                                android:layout_marginTop="5dp"
+                                android:textIsSelectable="true"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"

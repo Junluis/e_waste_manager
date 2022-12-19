@@ -115,13 +115,14 @@
 
             <TextView
                 android:id="@+id/commentBody"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:ellipsize="end"
-                android:maxLines="2"
                 android:text="@string/lorem_ipsum"
                 android:textAlignment="viewStart"
+                android:textColor="@color/black"
+                android:autoLink="web"
+                android:textIsSelectable="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
