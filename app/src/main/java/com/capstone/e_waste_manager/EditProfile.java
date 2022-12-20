@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -61,6 +62,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class EditProfile extends AppCompatActivity {
 
@@ -78,9 +80,10 @@ public class EditProfile extends AppCompatActivity {
 
     Uri profileImageUri;
 
-    TextInputLayout tilUsername, tilEmail, tilBio, tilFirstName, tilLastName, tilDateOfBirth, tilAddressHouse, tilBarangay;
-    EditText regUsername, regEmail, regBio, regFirstName, regLastName, regDateOfBirth, regAddressHouse;
+    TextInputLayout tilUsername, tilEmail, tilBio, tilFirstName, tilLastName, tilDateOfBirth, tilAddressHouse, tilBarangay, tilOrgDesc;
+    EditText regUsername, regEmail, regBio, regFirstName, regLastName, regDateOfBirth, regAddressHouse, regOrgDesc;
 
+    TextView textView5;
 
     AutoCompleteTextView regBarangay;
     ArrayAdapter<String> barangayList;
@@ -116,6 +119,9 @@ public class EditProfile extends AppCompatActivity {
         regAddressHouse = findViewById(R.id.regAddressHouse);
         regBarangay = findViewById(R.id.regBarangay);
 
+        textView5 = findViewById(R.id.textView5);
+        regOrgDesc = findViewById(R.id.regOrgDesc);
+
         tilUsername = findViewById(R.id.tilUsername);
         tilEmail = findViewById(R.id.tilEmail);
         tilBio = findViewById(R.id.tilBio);
@@ -124,6 +130,9 @@ public class EditProfile extends AppCompatActivity {
         tilDateOfBirth = findViewById(R.id.tilDateOfBirth);
         tilAddressHouse = findViewById(R.id.tilAddressHouse);
         tilBarangay = findViewById(R.id.tilBarangay);
+
+        tilOrgDesc = findViewById(R.id.tilOrgDesc);
+
 
         DocumentReference docRef = fStore.collection("Miscellaneous").document("cvUA8BB7Pk0Ud7kYwxoT");
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -147,15 +156,80 @@ public class EditProfile extends AppCompatActivity {
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                regUsername.setText(documentSnapShot.getString("Username"));
-                regEmail.setText(documentSnapShot.getString("Email"));
-                regFirstName.setText(documentSnapShot.getString("FirstName"));
-                regLastName.setText(documentSnapShot.getString("LastName"));
-                regDateOfBirth.setText(documentSnapShot.getString("DateOfBirth"));
 
-                regBio.setText(documentSnapShot.getString("Bio"));
-                regAddressHouse.setText(documentSnapShot.getString("HouseAddress"));
-                regBarangay.setText(documentSnapShot.getString("Barangay"));
+                if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
+                    regUsername.setText(documentSnapShot.getString("Username"));
+                    regEmail.setText(documentSnapShot.getString("Email"));
+                    regFirstName.setText(documentSnapShot.getString("OrganizationName"));
+                    regOrgDesc.setText(documentSnapShot.getString("OrganizationDesc"));
+
+                    regBio.setText(documentSnapShot.getString("Bio"));
+                    regAddressHouse.setText(documentSnapShot.getString("HouseAddress"));
+                    regBarangay.setText(documentSnapShot.getString("Barangay"));
+
+                    tilOrgDesc.setVisibility(View.VISIBLE);
+                    tilLastName.setVisibility(View.GONE);
+                    regFirstName.setHint("Organization Name");
+                    tilDateOfBirth.setVisibility(View.GONE);
+                    textView5.setText("Organization Details");
+
+                    regFirstName.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+                        }
+                        @Override
+                        public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                            if(s.toString().isEmpty()){
+                                if (tilFirstName.getChildCount() == 2)
+                                    tilFirstName.getChildAt(1).setVisibility(View.VISIBLE);
+                                tilFirstName.setError("required*");
+                            } else{
+                                tilFirstName.setError(null);
+                                if (tilFirstName.getChildCount() == 2)
+                                    tilFirstName.getChildAt(1).setVisibility(View.GONE);
+                            }
+                        }
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                        }
+                    });
+
+                }else{
+                    regUsername.setText(documentSnapShot.getString("Username"));
+                    regEmail.setText(documentSnapShot.getString("Email"));
+                    regFirstName.setText(documentSnapShot.getString("FirstName"));
+                    regLastName.setText(documentSnapShot.getString("LastName"));
+                    regDateOfBirth.setText(documentSnapShot.getString("DateOfBirth"));
+
+                    regBio.setText(documentSnapShot.getString("Bio"));
+                    regAddressHouse.setText(documentSnapShot.getString("HouseAddress"));
+                    regBarangay.setText(documentSnapShot.getString("Barangay"));
+
+                    regFirstName.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+                        }
+                        @Override
+                        public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                            if(s.toString().isEmpty()){
+                                if (tilFirstName.getChildCount() == 2)
+                                    tilFirstName.getChildAt(1).setVisibility(View.VISIBLE);
+                                tilFirstName.setError("required*");
+                            }else if(!s.toString().matches("[a-zA-Z ]+")){
+                                if (tilFirstName.getChildCount() == 2)
+                                    tilFirstName.getChildAt(1).setVisibility(View.VISIBLE);
+                                tilFirstName.setError("Special characters and numeric values are not allowed.");
+                            }else{
+                                tilFirstName.setError(null);
+                                if (tilFirstName.getChildCount() == 2)
+                                    tilFirstName.getChildAt(1).setVisibility(View.GONE);
+                            }
+                        }
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                        }
+                    });
+                }
 
             }
         });
@@ -408,30 +482,7 @@ public class EditProfile extends AppCompatActivity {
                 }
             }
         });
-        regFirstName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if(s.toString().isEmpty()){
-                    if (tilFirstName.getChildCount() == 2)
-                        tilFirstName.getChildAt(1).setVisibility(View.VISIBLE);
-                    tilFirstName.setError("required*");
-                }else if(!s.toString().matches("[a-zA-Z ]+")){
-                    if (tilFirstName.getChildCount() == 2)
-                        tilFirstName.getChildAt(1).setVisibility(View.VISIBLE);
-                    tilFirstName.setError("Special characters and numeric values are not allowed.");
-                }else{
-                    tilFirstName.setError(null);
-                    if (tilFirstName.getChildCount() == 2)
-                        tilFirstName.getChildAt(1).setVisibility(View.GONE);
-                }
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+
         regLastName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
@@ -517,7 +568,7 @@ public class EditProfile extends AppCompatActivity {
                     if(regEmail.getText().toString().length() == 0)
                         regEmail.setText("");
                     regEmail.requestFocus();
-                }else if(regDateOfBirth.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDateOfBirth.getError())) {
+                }else if((regDateOfBirth.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDateOfBirth.getError())) && tilDateOfBirth.getVisibility() == View.VISIBLE) {
                     if(regDateOfBirth.getText().toString().length() == 0)
                         regDateOfBirth.setText("");
                     regDateOfBirth.requestFocus();
@@ -525,7 +576,7 @@ public class EditProfile extends AppCompatActivity {
                     if(regFirstName.getText().toString().length() == 0)
                         regFirstName.setText("");
                     regFirstName.requestFocus();
-                }else if(regLastName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilLastName.getError())){
+                }else if((regLastName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilLastName.getError())) && tilLastName.getVisibility() == View.VISIBLE){
                     if(regLastName.getText().toString().length() == 0)
                         regLastName.setText("");
                     regLastName.requestFocus();
@@ -548,14 +599,25 @@ public class EditProfile extends AppCompatActivity {
                         public void onSuccess(Void unused) {
                             DocumentReference docRef = fStore.collection("Users").document(user.getUid());
                             Map<String, Object> edited = new HashMap<>();
-                            edited.put("Email", email);
-                            edited.put("Username", regUsername.getText().toString().trim());
-                            edited.put("FirstName", regFirstName.getText().toString().trim());
-                            edited.put("LastName", regLastName.getText().toString().trim());
-                            edited.put("DateOfBirth", regDateOfBirth.getText().toString());
-                            edited.put("Bio", regBio.getText().toString().trim());
-                            edited.put("HouseAddress", regAddressHouse.getText().toString().trim());
-                            edited.put("Barangay", regBarangay.getText().toString());
+
+                            if(tilLastName.getVisibility() == View.VISIBLE){
+                                edited.put("Email", email);
+                                edited.put("Username", regUsername.getText().toString().trim());
+                                edited.put("FirstName", regFirstName.getText().toString().trim());
+                                edited.put("LastName", regLastName.getText().toString().trim());
+                                edited.put("DateOfBirth", regDateOfBirth.getText().toString());
+                                edited.put("Bio", regBio.getText().toString().trim());
+                                edited.put("HouseAddress", regAddressHouse.getText().toString().trim());
+                                edited.put("Barangay", regBarangay.getText().toString());
+                            } else{
+                                edited.put("Email", email);
+                                edited.put("Username", regUsername.getText().toString().trim());
+                                edited.put("OrganizationName", regFirstName.getText().toString().trim());
+                                edited.put("OrganizationDesc", regOrgDesc.getText().toString().trim());
+                                edited.put("Bio", regBio.getText().toString().trim());
+                                edited.put("HouseAddress", regAddressHouse.getText().toString().trim());
+                                edited.put("Barangay", regBarangay.getText().toString());
+                            }
 
                             docRef.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
@@ -603,8 +665,6 @@ public class EditProfile extends AppCompatActivity {
             }
         });
     }
-
-
 
 
 }

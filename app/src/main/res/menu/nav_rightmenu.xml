@@ -11,7 +11,7 @@
     <item
         android:id="@+id/notificationpg"
         android:icon="@drawable/ic_baseline_notifications_24"
-        android:title="@string/notification"
+        android:title="Requests"
         android:visible="false"/>
 
 

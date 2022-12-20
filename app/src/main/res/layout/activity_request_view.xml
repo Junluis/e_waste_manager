@@ -48,255 +48,283 @@
 
     </RelativeLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout3">
-
-        <androidx.cardview.widget.CardView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayout3">
 
-            <ScrollView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/textView20"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="15sp"
-                            android:layout_marginTop="15sp"
-                            android:layout_marginBottom="15sp"
-                            android:text="Name: "
-                            android:textSize="24sp" />
-
-                        <TextView
-                            android:id="@+id/reqNameTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5sp"
-                            android:layout_marginTop="15sp"
-                            android:layout_marginBottom="15sp"
-                            android:text="Name Here"
-                            android:textColor="#0C0C0C"
-                            android:textSize="24sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/textView19"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="15sp"
-                            android:layout_marginTop="15sp"
-                            android:layout_marginBottom="15sp"
-                            android:text="Address: "
-                            android:textSize="24sp" />
-
-                        <TextView
-                            android:id="@+id/reqAddressTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5sp"
-                            android:layout_marginTop="15sp"
-                            android:layout_marginBottom="15sp"
-                            android:text="Address Here"
-                            android:textColor="#0C0C0C"
-                            android:textSize="24sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/textView21"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="15sp"
-                            android:layout_marginTop="15sp"
-                            android:layout_marginBottom="15sp"
-                            android:text="Number: "
-                            android:textSize="24sp" />
-
-                        <TextView
-                            android:id="@+id/reqNumberTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5sp"
-                            android:layout_marginTop="15sp"
-                            android:layout_marginBottom="15sp"
-                            android:text="Number Here"
-                            android:textColor="#0C0C0C"
-                            android:textSize="24sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/textView29"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="15sp"
-                            android:layout_marginTop="15sp"
-                            android:layout_marginBottom="15sp"
-                            android:text="Email: "
-                            android:textSize="24sp" />
-
-                        <TextView
-                            android:id="@+id/reqEmailTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5sp"
-                            android:layout_marginTop="15sp"
-                            android:layout_marginBottom="15sp"
-                            android:text="Email Here"
-                            android:textColor="#0C0C0C"
-                            android:textSize="24sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/textView22"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="15sp"
-                            android:layout_marginTop="15sp"
-                            android:text="Description: "
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/reqDescTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="15sp"
-                            android:layout_marginBottom="15sp"
-                            android:text="Description Here"
-                            android:textColor="#0C0C0C"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/textView23"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="15sp"
-                            android:layout_marginTop="15sp"
-                            android:text="DTI:"
-                            android:textSize="16sp" />
-
-                        <androidx.cardview.widget.CardView
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal|center_vertical"
-                            android:paddingStart="15dp"
-                            android:paddingEnd="15dp">
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
 
-                            <ImageView
-                                android:id="@+id/reqDTIIV"
+                            <TextView
+                                android:id="@+id/textView20"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center_horizontal|center_vertical"
-                                app:srcCompat="@drawable/add_photos" />
-                        </androidx.cardview.widget.CardView>
+                                android:layout_marginStart="15sp"
+                                android:layout_marginTop="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Name: "
+                                android:textSize="24sp" />
 
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/textView24"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="15sp"
-                            android:layout_marginTop="15sp"
-                            android:text="SEC:"
-                            android:textSize="16sp" />
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal|center_vertical"
-                            android:paddingStart="15dp"
-                            android:paddingEnd="15dp">
-
-                            <ImageView
-                                android:id="@+id/reqSECIV"
+                            <TextView
+                                android:id="@+id/reqNameTV"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginStart="5sp"
+                                android:layout_marginTop="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Name Here"
+                                android:textColor="#0C0C0C"
+                                android:textSize="24sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView19"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15sp"
+                                android:layout_marginTop="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Address: "
+                                android:textSize="24sp" />
+
+                            <TextView
+                                android:id="@+id/reqAddressTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5sp"
+                                android:layout_marginTop="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Address Here"
+                                android:textColor="#0C0C0C"
+                                android:textSize="24sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15sp"
+                                android:layout_marginTop="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Barangay: "
+                                android:textSize="24sp" />
+
+                            <TextView
+                                android:id="@+id/reqBarangayTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5sp"
+                                android:layout_marginTop="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Barangay Here"
+                                android:textColor="#0C0C0C"
+                                android:textSize="24sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView21"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15sp"
+                                android:layout_marginTop="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Number: "
+                                android:textSize="24sp" />
+
+                            <TextView
+                                android:id="@+id/reqNumberTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5sp"
+                                android:layout_marginTop="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Number Here"
+                                android:textColor="#0C0C0C"
+                                android:textSize="24sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textView29"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15sp"
+                                android:layout_marginTop="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Email: "
+                                android:textSize="24sp" />
+
+                            <TextView
+                                android:id="@+id/reqEmailTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5sp"
+                                android:layout_marginTop="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Email Here"
+                                android:textColor="#0C0C0C"
+                                android:textSize="24sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textView22"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15sp"
+                                android:layout_marginTop="15sp"
+                                android:text="Description: "
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/reqDescTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15sp"
+                                android:layout_marginBottom="15sp"
+                                android:text="Description Here"
+                                android:textColor="#0C0C0C"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textView23"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15sp"
+                                android:layout_marginTop="15sp"
+                                android:text="DTI:"
+                                android:textSize="16sp" />
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal|center_vertical"
-                                app:srcCompat="@drawable/add_photos" />
-                        </androidx.cardview.widget.CardView>
+                                android:paddingStart="15dp"
+                                android:paddingEnd="15dp">
+
+                                <ImageView
+                                    android:id="@+id/reqDTIIV"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal|center_vertical"
+                                    app:srcCompat="@drawable/add_photos" />
+                            </androidx.cardview.widget.CardView>
 
 
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textView24"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15sp"
+                                android:layout_marginTop="15sp"
+                                android:text="SEC:"
+                                android:textSize="16sp" />
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal|center_vertical"
+                                android:paddingStart="15dp"
+                                android:paddingEnd="15dp">
+
+                                <ImageView
+                                    android:id="@+id/reqSECIV"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal|center_vertical"
+                                    app:srcCompat="@drawable/add_photos" />
+                            </androidx.cardview.widget.CardView>
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/reqApprove"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="15dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/green1"
+                                android:text="Approve" />
+
+                            <Button
+                                android:id="@+id/reqReject"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="15dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="#D52D1F"
+                                android:text="Reject" />
+                        </LinearLayout>
                     </LinearLayout>
+                </ScrollView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
+            </androidx.cardview.widget.CardView>
 
-                        <Button
-                            android:id="@+id/reqApprove"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="15dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="@color/green1"
-                            android:text="Approve" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        <Button
-                            android:id="@+id/reqReject"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="15dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="#D52D1F"
-                            android:text="Reject" />
-                    </LinearLayout>
-                </LinearLayout>
-            </ScrollView>
 
-        </androidx.cardview.widget.CardView>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

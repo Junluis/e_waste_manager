@@ -1,28 +1,39 @@
 package com.capstone.e_waste_manager;
 
-public class RequestModel {
-    String reqName, reqAddress, reqNumber, reqDesc, reqDTI, reqSEC, reqUserMail, reqUserId;
+import com.google.firebase.firestore.DocumentId;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class RequestModel implements Serializable {
+
+    public String reqAddress;
+    public String reqBarangay;
+    public String reqDesc;
+    public String reqName;
+    public String reqNumber;
+    public String reqUserId;
+    public String docId;
+    public Date reqDate;
+
 
     public RequestModel(){}
 
-    public RequestModel(String reqName, String reqAddress, String reqNumber, String reqDesc, String reqDTI, String reqSEC, String reqUserMail, String reqUserId) {
-        this.reqName = reqName;
+    public RequestModel(String reqAddress, String reqBarangay,String reqDesc,String reqName,String reqNumber,String reqUserId, Date reqDate) {
         this.reqAddress = reqAddress;
-        this.reqNumber = reqNumber;
+        this.reqBarangay = reqBarangay;
         this.reqDesc = reqDesc;
-        this.reqDTI = reqDTI;
-        this.reqSEC = reqSEC;
-        this.reqUserMail = reqUserMail;
-        this.reqUserId = reqUserId;
-    }
-
-    public String getReqName() {
-        return reqName;
-    }
-
-    public void setReqName(String reqName) {
         this.reqName = reqName;
+        this.reqNumber = reqNumber;
+        this.reqUserId = reqUserId;
+        this.reqDate = reqDate;
     }
+
+    @DocumentId
+    public String getDocId() {return docId;}
+
+    @DocumentId
+    public void setDocId(String docId) {this.docId = docId;}
 
     public String getReqAddress() {
         return reqAddress;
@@ -32,12 +43,12 @@ public class RequestModel {
         this.reqAddress = reqAddress;
     }
 
-    public String getReqNumber() {
-        return reqNumber;
+    public String getReqBarangay() {
+        return reqBarangay;
     }
 
-    public void setReqNumber(String reqNumber) {
-        this.reqNumber = reqNumber;
+    public void setReqBarangay(String reqBarangay) {
+        this.reqBarangay = reqBarangay;
     }
 
     public String getReqDesc() {
@@ -48,28 +59,20 @@ public class RequestModel {
         this.reqDesc = reqDesc;
     }
 
-    public String getReqDTI() {
-        return reqDTI;
+    public String getReqName() {
+        return reqName;
     }
 
-    public void setReqDTI(String reqDTI) {
-        this.reqDTI = reqDTI;
+    public void setReqName(String reqName) {
+        this.reqName = reqName;
     }
 
-    public String getReqSEC() {
-        return reqSEC;
+    public String getreqNumber() {
+        return reqNumber;
     }
 
-    public void setReqSEC(String reqSEC) {
-        this.reqSEC = reqSEC;
-    }
-
-    public String getReqUserMail() {
-        return reqUserMail;
-    }
-
-    public void setReqUserMail(String reqUserMail) {
-        this.reqUserMail = reqUserMail;
+    public void setReqNumber(String reqNumber) {
+        this.reqNumber = reqNumber;
     }
 
     public String getReqUserId() {
@@ -79,4 +82,14 @@ public class RequestModel {
     public void setReqUserId(String reqUserId) {
         this.reqUserId = reqUserId;
     }
+
+    public Date getReqDate() {
+        return reqDate;
+    }
+
+    public void setReqDate(Date reqDate) {
+        this.reqDate = reqDate;
+    }
+
+
 }

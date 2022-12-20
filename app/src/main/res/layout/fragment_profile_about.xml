@@ -22,7 +22,7 @@
             app:cardElevation="30dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@+id/prof_img"
@@ -37,6 +37,7 @@
                     android:paddingTop="8dp">
 
                     <TextView
+                        android:id="@+id/titletext1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Personal Profile     |"
@@ -46,6 +47,7 @@
 
                 </LinearLayout>
                 <TextView
+                    android:id="@+id/titletext2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/first_name"
@@ -58,6 +60,7 @@
                     android:text="@string/first_name"
                     android:textColor="@android:color/black" />
                 <TextView
+                    android:id="@+id/titletext3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/last_name"

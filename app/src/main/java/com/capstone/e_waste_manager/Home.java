@@ -840,6 +840,9 @@ public class Home extends AppCompatActivity{
                             if (Objects.equals(documentSnapShot.getBoolean("isReq"), true)){
                                 request.setEnabled(false);
                                 requesttext.setText("Partnership request submitted. Wait for approval.");
+                            } else if (Objects.equals(documentSnapShot.getBoolean("isReq"), false)){
+                                request.setEnabled(true);
+                                requesttext.setText("Partnership request denied. Try again");
                             }
                         } else{
                             request.setVisibility(View.GONE);

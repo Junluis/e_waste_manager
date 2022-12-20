@@ -39,7 +39,7 @@ public class ProfileAboutFragment extends Fragment {
         // Required empty public constructor
     }
 
-    TextView prof_firstname, prof_lastname, prof_email, prof_addressHouse, prof_Barangay;
+    TextView prof_firstname, prof_lastname, prof_email, prof_addressHouse, prof_Barangay, titletext1, titletext2, titletext3;
 
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
@@ -58,6 +58,10 @@ public class ProfileAboutFragment extends Fragment {
         prof_addressHouse = view.findViewById(R.id.prof_addressHouse);
         prof_Barangay = view.findViewById(R.id.prof_Barangay);
 
+        titletext1 = view.findViewById(R.id.titletext1);
+        titletext2 = view.findViewById(R.id.titletext2);
+        titletext3 = view.findViewById(R.id.titletext3);
+
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -67,15 +71,30 @@ public class ProfileAboutFragment extends Fragment {
         documentReference.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
-                prof_firstname.setText(documentSnapShot.getString("FirstName"));
-                prof_lastname.setText(documentSnapShot.getString("LastName"));
-                prof_email.setText(documentSnapShot.getString("Email"));
-                prof_addressHouse.setText(documentSnapShot.getString("HouseAddress"));
-                prof_Barangay.setText(documentSnapShot.getString("Barangay"));
+
+                if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
+                    titletext1.setText("Organization Profile");
+                    titletext2.setText("Organization Name");
+                    titletext3.setText("Description");
+
+                    prof_firstname.setText(documentSnapShot.getString("OrganizationName"));
+                    prof_lastname.setText(documentSnapShot.getString("OrganizationDesc"));
+                    prof_email.setText(documentSnapShot.getString("Email"));
+                    prof_addressHouse.setText(documentSnapShot.getString("HouseAddress"));
+                    prof_Barangay.setText(documentSnapShot.getString("Barangay"));
+                } else{
+                    prof_firstname.setText(documentSnapShot.getString("FirstName"));
+                    prof_lastname.setText(documentSnapShot.getString("LastName"));
+                    prof_email.setText(documentSnapShot.getString("Email"));
+                    prof_addressHouse.setText(documentSnapShot.getString("HouseAddress"));
+                    prof_Barangay.setText(documentSnapShot.getString("Barangay"));
+                }
             }
         });
 
 
         return view;
     }
+
+
 }

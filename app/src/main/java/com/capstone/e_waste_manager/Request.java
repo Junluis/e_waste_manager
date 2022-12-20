@@ -35,6 +35,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -269,13 +270,11 @@ public class Request extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
                 if(s.toString().isEmpty()){
-                    if (tilDesc.getChildCount() == 2)
-                        tilDesc.getChildAt(1).setVisibility(View.VISIBLE);
                     tilDesc.setError("required*");
+                } else if(!(s.toString().length() <= 160)){
+                    tilDesc.setError("Oops! You run out of characters.");
                 }else{
                     tilDesc.setError(null);
-                    if (tilDesc.getChildCount() == 2)
-                        tilDesc.getChildAt(1).setVisibility(View.GONE);
                 }
             }
             @Override
@@ -329,13 +328,14 @@ public class Request extends AppCompatActivity {
                 String id = task.getResult().getString("Partner");
                 if(Objects.equals(id, "0")) {
                     Map<String, Object> doc = new HashMap<>();
-                    doc.put("accepted", false);
+                    doc.put("status", "pending");
                     doc.put("reqName", prName.getText().toString().trim());
                     doc.put("reqAddress", prAddress.getText().toString().trim());
                     doc.put("reqBarangay", regBarangay.getText().toString().trim());
                     doc.put("reqNumber", prNumber.getText().toString().trim());
                     doc.put("reqDesc", prDesc.getText().toString().trim());
                     doc.put("reqUserId", userID);
+                    doc.put("reqDate", FieldValue.serverTimestamp());
 
                     fStore.collection("Request").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                         @Override
