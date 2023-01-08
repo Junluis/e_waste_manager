@@ -498,8 +498,6 @@ public class DisposalLocation extends AppCompatActivity implements LocationListe
                     Intent intent = new Intent(itemView.getContext(), GoogleMapView.class);
                     intent.putExtra("latitude1", Double.parseDouble(latitude.getText().toString()));
                     intent.putExtra("longitude1", Double.parseDouble(longitude.getText().toString()));
-                    intent.putExtra("latitude2", Double.parseDouble(currentLocation.getLatitude()+""));
-                    intent.putExtra("longitude2", Double.parseDouble(currentLocation.getLongitude()+""));
                     itemView.getContext().startActivity(intent);
                 }
             });

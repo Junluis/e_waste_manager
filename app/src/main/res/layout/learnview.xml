@@ -129,8 +129,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Read more"
-                android:textColor="@color/blue" />
+                android:text="Read more" />
 
             <soup.neumorphism.NeumorphCardView
                 android:id="@+id/ebook"
@@ -147,28 +146,35 @@
 
                     <ImageView
                         android:id="@+id/imageView2"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@drawable/ic__swipe"
                         android:elevation="5dp"
-                        android:visibility="gone"
-                        app:tint="@color/green1"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginStart="10dp"
+                        android:src="@drawable/ic__swipe"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
                         android:id="@+id/imageView3"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@drawable/ic__swiperight"
                         android:elevation="5dp"
-                        android:visibility="gone"
-                        app:tint="@color/green1"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/ic__swiperight"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="PDF Viewer"
+                        android:gravity="center"
+                        android:elevation="5dp"
+                        android:layout_marginHorizontal="20dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <LinearLayout

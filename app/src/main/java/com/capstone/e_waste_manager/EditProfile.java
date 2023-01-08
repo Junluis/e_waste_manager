@@ -169,7 +169,7 @@ public class EditProfile extends AppCompatActivity {
 
                     tilOrgDesc.setVisibility(View.VISIBLE);
                     tilLastName.setVisibility(View.GONE);
-                    regFirstName.setHint("Organization Name");
+                    tilFirstName.setHint("Organization Name");
                     tilDateOfBirth.setVisibility(View.GONE);
                     textView5.setText("Organization Details");
 

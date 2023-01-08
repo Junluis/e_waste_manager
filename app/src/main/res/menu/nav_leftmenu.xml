@@ -20,6 +20,11 @@
                 android:icon="@drawable/ic__pin"
                 android:title="Add Disposal Area"
                 android:visible="false"/>
+
+            <item
+                android:id="@+id/donate"
+                android:icon="@drawable/ic__donate"
+                android:title="@string/donate"/>
         </menu>
     </item>
 

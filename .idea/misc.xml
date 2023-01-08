@@ -69,6 +69,7 @@
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__pin.xml" value="0.201" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__recieveddonation.xml" value="0.201" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__reply.xml" value="0.307" />
+        <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__token.xml" value="0.2225" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__upvotefalse.xml" value="0.307" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__upvotetrue.xml" value="0.307" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/ic__user_icon.xml" value="0.229" />
@@ -89,11 +90,13 @@
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/vote_toggle.xml" value="0.307" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/drawable/zoom_toggle.xml" value="0.201" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_add_disposal.xml" value="0.25" />
+        <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_confirm_donation.xml" value="0.33" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_disposal_location.xml" value="0.358695652173913" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_donate.xml" value="0.358695652173913" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_donate_transactions.xml" value="0.358695652173913" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_edit_profile.xml" value="0.33" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_google_map_view.xml" value="0.36096014492753625" />
+        <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_guide_search.xml" value="0.30434782608695654" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_home.xml" value="0.33" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_home_view.xml" value="0.4932014833127318" />
         <entry key="..\:/Users/jdtor/Documents/GitHub/e_waste_manager/app/src/main/res/layout/activity_learn.xml" value="0.25" />

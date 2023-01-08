@@ -296,9 +296,11 @@ public class Home extends AppCompatActivity{
                     prof_email_header.setText(documentSnapShot.getString("Email"));
                     prof_bio_header.setText(documentSnapShot.getString("Bio"));
 
-                    if(prof_bio_header.getText().toString().equals("")){
-                        prof_bio_header.setText("Add bio...");
-                        prof_bio_header.setTextColor(Color.parseColor("#aaaaaa"));
+                    if(!prof_bio_header.getText().toString().equals("")){
+                        prof_bio_header.setTextColor(Color.parseColor("#000000"));
+                        prof_bio_header.setVisibility(View.VISIBLE);
+                    }else{
+                        prof_bio_header.setVisibility(View.GONE);
                     }
                     if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
                         partnerBadge_header.setVisibility(View.VISIBLE);
@@ -407,6 +409,11 @@ public class Home extends AppCompatActivity{
                     case R.id.adddisposalpg:
                     {
                         startActivity(new Intent(Home.this, AddDisposal.class));
+                        break;
+                    }
+                    case R.id.donate:
+                    {
+                        startActivity(new Intent(Home.this, Donate.class));
                         break;
                     }
                 }

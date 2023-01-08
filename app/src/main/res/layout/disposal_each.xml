@@ -76,6 +76,7 @@
                     android:layout_height="wrap_content">
 
                     <ScrollView
+                        android:id="@+id/cardscroll"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintHeight_max="400dp"
