@@ -312,6 +312,7 @@ public class Post extends AppCompatActivity {
                 String username = task.getResult().getString("Username");
                 Map<String, Object> doc = new HashMap<>();
                 doc.put("homeTitle", postTitle.getText().toString().trim());
+                doc.put("delete", false);
                 doc.put("homeBody", postBody.getText().toString().trim());
                 doc.put("homeAuthor", username);
                 doc.put("homeAuthorUid", fAuth.getCurrentUser().getUid());

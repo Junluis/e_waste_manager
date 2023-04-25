@@ -80,8 +80,8 @@ public class EditProfile extends AppCompatActivity {
 
     Uri profileImageUri;
 
-    TextInputLayout tilUsername, tilEmail, tilBio, tilFirstName, tilLastName, tilDateOfBirth, tilAddressHouse, tilBarangay, tilOrgDesc;
-    EditText regUsername, regEmail, regBio, regFirstName, regLastName, regDateOfBirth, regAddressHouse, regOrgDesc;
+    TextInputLayout tilUsername, tilEmail, tilBio, tilFirstName, tilLastName, tilDateOfBirth, tilAddressHouse, tilBarangay, tilOrgDesc, tilMobileNumber;
+    EditText regUsername, regEmail, regBio, regFirstName, regLastName, regDateOfBirth, regAddressHouse, regOrgDesc, regMobileNumber;
 
     TextView textView5;
 
@@ -118,6 +118,7 @@ public class EditProfile extends AppCompatActivity {
         regDateOfBirth = findViewById(R.id.regDateOfBirth);
         regAddressHouse = findViewById(R.id.regAddressHouse);
         regBarangay = findViewById(R.id.regBarangay);
+        regMobileNumber = findViewById(R.id.regMobileNumber);
 
         textView5 = findViewById(R.id.textView5);
         regOrgDesc = findViewById(R.id.regOrgDesc);
@@ -130,6 +131,7 @@ public class EditProfile extends AppCompatActivity {
         tilDateOfBirth = findViewById(R.id.tilDateOfBirth);
         tilAddressHouse = findViewById(R.id.tilAddressHouse);
         tilBarangay = findViewById(R.id.tilBarangay);
+        tilMobileNumber = findViewById(R.id.tilMobileNumber);
 
         tilOrgDesc = findViewById(R.id.tilOrgDesc);
 
@@ -162,6 +164,7 @@ public class EditProfile extends AppCompatActivity {
                     regEmail.setText(documentSnapShot.getString("Email"));
                     regFirstName.setText(documentSnapShot.getString("OrganizationName"));
                     regOrgDesc.setText(documentSnapShot.getString("OrganizationDesc"));
+                    regMobileNumber.setText(documentSnapShot.getString("Number"));
 
                     regBio.setText(documentSnapShot.getString("Bio"));
                     regAddressHouse.setText(documentSnapShot.getString("HouseAddress"));
@@ -200,6 +203,7 @@ public class EditProfile extends AppCompatActivity {
                     regFirstName.setText(documentSnapShot.getString("FirstName"));
                     regLastName.setText(documentSnapShot.getString("LastName"));
                     regDateOfBirth.setText(documentSnapShot.getString("DateOfBirth"));
+                    regMobileNumber.setText(documentSnapShot.getString("Number"));
 
                     regBio.setText(documentSnapShot.getString("Bio"));
                     regAddressHouse.setText(documentSnapShot.getString("HouseAddress"));
@@ -523,6 +527,29 @@ public class EditProfile extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+        regMobileNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                if(s.toString().startsWith("0")){
+                    regMobileNumber.setText(s.toString().replaceFirst("0",""));
+                }else if(s.length() > 10){
+                    if (tilMobileNumber.getChildCount() == 2)
+                        tilMobileNumber.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilMobileNumber.setError("Invalid number.");
+                }else{
+                    tilMobileNumber.setError(null);
+                    if (tilMobileNumber.getChildCount() == 2)
+                        tilMobileNumber.getChildAt(1).setVisibility(View.GONE);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         regBarangay.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
@@ -576,7 +603,7 @@ public class EditProfile extends AppCompatActivity {
                     if(regFirstName.getText().toString().length() == 0)
                         regFirstName.setText("");
                     regFirstName.requestFocus();
-                }else if((regLastName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilLastName.getError())) && tilLastName.getVisibility() == View.VISIBLE){
+                }else if(((regLastName.getText().toString().length() == 0 || !TextUtils.isEmpty(tilLastName.getError()))) && tilLastName.getVisibility() == View.VISIBLE){
                     if(regLastName.getText().toString().length() == 0)
                         regLastName.setText("");
                     regLastName.requestFocus();
@@ -584,6 +611,11 @@ public class EditProfile extends AppCompatActivity {
                     if(regBio.getText().toString().length() == 0)
                         regBio.setText("");
                     regBio.requestFocus();
+                }else if((regMobileNumber.getText().toString().length() != 10 && regMobileNumber.getText().toString().length() != 0) || !TextUtils.isEmpty(tilMobileNumber.getError())){
+                    if (tilMobileNumber.getChildCount() == 2)
+                        tilMobileNumber.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilMobileNumber.setError("Invalid number.");
+                    regMobileNumber.requestFocus();
                 }else if(!TextUtils.isEmpty(tilBarangay.getError())){
                     if(regBarangay.getText().toString().length() == 0)
                         regBarangay.setText("");
@@ -607,6 +639,7 @@ public class EditProfile extends AppCompatActivity {
                                 edited.put("LastName", regLastName.getText().toString().trim());
                                 edited.put("DateOfBirth", regDateOfBirth.getText().toString());
                                 edited.put("Bio", regBio.getText().toString().trim());
+                                edited.put("Number", regMobileNumber.getText().toString().trim());
                                 edited.put("HouseAddress", regAddressHouse.getText().toString().trim());
                                 edited.put("Barangay", regBarangay.getText().toString());
                             } else{
@@ -615,6 +648,7 @@ public class EditProfile extends AppCompatActivity {
                                 edited.put("OrganizationName", regFirstName.getText().toString().trim());
                                 edited.put("OrganizationDesc", regOrgDesc.getText().toString().trim());
                                 edited.put("Bio", regBio.getText().toString().trim());
+                                edited.put("Number", regMobileNumber.getText().toString().trim());
                                 edited.put("HouseAddress", regAddressHouse.getText().toString().trim());
                                 edited.put("Barangay", regBarangay.getText().toString());
                             }

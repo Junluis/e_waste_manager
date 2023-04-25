@@ -1,5 +1,6 @@
 package com.capstone.e_waste_manager;
 
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -21,6 +22,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -28,6 +30,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -107,6 +110,16 @@ public class Donate extends AppCompatActivity {
     FirestoreRecyclerAdapter adapter;
     FirebaseUser user;
 
+    ImageView deviceimg;
+    Bitmap bitmap;
+    Bundle bundle;
+    ActivityResultLauncher<Intent> activityResultLauncher;
+    private static final int CAMERA_PERMISSION_CODE = 100;
+
+    FirestoreRecyclerOptions<DisposalModel> options2;
+
+    boolean hasImage;
+
     private static final float MILLISECONDS_PER_INCH = 50f; //default is 25f (bigger = slower)
 
     @Override
@@ -135,6 +148,40 @@ public class Donate extends AppCompatActivity {
         tilDeviceAge = findViewById(R.id.tilDeviceAge);
         tilDeviceType = findViewById(R.id.tilDeviceType);
 
+        deviceimg = findViewById(R.id.deviceimg);
+
+        if (iscamerapresent()) {
+            camerapermission();
+        } else {
+            Toast.makeText(this, "Camera not detected", Toast.LENGTH_SHORT).show();
+        }
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            bundle = result.getData().getExtras();
+                            bitmap = (Bitmap) bundle.get("data");
+                            deviceimg.setImageBitmap(bitmap);
+                            hasImage = true;
+                        }
+                    }
+                });
+        deviceimg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    activityResultLauncher.launch(intent);
+                } else {
+                    Toast.makeText(Donate.this, "there is no support this action",
+                            Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
         spinner = findViewById(R.id.spinner);
         ArrayAdapter<String> calendricaladapter = new ArrayAdapter<String>(Donate.this, android.R.layout.simple_spinner_dropdown_item, calendrical);
         calendricaladapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -159,6 +206,10 @@ public class Donate extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onBackPressed();
+
+                if (adapter != null) {
+                    adapter.stopListening();
+                }
             }
         });
 
@@ -266,7 +317,7 @@ public class Donate extends AppCompatActivity {
                 querytags = fStore.collection("DisposalLocations")
                         .orderBy("barangay", Query.Direction.ASCENDING).whereArrayContains("donationtags", regDeviceType.getText().toString());
 
-                FirestoreRecyclerOptions<DisposalModel> options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
+                options2 = new FirestoreRecyclerOptions.Builder<DisposalModel>()
                         .setQuery(querytags, DisposalModel.class)
                         .build();
                 adapter.updateOptions(options2);
@@ -430,7 +481,9 @@ public class Donate extends AppCompatActivity {
         regNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(regDeviceType.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDeviceType.getError())){
+                if(!hasImage){
+                    Toast.makeText(Donate.this, "Take a photo of the device.", Toast.LENGTH_SHORT).show();
+                } else if(regDeviceType.getText().toString().length() == 0 || !TextUtils.isEmpty(tilDeviceType.getError())){
                     if(regDeviceType.getText().toString().length() == 0)
                         regDeviceType.setText("");
                     regDeviceType.requestFocus();
@@ -451,7 +504,24 @@ public class Donate extends AppCompatActivity {
                         regDeviceAge.setText("");
                     regDeviceAge.requestFocus();
                 } else {
-                    startActivity(new Intent(getApplicationContext(), ConfirmDonation.class));
+                    Intent i=new Intent(getApplicationContext(),ConfirmDonation.class);
+
+                    i.putExtra("Bitmap", bitmap);
+
+                    i.putExtra("devicetype",regDeviceType.getText().toString());
+                    i.putExtra("brand",regBrand.getText().toString());
+                    i.putExtra("model",regModel.getText().toString());
+                    i.putExtra("condition",regCondition.getText().toString());
+                    i.putExtra("deviceage",regDeviceAge.getText().toString()+" "+spinner.getSelectedItem().toString());
+
+                    View v = snapHelper.findSnapView(linearLayoutManager);
+                    int pos = linearLayoutManager.getPosition(v);
+
+                    String key = options2.getSnapshots().getSnapshot(pos).getId();
+
+                    i.putExtra("docid",key);
+
+                    startActivity(i);
                 }
             }
         });
@@ -647,13 +717,13 @@ public class Donate extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-
         adapter.startListening();
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onBackPressed() {
+        super.onBackPressed();
+
         if (adapter != null) {
             adapter.stopListening();
         }
@@ -665,6 +735,18 @@ public class Donate extends AppCompatActivity {
         existingChip.setText(text);
         existingChip.setClickable(false);
         group.addView(existingChip);
+    }
+
+    private boolean iscamerapresent() {
+        return getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+    }
+
+    private void camerapermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_CODE);
+        }
     }
 
 

@@ -1,5 +1,7 @@
 package com.capstone.e_waste_manager;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,8 +25,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -33,6 +38,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,9 +85,9 @@ import io.github.ponnamkarthik.richlinkpreview.RichLinkViewTwitter;
 import io.github.ponnamkarthik.richlinkpreview.ViewListener;
 import soup.neumorphism.NeumorphFloatingActionButton;
 
-public class HomeView extends AppCompatActivity {
+public class HomeView extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
-    ImageButton bckBtn;
+    ImageButton bckBtn, more;
     Button commentBtn;
     ImageView prof_img, partnerBadge, postImg;
     EditText pComment;
@@ -139,6 +145,7 @@ public class HomeView extends AppCompatActivity {
         tilpComment = findViewById(R.id.tilpComment);
         commentBtn = findViewById(R.id.commentBtn);
         bckBtn = findViewById(R.id.bckBtn);
+        more = findViewById(R.id.more);
         commentRecycler = findViewById(R.id.commentRecycler);
         insetaddcomment = findViewById(R.id.insetaddcomment);
 
@@ -370,6 +377,22 @@ public class HomeView extends AppCompatActivity {
         pdocId.setText(model.docId);
         pBody.setText(model.getHomeBody());
         urltext.setText(model.url);
+
+
+        more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (user != null && !user.isAnonymous()) {
+                    if (pAuthorUid.getText().toString().equals(user.getUid())){
+                        postpopup(more, true, pdocId.getText().toString());
+                    } else{
+                        postpopup(more, false, pdocId.getText().toString());
+                    }
+                } else{
+                    ShowPopup();
+                }
+            }
+        });
 
         if (pBody.getText().length() == 0){
             pBody.setVisibility(View.GONE);
@@ -981,6 +1004,150 @@ public class HomeView extends AppCompatActivity {
     public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = ((ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
+    public void postpopup(View v, boolean isUser, String docid){
+        PopupMenu popup = new PopupMenu(this, v, Gravity.END);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.post_options);
+        confirmdocid=docid;
+        if (!isUser){
+            popup.getMenu().findItem(R.id.delete).setVisible(false);
+            popup.getMenu().findItem(R.id.report).setVisible(true);
+
+            FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+            DocumentReference docIdRef = rootRef.collection("Post").document(confirmdocid).collection("report").document(user.getUid());
+            docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            popup.getMenu().findItem(R.id.report).setEnabled(false);
+                        } else {
+                            popup.getMenu().findItem(R.id.report).setEnabled(true);
+                        }
+                    } else {
+                        Log.d(TAG, "Failed with: ", task.getException());
+                    }
+                }
+            });
+        }else{
+            popup.getMenu().findItem(R.id.delete).setVisible(true);
+            popup.getMenu().findItem(R.id.report).setVisible(false);
+        }
+        popup.show();
+    }
+
+    String confirmdocid;
+
+    public void confirmPopup(String Title, String subtitle, String btn){
+        Button registerbutton, loginButton;
+        NeumorphFloatingActionButton close_popup;
+        guestDialog.setContentView(R.layout.custom_popup_guest);
+        TextView popup_title, popup_subtitle;
+
+        close_popup = (NeumorphFloatingActionButton) guestDialog.findViewById(R.id.close_popup);
+        loginButton = (Button) guestDialog.findViewById(R.id.loginButton);
+        registerbutton = (Button) guestDialog.findViewById(R.id.registerbutton);
+        popup_title = (TextView) guestDialog.findViewById(R.id.popup_title);
+        popup_subtitle = (TextView) guestDialog.findViewById(R.id.popup_subtitle);
+
+        loginButton.setText("Confirm");
+        registerbutton.setText("Back");
+        popup_title.setText(Title);
+        popup_subtitle.setText(subtitle);
+
+        close_popup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                guestDialog.dismiss();
+            }
+        });
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Objects.equals(btn, "delete")){
+                    delete(confirmdocid);
+                }else{
+                    report(confirmdocid);
+                }
+                guestDialog.dismiss();
+            }
+        });
+        registerbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                guestDialog.dismiss();
+            }
+        });
+        guestDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        guestDialog.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.delete:
+                confirmPopup("Delete post?", "This action cannot be undone.", "delete");
+                return true;
+            case R.id.report:
+                confirmPopup("Report post?", "This action cannot be undone.", "report");
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void delete(String docId){
+        DocumentReference status = fStore.collection("Post").document(docId);
+        Map<String, Object> edited = new HashMap<>();
+
+        edited.put("delete", true);
+
+        status.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(HomeView.this, "Post deleted", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(HomeView.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        onBackPressed();
+    }
+
+    private void report(String docId){
+
+        Map<String, Object> vote = new HashMap<>();
+        vote.put("report", true);
+
+        fStore.collection("Post").document(docId).collection("report")
+                .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                    }
+                });
+
+
+        DocumentReference status = fStore.collection("Post").document(docId);
+        Map<String, Object> edited = new HashMap<>();
+
+        edited.put("report", FieldValue.increment(1));
+
+        status.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(HomeView.this, "Post reported", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(HomeView.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

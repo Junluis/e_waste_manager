@@ -56,6 +56,8 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation 'es.voghdev.pdfviewpager:library:1.1.2'
 
+    implementation 'com.github.stfalcon-studio:StfalconImageViewer:v1.0.1'
+
     implementation('androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1') {
         because 'insert explanation here'
     }

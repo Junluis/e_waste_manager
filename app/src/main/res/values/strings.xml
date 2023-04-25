@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">e_waste_manager</string>
+    <string name="app_name">E-waste Manager</string>
     <string name="login_logo">Login Logo</string>
     <string name="e_waste_manager">E-Waste Manager</string>
     <string name="hint">hint</string>

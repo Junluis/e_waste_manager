@@ -25,6 +25,11 @@
                 android:id="@+id/donate"
                 android:icon="@drawable/ic__donate"
                 android:title="@string/donate"/>
+
+            <item
+                android:id="@+id/donatehistorypg"
+                android:icon="@drawable/ic__donationhistory"
+                android:title="Donation History"/>
         </menu>
     </item>
 

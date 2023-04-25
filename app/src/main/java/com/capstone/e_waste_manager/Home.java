@@ -28,8 +28,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,6 +53,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -76,6 +79,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -85,6 +89,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -98,7 +103,7 @@ import kotlin.jvm.functions.Function1;
 import soup.neumorphism.NeumorphFloatingActionButton;
 
 
-public class Home extends AppCompatActivity{
+public class Home extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     //firebase
     FirebaseFirestore fStore;
@@ -287,14 +292,30 @@ public class Home extends AppCompatActivity{
             TextView prof_bio_header = (TextView) hView.findViewById(R.id.prof_bio);
             ImageView prof_img_header = (ImageView) hView.findViewById(R.id.prof_img);
             ImageView partnerBadge_header = (ImageView) hView.findViewById(R.id.partnerBadge);
+            TextView empoints = (TextView) hView.findViewById(R.id.empoints);
+            Button redeem = (Button) hView.findViewById(R.id.redeem);
+
+            redeem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(Home.this, Rewards.class));
+                }
+            });
 
             DocumentReference documentReference = fStore.collection("Users").document(user.getUid());
             documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+                @SuppressLint("SetTextI18n")
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
+                    assert documentSnapShot != null;
                     prof_username_header.setText(documentSnapShot.getString("Username"));
                     prof_email_header.setText(documentSnapShot.getString("Email"));
                     prof_bio_header.setText(documentSnapShot.getString("Bio"));
+                    if(documentSnapShot.getDouble("EMPoints") != null){
+                        empoints.setText(Objects.requireNonNull(documentSnapShot.getDouble("EMPoints")).toString());
+                    }else{
+                        empoints.setText("0");
+                    }
 
                     if(!prof_bio_header.getText().toString().equals("")){
                         prof_bio_header.setTextColor(Color.parseColor("#000000"));
@@ -305,10 +326,14 @@ public class Home extends AppCompatActivity{
                     if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
                         partnerBadge_header.setVisibility(View.VISIBLE);
                         navView_menu.getMenu().findItem(R.id.adddisposalpg).setVisible(true);
+                        navView_menu.getMenu().findItem(R.id.donate).setVisible(false);
+                        redeem.setVisibility(View.GONE);
                     } else if (Objects.equals(documentSnapShot.getString("Partner"), "0")){
                         partnerBadge_header.setVisibility(View.GONE);
+                        redeem.setVisibility(View.VISIBLE);
                     } else{
                         navView_profile.getMenu().findItem(R.id.notificationpg).setVisible(true);
+                        redeem.setVisibility(View.VISIBLE);
                     }
                     StorageReference profileRef = storageReference.child("ProfileImage/"+fAuth.getCurrentUser().getUid()+"/profile.jpg");
                     profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -317,7 +342,6 @@ public class Home extends AppCompatActivity{
                             Picasso.get().load(uri).into(prof_img_header);
                         }
                     });
-
                 }
             });
             StorageReference profileRef = storageReference.child("ProfileImage/"+user.getUid()+"/profile.jpg");
@@ -413,7 +437,20 @@ public class Home extends AppCompatActivity{
                     }
                     case R.id.donate:
                     {
-                        startActivity(new Intent(Home.this, Donate.class));
+                        if (user != null && !user.isAnonymous()) {
+                            startActivity(new Intent(Home.this, Donate.class));
+                        } else{
+                            ShowPopup();
+                        }
+                        break;
+                    }
+                    case R.id.donatehistorypg:
+                    {
+                        if (user != null && !user.isAnonymous()) {
+                            startActivity(new Intent(Home.this, DonateTransactions.class));
+                        } else{
+                            ShowPopup();
+                        }
                         break;
                     }
                 }
@@ -428,8 +465,8 @@ public class Home extends AppCompatActivity{
         homeRecycler.setItemAnimator(null);
 
         //forums
-        query = fStore.collection("Post")
-                .orderBy("homePostDate", Query.Direction.DESCENDING)
+        query = fStore.collection("Post").orderBy("delete", Query.Direction.DESCENDING)
+                .orderBy("homePostDate", Query.Direction.DESCENDING).whereNotEqualTo("delete", true)
                 .limit(3);
 
         config = new PagingConfig(/* page size */ 2, /* prefetchDistance */ 2,
@@ -525,6 +562,7 @@ public class Home extends AppCompatActivity{
         ImageView prof_img, partnerBadge, postImg;
         HomeModel model;
         FrameLayout urllink;
+        ImageButton more;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -546,6 +584,7 @@ public class Home extends AppCompatActivity{
             urllink = itemView.findViewById(R.id.urllink);
             postImg = itemView.findViewById(R.id.postImg);
             urltext = itemView.findViewById(R.id.urltext);
+            more = itemView.findViewById(R.id.more);
 
             addcoment.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -578,6 +617,21 @@ public class Home extends AppCompatActivity{
                 String timeago = timeAgo2.covertTimeToText(homeModel.getHomePostDate().toString());
                 timestamp.setText(timeago);
             }
+
+            more.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (user != null && !user.isAnonymous()) {
+                        if (homeModel.homeAuthorUid.equals(user.getUid())){
+                            postpopup(more, true, homeModel.docId);
+                        } else{
+                            postpopup(more, false, homeModel.docId);
+                        }
+                    } else{
+                        ShowPopup();
+                    }
+                }
+            });
 
             if (body.getText().length() == 0){
                 body.setVisibility(View.GONE);
@@ -981,5 +1035,149 @@ public class Home extends AppCompatActivity{
         adapter.startListening();
         adapter.refresh();
         swipeRefresh.setRefreshing(false);
+    }
+
+    public void postpopup(View v, boolean isUser, String docid){
+        PopupMenu popup = new PopupMenu(this, v, Gravity.END);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.post_options);
+        confirmdocid=docid;
+        if (!isUser){
+            popup.getMenu().findItem(R.id.delete).setVisible(false);
+            popup.getMenu().findItem(R.id.report).setVisible(true);
+
+            FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+            DocumentReference docIdRef = rootRef.collection("Post").document(confirmdocid).collection("report").document(user.getUid());
+            docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            popup.getMenu().findItem(R.id.report).setEnabled(false);
+                        } else {
+                            popup.getMenu().findItem(R.id.report).setEnabled(true);
+                        }
+                    } else {
+                        Log.d(TAG, "Failed with: ", task.getException());
+                    }
+                }
+            });
+        }else{
+            popup.getMenu().findItem(R.id.delete).setVisible(true);
+            popup.getMenu().findItem(R.id.report).setVisible(false);
+        }
+        popup.show();
+    }
+
+    String confirmdocid;
+
+    public void confirmPopup(String Title, String subtitle, String btn){
+        Button registerbutton, loginButton;
+        NeumorphFloatingActionButton close_popup;
+        guestDialog.setContentView(R.layout.custom_popup_guest);
+        TextView popup_title, popup_subtitle;
+
+        close_popup = (NeumorphFloatingActionButton) guestDialog.findViewById(R.id.close_popup);
+        loginButton = (Button) guestDialog.findViewById(R.id.loginButton);
+        registerbutton = (Button) guestDialog.findViewById(R.id.registerbutton);
+        popup_title = (TextView) guestDialog.findViewById(R.id.popup_title);
+        popup_subtitle = (TextView) guestDialog.findViewById(R.id.popup_subtitle);
+
+        loginButton.setText("Confirm");
+        registerbutton.setText("Back");
+        popup_title.setText(Title);
+        popup_subtitle.setText(subtitle);
+
+        close_popup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                guestDialog.dismiss();
+            }
+        });
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Objects.equals(btn, "delete")){
+                    delete(confirmdocid);
+                }else{
+                    report(confirmdocid);
+                }
+                guestDialog.dismiss();
+            }
+        });
+        registerbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                guestDialog.dismiss();
+            }
+        });
+        guestDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        guestDialog.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.delete:
+                confirmPopup("Delete post?", "This action cannot be undone.", "delete");
+                return true;
+            case R.id.report:
+                confirmPopup("Report post?", "This action cannot be undone.", "report");
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void delete(String docId){
+        DocumentReference status = fStore.collection("Post").document(docId);
+        Map<String, Object> edited = new HashMap<>();
+
+        edited.put("delete", true);
+
+        status.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(Home.this, "Post deleted", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(Home.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        refresh();
+    }
+
+    private void report(String docId){
+
+            Map<String, Object> vote = new HashMap<>();
+            vote.put("report", true);
+
+            fStore.collection("Post").document(docId).collection("report")
+                    .document(user.getUid()).set(vote).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                        }
+                    });
+
+
+            DocumentReference status = fStore.collection("Post").document(docId);
+            Map<String, Object> edited = new HashMap<>();
+
+            edited.put("report", FieldValue.increment(1));
+
+            status.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Toast.makeText(Home.this, "Post reported", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(Home.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
+                }
+            });
     }
 }

@@ -172,9 +172,6 @@ public class Login extends AppCompatActivity {
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                }else{
-                    FirebaseAuth.getInstance().signOut();
-                    Toast.makeText(Login.this, "Login Invalid.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
