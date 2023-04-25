@@ -73,9 +73,9 @@ public class ProfileAboutFragment extends Fragment {
             public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
 
                 if(Objects.equals(documentSnapShot.getString("Partner"), "1")){
-                    titletext1.setText("Organization Profile");
-                    titletext2.setText("Organization Name");
-                    titletext3.setText("Description");
+                    titletext1.setText(R.string.orgprof);
+                    titletext2.setText(R.string.orgname);
+                    titletext3.setText(R.string.orgdesc);
 
                     prof_firstname.setText(documentSnapShot.getString("OrganizationName"));
                     prof_lastname.setText(documentSnapShot.getString("OrganizationDesc"));
