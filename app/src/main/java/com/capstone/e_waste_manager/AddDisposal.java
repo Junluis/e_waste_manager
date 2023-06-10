@@ -252,8 +252,8 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
 //                {
 //                    Log.e("Tag",log);
 //                }
-                Collections.sort(disposaltags, String.CASE_INSENSITIVE_ORDER);
                 if (disposaltags != null) {
+                    Collections.sort(disposaltags, String.CASE_INSENSITIVE_ORDER);
                     for (String chipText: disposaltags){
                         addExistingChips(chipText);
                     }
@@ -270,8 +270,8 @@ public class AddDisposal extends AppCompatActivity implements LocationListener{
 //                {
 //                    Log.e("Tag",log);
 //                }
-                Collections.sort(donationtags, String.CASE_INSENSITIVE_ORDER);
                 if (donationtags != null) {
+                    Collections.sort(donationtags, String.CASE_INSENSITIVE_ORDER);
                     for (String chipText: donationtags){
                         addExistingDonationChips(chipText);
                     }

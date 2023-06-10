@@ -178,10 +178,22 @@ public class Register extends AppCompatActivity {
                         tilPassword.getChildAt(1).setVisibility(View.VISIBLE);
                     tilPassword.setError("Use 6 characters or more for your password.");
                     tilPassword.setErrorIconDrawable(0);
+                }else if(!regConfPassword.getText().toString().isEmpty() && s.length() >= 6 && !s.toString().equals(regConfPassword.getText().toString())){
+                    tilPassword.setError(null);
+                    if (tilPassword.getChildCount() == 2)
+                        tilPassword.getChildAt(1).setVisibility(View.GONE);
+
+                    if (tilConfPassword.getChildCount() == 2)
+                        tilConfPassword.getChildAt(1).setVisibility(View.VISIBLE);
+                    tilConfPassword.setError("Password does not match. Try again.");
+                    tilConfPassword.setErrorIconDrawable(0);
                 }else{
                     tilPassword.setError(null);
                     if (tilPassword.getChildCount() == 2)
                         tilPassword.getChildAt(1).setVisibility(View.GONE);
+                    tilConfPassword.setError(null);
+                    if (tilConfPassword.getChildCount() == 2)
+                        tilConfPassword.getChildAt(1).setVisibility(View.GONE);
                 }
             }
             @Override

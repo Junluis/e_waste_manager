@@ -114,6 +114,7 @@ public class Request extends AppCompatActivity {
             public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
                 prAddress.setText(documentSnapShot.getString("HouseAddress"));
                 regBarangay.setText(documentSnapShot.getString("Barangay"));
+                prNumber.setText(documentSnapShot.getString("Number"));
             }
         });
 
@@ -249,10 +250,12 @@ public class Request extends AppCompatActivity {
             }
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                if(s.toString().isEmpty()){
+                if(s.toString().startsWith("0")){
+                    prNumber.setText(s.toString().replaceFirst("0",""));
+                }else if(s.length() > 10){
                     if (tilNumber.getChildCount() == 2)
                         tilNumber.getChildAt(1).setVisibility(View.VISIBLE);
-                    tilNumber.setError("required*");
+                    tilNumber.setError("Invalid number.");
                 }else{
                     tilNumber.setError(null);
                     if (tilNumber.getChildCount() == 2)
