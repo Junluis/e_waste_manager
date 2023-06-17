@@ -304,15 +304,16 @@ public class Home extends AppCompatActivity implements PopupMenu.OnMenuItemClick
 
             DocumentReference documentReference = fStore.collection("Users").document(user.getUid());
             documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-                @SuppressLint("SetTextI18n")
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot documentSnapShot, @Nullable FirebaseFirestoreException error) {
                     assert documentSnapShot != null;
                     prof_username_header.setText(documentSnapShot.getString("Username"));
                     prof_email_header.setText(documentSnapShot.getString("Email"));
                     prof_bio_header.setText(documentSnapShot.getString("Bio"));
-                    if(documentSnapShot.getDouble("EMPoints") != null){
-                        empoints.setText(Objects.requireNonNull(documentSnapShot.getDouble("EMPoints")).toString());
+                    Double points = documentSnapShot.getDouble("EMPoints");
+
+                    if (points != null) {
+                        empoints.setText(points.longValue() +"");
                     }else{
                         empoints.setText("0");
                     }

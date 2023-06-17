@@ -173,4 +173,16 @@
     <string name="orgprof">Organization Profile</string>
     <string name="orgname">Organization Name</string>
     <string name="orgdesc">Description</string>
+    <string name="reward_catalog">You will receive an email once the redemption is successful.</string>
+    <string name="redeem">Redeem</string>
+
+    <string-array name="donationrecycleropt1">
+        <item>All</item>
+        <item>Pending</item>
+        <item>Ongoing</item>
+    </string-array>
+    <string-array name="donationrecycleropt2">
+        <item>Pickup</item>
+        <item>Drop Off</item>
+    </string-array>
 </resources>
