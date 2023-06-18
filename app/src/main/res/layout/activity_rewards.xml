@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/whitebg"
     tools:context=".Rewards">
 
     <RelativeLayout
@@ -101,25 +100,30 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefresh"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:orientation="vertical"
         android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileCard">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/Recycler"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/rewardsTabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_border"
+            app:tabGravity="fill"
+            app:tabIndicatorAnimationMode="elastic" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/rewardPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="70dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-            tools:listitem="@layout/reward_each" />
+            android:background="@color/whitebg" />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

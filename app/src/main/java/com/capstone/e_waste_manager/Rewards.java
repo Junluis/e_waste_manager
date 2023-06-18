@@ -3,22 +3,16 @@ package com.capstone.e_waste_manager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import android.annotation.SuppressLint;
-import android.content.Intent;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager2.widget.ViewPager2;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.capstone.e_waste_manager.adapter.DonationAdapter;
+import com.capstone.e_waste_manager.adapter.RewardAdapter;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -26,30 +20,23 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.Objects;
 
 public class Rewards extends AppCompatActivity {
 
     ImageView closedr;
     TextView empoints;
 
-    RecyclerView recycler;
-    LinearLayoutManager linearLayoutManager;
+    TabLayout rewardsTabLayout;
+    ViewPager2 rewardPager;
+    RewardAdapter adapter;
 
     //firebase
     FirebaseFirestore fStore;
     StorageReference storageReference;
     FirebaseAuth fAuth;
-    FirestoreRecyclerAdapter adapter;
     FirebaseUser user;
-
-    SwipeRefreshLayout swipeRefresh;
-
-    Query query;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +49,11 @@ public class Rewards extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         user = fAuth.getCurrentUser();
 
-        swipeRefresh = findViewById(R.id.swipeRefresh);
-
         closedr = findViewById(R.id.closedr);
         empoints = findViewById(R.id.empoints);
+
+        rewardsTabLayout = findViewById(R.id.rewardsTabLayout);
+        rewardPager = findViewById(R.id.rewardPager);
 
         closedr.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,95 +76,33 @@ public class Rewards extends AppCompatActivity {
             }
         });
 
-        recycler = findViewById(R.id.Recycler);
-        linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        recycler.setLayoutManager(linearLayoutManager);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        adapter = new RewardAdapter(fragmentManager, getLifecycle());
+        rewardPager.setAdapter(adapter);
+        rewardsTabLayout.addTab(rewardsTabLayout.newTab().setText("Available Rewards"));
+        rewardsTabLayout.addTab(rewardsTabLayout.newTab().setText("My Rewards"));
 
-        recycler.setItemAnimator(null);
-
-        query = fStore.collection("Reward");
-
-        FirestoreRecyclerOptions<RewardsModel> options = new FirestoreRecyclerOptions.Builder<RewardsModel>()
-                .setQuery(query, RewardsModel.class)
-                .build();
-
-        adapter = new FirestoreRecyclerAdapter<RewardsModel, ViewHolder>(options) {
+        rewardsTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull RewardsModel model) {
-                holder.bind(model);
+            public void onTabSelected(TabLayout.Tab tab) {
+                rewardPager.setCurrentItem(tab.getPosition());
             }
 
-            @NonNull
             @Override
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup group, int i) {
-                View view = LayoutInflater.from(group.getContext())
-                        .inflate(R.layout.reward_each, group,false);
-                return new ViewHolder(view);
+            public void onTabUnselected(TabLayout.Tab tab) {
+
             }
-        };
 
-        recycler.setAdapter(adapter);
-
-        //swipe up to refresh
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @SuppressLint("NotifyDataSetChanged")
             @Override
-            public void onRefresh() {
-                refresh();
+            public void onTabReselected(TabLayout.Tab tab) {
+
             }
         });
-    }
-
-    class ViewHolder extends RecyclerView.ViewHolder {
-
-        RewardsModel model;
-        TextView rewardtitle, rewardpoint;
-        Button redeembtn;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            rewardtitle = itemView.findViewById(R.id.rewardtitle);
-            rewardpoint = itemView.findViewById(R.id.rewardpoint);
-            redeembtn = itemView.findViewById(R.id.redeembtn);
-
-            redeembtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(itemView.getContext(), RewardsCatalog.class);
-                    intent.putExtra("model", model);
-                    itemView.getContext().startActivity(intent);
-                }
-            });
-
-        }
-        public void bind(RewardsModel rewardModel){
-            model = rewardModel;
-
-            rewardtitle.setText(rewardModel.title);
-            rewardpoint.setText(rewardModel.points + " Points");
-
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
-    }
-
-    public void refresh(){
-        swipeRefresh.setRefreshing(true);
-        recycler.setAdapter(null);
-        recycler.setAdapter(adapter);
-        adapter.startListening();
-        adapter.notifyDataSetChanged();
-        swipeRefresh.setRefreshing(false);
+        rewardPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                rewardsTabLayout.selectTab(rewardsTabLayout.getTabAt(position));
+            }
+        });
     }
 }

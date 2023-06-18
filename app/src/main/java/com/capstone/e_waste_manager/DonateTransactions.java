@@ -27,7 +27,6 @@ public class DonateTransactions extends AppCompatActivity {
     StorageReference storageReference;
     String userID;
 
-    RelativeLayout relativeLayout3;
     ImageButton closedr;
 
     @Override
@@ -43,7 +42,6 @@ public class DonateTransactions extends AppCompatActivity {
         donationPager = findViewById(R.id.donationPager);
 
         closedr = findViewById(R.id.closedr);
-        relativeLayout3 = findViewById(R.id.relativeLayout3);
 
         userID = fAuth.getCurrentUser().getUid();
 

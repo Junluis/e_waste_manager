@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -57,7 +58,7 @@
                     android:layout_marginTop="10dp"
                     android:ellipsize="end"
                     android:maxLines="3"
-                    android:text="Reward Title"
+                    android:text="Reward Title \n \n ssd"
                     android:textColor="@color/white"
                     android:textSize="20dp"
                     android:textStyle="bold"
@@ -72,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_bordertopdash"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:paddingVertical="10dp">
 
                 <TextView
@@ -80,15 +81,39 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
-                    android:text="Points"
-                    android:textColor="@color/black" />
+                    android:text="Expires on"
+                    android:textColor="@color/darkblue" />
 
-                <Button
-                    android:id="@+id/redeembtn"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="20dp"
-                    android:text="Redeem" />
+                    android:layout_height="100dp"
+                    android:background="@color/whitebg"
+                    android:layout_margin="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FRESHMART300JYNM3Y"
+                        android:textColor="@color/blue"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.anupkumarpanwar.scratchview.ScratchView
+                        android:id="@+id/scratchView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:overlay_image="@drawable/hide"
+                        app:tile_mode="CLAMP" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
@@ -99,11 +124,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="3dp"
         android:layout_marginHorizontal="10dp"
+        android:elevation="3dp"
         app:layout_constraintBottom_toBottomOf="@+id/cardView5"
         app:layout_constraintTop_toTopOf="@+id/cardView5"
-        app:layout_constraintVertical_bias="0.61">
+        app:layout_constraintVertical_bias="0.37"
+        tools:layout_editor_absoluteX="10dp">
 
         <ImageView
             android:id="@+id/imageView9"
