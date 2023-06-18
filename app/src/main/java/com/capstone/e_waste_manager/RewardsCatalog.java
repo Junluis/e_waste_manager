@@ -128,7 +128,7 @@ public class RewardsCatalog extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(points >= model.points){
-                    uploadData(model.docId, model.points);
+                    uploadData(model.docId, model.points, model.prefix);
                 }else{
                     Toast.makeText(RewardsCatalog.this, "Insufficient points.", Toast.LENGTH_SHORT).show();
                 }
@@ -139,11 +139,11 @@ public class RewardsCatalog extends AppCompatActivity {
 
     private static final String ALLOWED_CHARACTERS ="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    private void uploadData(String docid, Integer pointval) {
+    private void uploadData(String docid, Integer pointval, String prefix) {
 
-        String code = "FRESHMART"+getRandomString(6);
+        String code = prefix+getRandomString(6);
 
-        Query totalcount = fStore.collection("Vouchers");
+        Query totalcount = fStore.collection("Vouchers").whereEqualTo("rewardId", docid);
         AggregateQuery counttotal = totalcount.count();
         counttotal.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
             @Override
@@ -151,6 +151,8 @@ public class RewardsCatalog extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     // Count fetched successfully
                     AggregateQuerySnapshot snapshot = task.getResult();
+                    Toast.makeText(RewardsCatalog.this, snapshot.getCount()+"", Toast.LENGTH_SHORT).show();
+
                     if (snapshot.getCount() < 1947792){
                         Query query = fStore.collection("Vouchers").whereEqualTo("code", code);
                         AggregateQuery countQuery = query.count();
@@ -198,7 +200,7 @@ public class RewardsCatalog extends AppCompatActivity {
                                             }
                                         });
                                     } else{
-                                        uploadData(docid, pointval);
+                                        uploadData(docid, pointval, prefix);
                                     }
                                 }else{
                                     Toast.makeText(RewardsCatalog.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();

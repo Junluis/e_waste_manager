@@ -10,15 +10,17 @@ public class RewardsModel implements Serializable {
     public String title;
     public Integer points;
     public String docId;
+    public String prefix;
 
 
     public RewardsModel(){}
 
-    public RewardsModel(String details, Integer points, String title, String docId) {
+    public RewardsModel(String details, Integer points, String title, String docId, String prefix) {
         this.details = details;
         this.points = points;
         this.title = title;
         this.docId = docId;
+        this.prefix = prefix;
     }
 
     public String getTitle() {
@@ -27,6 +29,15 @@ public class RewardsModel implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     public Integer getPoints() { return points; }
