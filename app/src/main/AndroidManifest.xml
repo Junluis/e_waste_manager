@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.capstone.e_waste_manager">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -22,6 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.E_waste_manager"
         tools:targetApi="31">
+        <activity
+            android:name=".RewardReceipt"
+            android:exported="false" />
         <activity
             android:name=".RewardsCatalog"
             android:exported="false" />

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -53,6 +54,8 @@ public class RewardsCatalog extends AppCompatActivity {
 
     Double points;
 
+    RewardsModel model;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +89,7 @@ public class RewardsCatalog extends AppCompatActivity {
         });
 
         //model
-        RewardsModel model = (RewardsModel) getIntent().getSerializableExtra("model");
+        model = (RewardsModel) getIntent().getSerializableExtra("model");
 
         title.setText(model.title);
         rewarddetails.setText(model.details);
@@ -168,6 +171,7 @@ public class RewardsCatalog extends AppCompatActivity {
                                         doc.put("rewardId", docid);
                                         doc.put("code", code);
                                         doc.put("revealed", false);
+                                        doc.put("date", FieldValue.serverTimestamp());
 
 
                                         fStore.collection("Vouchers").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
@@ -182,20 +186,23 @@ public class RewardsCatalog extends AppCompatActivity {
                                                     @Override
                                                     public void onSuccess(Void unused) {
                                                         Toast.makeText(RewardsCatalog.this, "You've Successfully Redeemed Your Reward.", Toast.LENGTH_SHORT).show();
+                                                        Intent intent = new Intent(RewardsCatalog.this, RewardReceipt.class);
+                                                        intent.putExtra("model", model);
+                                                        RewardsCatalog.this.startActivity(intent);
+                                                        finish();
                                                     }
                                                 }).addOnFailureListener(new OnFailureListener() {
                                                     @Override
                                                     public void onFailure(@NonNull Exception e) {
-                                                        Toast.makeText(RewardsCatalog.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(RewardsCatalog.this, "Something went wrong. Please try again later.", Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
 
-                                                onBackPressed();
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(RewardsCatalog.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(RewardsCatalog.this, "Something went wrong. Please try again later.", Toast.LENGTH_SHORT).show();
                                                 onBackPressed();
                                             }
                                         });
@@ -203,7 +210,7 @@ public class RewardsCatalog extends AppCompatActivity {
                                         uploadData(docid, pointval, prefix);
                                     }
                                 }else{
-                                    Toast.makeText(RewardsCatalog.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(RewardsCatalog.this, "Something went wrong. Please try again later.", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -211,7 +218,7 @@ public class RewardsCatalog extends AppCompatActivity {
                         Toast.makeText(RewardsCatalog.this, "Sorry, This Voucher is Currently Unavailable. Please try again later.", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(RewardsCatalog.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RewardsCatalog.this, "Something went wrong. Please try again later.", Toast.LENGTH_SHORT).show();
                 }
             }
         });

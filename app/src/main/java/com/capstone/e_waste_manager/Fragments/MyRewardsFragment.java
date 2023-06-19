@@ -109,7 +109,7 @@ public class MyRewardsFragment extends Fragment {
         recycler.setItemAnimator(null);
 
         //forums
-        query = fStore.collection("Vouchers").whereEqualTo("rewardUid",user.getUid()).limit(3);
+        query = fStore.collection("Vouchers").whereEqualTo("rewardUid",user.getUid()).orderBy("date", Query.Direction.DESCENDING).limit(3);
 
         config = new PagingConfig(/* page size */ 2, /* prefetchDistance */ 2,
                 /* enablePlaceHolders */ false);
