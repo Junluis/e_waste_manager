@@ -151,7 +151,6 @@ public class RewardsCatalog extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     // Count fetched successfully
                     AggregateQuerySnapshot snapshot = task.getResult();
-                    Toast.makeText(RewardsCatalog.this, snapshot.getCount()+"", Toast.LENGTH_SHORT).show();
 
                     if (snapshot.getCount() < 1947792){
                         Query query = fStore.collection("Vouchers").whereEqualTo("code", code);
@@ -168,6 +167,7 @@ public class RewardsCatalog extends AppCompatActivity {
                                         doc.put("rewardUid", user.getUid());
                                         doc.put("rewardId", docid);
                                         doc.put("code", code);
+                                        doc.put("revealed", false);
 
 
                                         fStore.collection("Vouchers").add(doc).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {

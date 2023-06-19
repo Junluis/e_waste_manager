@@ -58,7 +58,7 @@
                     android:layout_marginTop="10dp"
                     android:ellipsize="end"
                     android:maxLines="3"
-                    android:text="Reward Title \n \n ssd"
+                    android:text="Reward Title"
                     android:textColor="@color/white"
                     android:textSize="20dp"
                     android:textStyle="bold"
@@ -74,10 +74,11 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_bordertopdash"
                 android:orientation="vertical"
+                android:clipChildren="false"
                 android:paddingVertical="10dp">
 
                 <TextView
-                    android:id="@+id/rewardpoint"
+                    android:id="@+id/rewardexp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
@@ -91,12 +92,15 @@
                     android:layout_margin="10dp">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:id="@+id/code"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:text="FRESHMART300JYNM3Y"
                         android:textColor="@color/blue"
                         android:textSize="25sp"
                         android:textStyle="bold"
+                        android:textIsSelectable="true"
+                        android:gravity="center"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -110,8 +114,22 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:overlay_image="@drawable/hide"
+                        app:overlay_image="@drawable/custom_scratchbg"
+                        app:overlay_height="100dp"
+                        app:overlay_width="100dp"
                         app:tile_mode="CLAMP" />
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/scratchanim"
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:layout_marginTop="40dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:lottie_autoPlay="true"
+                        app:lottie_rawRes="@raw/scratch"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
