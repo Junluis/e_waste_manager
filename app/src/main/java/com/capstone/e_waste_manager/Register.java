@@ -460,6 +460,7 @@ public class Register extends AppCompatActivity {
                             userInfo.put("LastName", regLastName.getText().toString().substring(0,1).toUpperCase() + regLastName.getText().toString().substring(1).toLowerCase());
                             userInfo.put("DateOfBirth", regdateOfBirth.getText().toString());
                             userInfo.put("Partner", "0");
+                            userInfo.put("EMPoints", 0);
                             df.set(userInfo);
                             checkUserAccessLevel(authResult.getUser().getUid());
                         }).addOnFailureListener(e -> Toast.makeText(Register.this, "Failed to Create Account. Email Already in Use.", Toast.LENGTH_LONG).show());
